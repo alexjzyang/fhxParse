@@ -1,0 +1,5 @@
+output/*
+*.fhx
+*.txt
+src/junkyard/*
+node_modules/*
