@@ -1,7 +1,8 @@
 // import { FhxProcessor, FileIO, namesFromIndex } from "fhxtool";
 import fs from "fs";
 import path from "path";
-import * as dscreater from "./DSCreater.js";
+import * as fhxProcessor from "./src/fhxProcessor.js";
+import * as dscreator from "./src/DSCreater.js";
 import { FileIO } from "./FileIO.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
@@ -30,54 +31,50 @@ const FHX_Filenames_temp = {
 
 const FHX_Filename = FHX_Filenames_18NOV24.Control_Module_Class;
 const outputPath = "output";
-/**
- * Find the property values of a module class block
- * @param {string} fhx_data input fhx data
- * @param {string} modulename the module which properties are to be found
- */
-function obtainModuleParameters(fhx_data, modulename) {
-  let block = fhxObject(fhx_data, "MODULE_CLASS", modulename);
-  let properties = classProperties(block);
-  let header = [
-    { id: "Name", title: "Name" },
-    { id: "Item", title: "Item" },
-  ];
-  let records = [];
 
-  for (const key in properties) {
-    if (Object.hasOwnProperty.call(properties, key)) {
-      const property = properties[key];
-      records.push({ Name: property.DVname, Item: property.value });
-    }
-  }
-  writeCsv(header, records, outputPath, `${modulename}Properties.csv`);
-}
+// a DSCreater function to find all Equipment Module Classes
+function findAllEMC(fhx_data) {
+  // let fhxBlockType = "MODULE_CLASS";
+  // let modulename = "_E_M_AGIT";
+  // let category = "Equipment Module Classes";
+  // let fhxProperties = { category: "CATEGORY" };
+  let outputFilePath = "output/All EMC";
 
-function runner(fhx_data) {
-  let blocks = dscreater.findBlocks(fhx_data, "MODULE_CLASS");
+  let blocks = fhxProcessor.findBlocks(fhx_data, "MODULE_CLASS"); // Find all module class blocks
   blocks.forEach((block) => {
     if (
-      dscreater.valueOf(block, "CATEGORY").includes("Equipment Module Classes")
+      fhxProcessor
+        .valueOf(block, "CATEGORY")
+        .includes("Equipment Module Classes")
     ) {
-      let modulename = dscreater.valueOf(block, "NAME");
-      FileIO.writeFiles(
-        path.join(outputPath, "All EMC"),
-        modulename,
-        block,
-        false
-      );
+      // Check if the block is an equipment module class
+      let modulename = fhxProcessor.valueOf(block, "NAME"); // Get the module name
+      FileIO.writeTxtFile(block, outputFilePath, modulename); // Write the block to a text file
     }
   });
 }
 
-const fhxfilepath = path.join(
+function runner(fhx_data) {
+  let block = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", "_C_M_AI");
+  let values = dscreator.valuesOfModuleParameters(block);
+  return;
+}
+
+const emfilepath = path.join(
   FHX_Path,
   FHX_Export_25NOV24,
   FHX_Filenames_25NOV24.Equipment_Module_Class
 );
 
-console.log("Loading file: " + fhxfilepath);
-const fhx_data = fs.readFileSync(fhxfilepath, "utf-16le");
+const cmfilepath = path.join(
+  FHX_Path,
+  FHX_Export_25NOV24,
+  FHX_Filenames_25NOV24.Control_Module_Class
+);
+
+// console.log("Loading file: " + fhxfilepath);
+const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
 const modulename = "_E_M_AGIT";
+// const modulename = "_C_M_AI";
 
 runner(fhx_data);

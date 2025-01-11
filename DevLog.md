@@ -73,3 +73,26 @@ TODO: create logic to extract information of each block. 1. From the definition 
 - The `findBlocks` function now supports inner blocks and handles depth changes correctly.
 - The `writeCsv` function simplifies the process of writing CSV files from extracted data.
 - The `fhxReplacer` function can be extended with additional replacer terms as needed.
+
+## 01/10/2025
+
+### Summary of `FileIO.js`:
+
+The `FileIO.js` file contains utility functions for file operations, including:
+
+- `prepareFilePath(filepath, filename, replace)`: Prepares the directory and file path for writing.
+- `writeTxtFile(data, filepath, filename, replace)`: Writes data to a text file at the specified path.
+- `writeTxtFiles(files, filepath, replace)`: Writes multiple text files to the specified directory.
+- `writeTxtFileConcat(data, filepath, filename, replace)`: Writes a single text file with concatenated data.
+- `writeTxtFileWithPrefix(data, filepath, baseFilename)`: Writes multiple text files with an auto-increment prefix.
+
+### Summary of `obtainModuleParameters`:
+
+The `obtainModuleProperties` function in `main.js`:
+
+- Extracts the properties of a fhx block header.
+- Creates a CSV file with the extracted properties.
+
+### Tested logic with the `runner` function
+
+- Finds and processes blocks of type "MODULE_CLASS" where the module is within a specific category (Equipment Module Classes).
