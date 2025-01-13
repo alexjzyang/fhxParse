@@ -15,4 +15,17 @@ E_M_AGIT yielded 366 results with the valueOfModuleParameter function
 \_C_M_AI has 20 CATEGORY=COMMON parameters
 C_M_AI yielded 21 results from the function, the difference is VERSION_CLASS parameter, It is an online parameter, but it has both attribute and attribute instance blocks, perhaps because of nature of the parameter needing a non default, incremental value.
 
-`Therefore, going forward module paramters will be identified as parameters which has a Attribute block which includes CATEGORY { CATEGORY=ONLINE }`
+`Therefore, going forward module paramters will be identified as parameters which has a Attribute block with CATEGORY { CATEGORY=ONLINE }`
+
+On a separate note, this means that some parameters with CATEGORY=COMMON will not have a Attribute Instance block.
+
+### Ideas
+
+DeltaV syntax is complex and inconsistent. Code is created with certain assumptions which over time is proven to be false. I can create test functions to run these assumptions every time when a new feature and new file is added
+
+1. Module Parameters:
+   Test whether _attributes blocks_ with `CATEGORY { CATEGORY=ONLINE }` always have an `attribute instance block`.
+
+### Lessons
+
+DeltaV Module Class's external references are always instance configuratble, where as internal references are never instance configurable

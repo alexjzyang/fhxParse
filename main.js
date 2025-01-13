@@ -54,9 +54,20 @@ function findAllEMC(fhx_data) {
   });
 }
 
-function runner(fhx_data) {
-  let block = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", "_C_M_AI");
+function runner(fhx_data, blockType = "MODULE_CLASS", blockName = "_C_M_AI") {
+  let block = fhxProcessor.fhxObject(fhx_data, blockType, blockName);
   let values = dscreator.valuesOfModuleParameters(block);
+  fhxProcessor.writeCsv(
+    [
+      { id: "name", title: "Name" },
+      { id: "type", title: "Type" },
+      { id: "value", title: "Default Value" },
+      { id: "configurable", title: "Configurable" },
+    ],
+    values,
+    outputPath,
+    `${blockName}-ModuleParameters.csv`
+  );
   return;
 }
 
@@ -74,7 +85,11 @@ const cmfilepath = path.join(
 
 // console.log("Loading file: " + fhxfilepath);
 const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
-const modulename = "_E_M_AGIT";
-// const modulename = "_C_M_AI";
+const cm_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
+const em_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
+const Module_Class = "MODULE_CLASS";
+const emname = "_E_M_AGIT";
+const cmname = "_C_M_AI";
 
-runner(fhx_data);
+runner(em_fhxdata, Module_Class, emname);
+// runner(cm_fhxdata, Module_Class, cmname);

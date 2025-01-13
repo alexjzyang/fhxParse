@@ -216,8 +216,8 @@ function tempWrite(
 
 /**
  * writeCsv writes a csv file based on the input
- * @param {[{id,tilte}]} header
- * @param {[{column,value}]} records
+ * @param {} header
+ * @param {} records
  * @param {string} filepath
  * @param {string} filename the default is ./output/tempcsv.csv
  */

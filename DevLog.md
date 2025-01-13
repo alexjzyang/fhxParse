@@ -96,3 +96,23 @@ The `obtainModuleProperties` function in `main.js`:
 ### Tested logic with the `runner` function
 
 - Finds and processes blocks of type "MODULE_CLASS" where the module is within a specific category (Equipment Module Classes).
+
+## 01/12/2025
+
+### Updates:
+
+- `fhxProcessor.js` is now dedicated to FHX processing.
+- `DSCreator.js` uses the processor's functions to compile tables necessary for the Design Specification creation project.
+
+### Functionality:
+
+- `valuesOfModuleParameters(module_data)`: Extracts default values of module parameters from a given module data block. It identifies parameters by checking for attribute blocks with `CATEGORY=COMMON`.
+
+### Purpose of `DesignConsideration.md`:
+
+The `DesignConsideration.md` file is used to explore and record the design roadmap, ideas, and lessons learned throughout the project.
+
+### Future Suggestions:
+
+- Use software to track issues, ideas, and milestones to make each coding session more effective.
+- Start using unit tests for consistency and to avoid spaghetti code.
