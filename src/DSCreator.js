@@ -10,7 +10,7 @@ let ModuleClass = "MODULE_CLASS";
  */
 function obtainModuleProperties(fhx_data, modulename) {
   let blockType = ModuleClass; // The block is a module class block
-  let block = fhxProcessor.fhxObject(fhx_data, blockType, modulename); // Find the module class block
+  let block = fhxProcessor.findBlockWithName(fhx_data, blockType, modulename); // Find the module class block
   let properties = fhxProcessor.classProperties(block); // Extract the properties of the module class block
   let header = [
     // Header row for the CSV file
@@ -132,4 +132,91 @@ function valuesOfModuleParameters(module_data, modulename) {
   // return moduleParameters;
 }
 
-export { obtainModuleProperties, valuesOfModuleParameters };
+/**
+ * Finds all blocks of a specified type in the provided FHX data that match the given criteria.
+ * Optionally writes each matching block to a text file in the specified output directory.
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} outputFilePath - The path to the output directory (optional).
+ * @param {string} elementKey - The key of the element to search for.
+ * @param {object} withValue - The criteria to filter the blocks by (e.g., { key: "CATEGORY", includes: "Equipment Module Classes" }).
+ * @returns {Array} - An array of the found blocks.
+ */
+function findAll(fhx_data, outputFilePath, elementKey, withValue) {
+  let blocks = fhxProcessor.findBlocks(fhx_data, elementKey);
+  let results = blocks.filter((block) => {
+    // Filter blocks based on the provided criteria
+    return fhxProcessor
+      .valueOf(block, withValue.key)
+      ?.includes(withValue.value);
+  });
+
+  if (outputFilePath)
+    // If an output file path is provided
+    results.forEach((block) => {
+      // Write each block to a text file
+      let modulename = fhxProcessor.valueOf(block, "NAME");
+      try {
+        FileIO.writeTxtFile(block, outputFilePath, modulename);
+      } catch (error) {
+        console.error("Error writing file: " + modulename);
+        console.error(error);
+      }
+    });
+
+  return results;
+}
+
+/**
+ * Finds all Equipment Module Classes (EMC) in the provided FHX data.
+ * Writes each EMC block to a text file in the specified output directory.
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} [outputFilePath="output/All EMC"] - The path to the output directory (optional).
+ */
+function findAllEMClasses(fhx_data, outputFilePath = "output/All EMC") {
+  let elementKey = "MODULE_CLASS";
+  let emCriteria = { value: "Equipment Module Classes", key: "CATEGORY" };
+  return findAll(fhx_data, outputFilePath, elementKey, emCriteria);
+}
+
+/**
+ * Finds all Control Module Classes (CMC) in the provided FHX data.
+ * Writes each CMC block to a text file in the specified output directory.
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} [outputFilePath="output/All CMC"] - The path to the output directory (optional).
+ */
+function findAllCMClasses(fhx_data, outputFilePath = "output/All CMC") {
+  let elementKey = "MODULE_CLASS";
+  let emCriteria = { value: "Equipment Module Classes", key: "CATEGORY" };
+  return findAll(fhx_data, outputFilePath, elementKey, emCriteria);
+}
+
+/**
+ * Processes a specific module class block from the provided FHX data.
+ * Extracts module parameters and properties, and writes them to output files.
+ * Currently only processing module properties and parameters
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} blockName - The name of the module class block to process.
+ */
+function processModuleClass(fhx_data, blockName = "_C_M_AI") {
+  //
+  let block = fhxProcessor.findBlockWithName(
+    fhx_data,
+    "MODULE_CLASS",
+    blockName
+  );
+  dscreator.valuesOfModuleParameters(block, blockName);
+  dscreator.obtainModuleProperties(block, blockName);
+}
+
+export {
+  obtainModuleProperties,
+  valuesOfModuleParameters,
+  findAll,
+  findAllEMClasses,
+  findAllCMClasses,
+  processModuleClass,
+};

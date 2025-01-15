@@ -1,5 +1,5 @@
 // import { FhxProcessor, FileIO, namesFromIndex } from "fhxtool";
-import fs from "fs";
+import fs, { writeFileSync } from "fs";
 import path from "path";
 import * as fhxProcessor from "./src/fhxProcessor.js";
 import * as dscreator from "./src/DSCreator.js";
@@ -32,88 +32,6 @@ const FHX_Filenames_temp = {
 const FHX_Filename = FHX_Filenames_18NOV24.Control_Module_Class;
 const outputPath = "output";
 
-// a DSCreater function to find all Equipment Module Classes
-function findAllEMC(fhx_data) {
-  // let fhxBlockType = "MODULE_CLASS";
-  // let modulename = "_E_M_AGIT";
-  // let category = "Equipment Module Classes";
-  // let fhxProperties = { category: "CATEGORY" };
-  let outputFilePath = "output/All EMC";
-
-  let blocks = fhxProcessor.findBlocks(fhx_data, "MODULE_CLASS"); // Find all module class blocks
-  blocks.forEach((block) => {
-    if (
-      fhxProcessor
-        .valueOf(block, "CATEGORY")
-        .includes("Equipment Module Classes")
-    ) {
-      // Check if the block is an equipment module class
-      let modulename = fhxProcessor.valueOf(block, "NAME"); // Get the module name
-      FileIO.writeTxtFile(block, outputFilePath, modulename); // Write the block to a text file
-    }
-  });
-}
-
-function runner(fhx_data, blockName = "_C_M_AI") {
-  let block = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", blockName);
-  dscreator.valuesOfModuleParameters(block, blockName);
-  dscreator.obtainModuleProperties(block, blockName);
-  // fhxProcessor.writeCsv(
-  //   [
-  //     { id: "name", title: "Name" },
-  //     { id: "type", title: "Type" },
-  //     { id: "value", title: "Default Value" },
-  //     { id: "configurable", title: "Configurable" },
-  //   ],
-  //   values,
-  //   outputPath,
-  //   `${blockName}-ModuleParameters.csv`
-  // );
-}
-
-function runAgitEM(fhx_data) {
-  let blockName = "_E_M_AGIT";
-  let emBlock = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", blockName);
-  /*
-  dscreator.valuesOfModuleParameters(emBlock, blockName);
-  dscreator.obtainModuleProperties(emBlock, blockName);
-  */
-
-  // let commandDef_0 = "__5D24D8BB_A831B14A__";
-
-  let functionBlocks = fhxProcessor.findBlocks(emBlock, "FUNCTION_BLOCK");
-  // find FUNCTION_BLOCK where NAME includes COMMAND_00
-  let commands = functionBlocks.filter((block) =>
-    fhxProcessor.nameOf(block).includes("COMMAND_00")
-  );
-
-  /*
-  // write the commands to a text file
-  FileIO.writeTxtFile(
-    commands.join("\r\n"),
-    path.join("output", blockName),
-    blockName + " commands"
-  );
-  */
-
-  // creating a list of command name and definitions
-  let commandNames = commands.map((block) => {
-    return {
-      name: fhxProcessor.nameOf(block),
-      definition: fhxProcessor.valueOf(block, "DEFINITION"),
-    };
-  });
-  console.log(commandNames);
-  // FUNCTION_BLOCK NAME="COMMAND_CTRL" DEFINITION="_CT_M_CMD_CTRL"
-
-  let testValueIn = fhxProcessor.valueIn(
-    emBlock,
-    "FUNCTION_BLOCK",
-    "DEFINITION",
-    fhxProcessor.valueOf(emBlock, "NAME")[0].includes("_CT_M_CMD_CTRL")
-  );
-}
-
 const emfilepath = path.join(
   FHX_Path,
   FHX_Export_25NOV24,
@@ -131,40 +49,115 @@ const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
 const cm_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
 const em_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
+const Function_Block = "FUNCTION_BLOCK";
+const Function_Block_Definition = "FUNCTION_BLOCK_DEFINITION";
 const emname = "_E_M_AGIT";
 const cmname = "_C_M_AI";
 
-console.log(path.dirname("./"));
+/**
+ * Finds all command definitions for a given Equipment Module (EM) in the provided FHX data.
+ * Extracts the command names and their definitions.
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} modulename - The name of the Equipment Module.
+ * @returns {Array<{name: string, definition: string}>} - An array of objects containing the command names and their definitions.
+ */
+function findEMCommands(fhx_data, modulename) {
+  let _E_M_AGITfhx = fhxProcessor.findBlockWithName(
+    fhx_data,
+    Module_Class,
+    modulename
+  );
 
-// // runner(em_fhxdata, emname);
-// runAgitEM(em_fhxdata);
-// runner(cm_fhxdata, cmname);
-// runner(em_fhxdata, emname);
-function findValueIn(fhx_data, blockType, name, property) {
-  let cmblock = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", cmname);
-  let attrBlock = fhxProcessor.fhxObject(cmblock, blockType, name);
-  console.log(attrBlock);
-  let cv = fhxProcessor.valueOf(attrBlock, property);
-  console.log(cv);
-}
-// findValueIn(cm_fhxdata, "ATTRIBUTE_INSTANCE", "SENS_FAILURE", "CV");
+  let commandsFhx = dscreator.findAll(_E_M_AGITfhx, null, Function_Block, {
+    value: "COMMAND_00",
+    key: "NAME",
+  });
 
-let tree = [
-  { block: "MODULE_CLASS", property: "_C_M_AI" },
-  { block: "ATTRIBUTE", property: "SENS_FAILURE" },
-];
-
-let property = "CATEGORY";
-// fhx_data = cm_fhxdata;
-
-function findValueInTree(fhx_data, tree, property) {
-  let block = fhx_data;
-  for (let i = 0; i < tree.length; i++) {
-    block = fhxProcessor.fhxObject(block, tree[i].block, tree[i].property);
-  }
-  return fhxProcessor.valueOf(block, property); // valueOf needs to be detect
-  // whether the user is looking for a block or a property. So that findValueInTree
-  // can be used for both after modifying the function signature.
+  let _E_M_AGITcmds = commandsFhx.map((block) => {
+    let commandname = fhxProcessor.valueOf(block, "NAME");
+    let commanddefinition = fhxProcessor.valueOf(block, "DEFINITION");
+    return { name: commandname, definition: commanddefinition };
+  });
+  return _E_M_AGITcmds;
 }
 
-findValueInTree(cm_fhxdata, tree, property);
+/**
+ * Compiles all command definitions for a given Equipment Module (EM) in the provided FHX data.
+ * Extracts the command names, their definitions, and writes them to text files.
+ *
+ * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} emname - The name of the Equipment Module.
+ * @returns {Array<{filename: string, data: string}>} - An array of objects containing the filenames and their data.
+ */
+function compileEMCommands(fhx_data, emname) {
+  // Get a list of names and their definition for the Equipment Module (enname)
+  let emCommands = findEMCommands(fhx_data, emname);
+
+  // add fhx data to each command
+  emCommands.map((command) => {
+    let definitionBlock = fhxProcessor.findBlockWithName(
+      fhx_data,
+      Function_Block_Definition,
+      command.definition
+    );
+    command.fhx = definitionBlock;
+  });
+
+  // Create an array of files with command names and their data for processing with FileIO
+  let files = emCommands.map((command) => {
+    let filename = command.name;
+    let data = command.fhx;
+    return { filename, data };
+  });
+
+  // Define the output path for the command files
+  let emOutputPath = path.join(outputPath, emname, "commands");
+
+  // Write the command files to the output path
+  FileIO.writeTxtFiles(files, emOutputPath, true);
+
+  // Return the array of files
+  return files;
+}
+
+function runner(em_fhxdata) {
+  let em0fhxdata = compileEMCommands(em_fhxdata, emname)[0];
+
+  let step0 = fhxProcessor.findBlockWithName(em0fhxdata.data, "STEP", "S0000");
+  let actionBlocks = fhxProcessor.findBlocks(step0, "ACTION");
+
+  let actionValues = actionBlocks.map((block) => {
+    let actionValue = (key) => fhxProcessor.valueOf(block, key);
+    let actionValues = {
+      name: actionValue("NAME"),
+      description: actionValue("DESCRIPTION"),
+      actionType: actionValue("ACTION_TYPE"),
+      qualifier: actionValue("QUALIFIER"),
+      expression: actionValue("EXPRESSION"),
+      confirmExpression: actionValue("CONFIRM_EXPRESSION"),
+      confirmTimeOut: actionValue("CONFIRM_TIME_OUT"),
+      delayedExpression: actionValue("DELAYED_EXPRESSION"),
+      delayTime: actionValue("DELAY_TIME"),
+    };
+    return actionValues;
+  });
+  // let action0 = fhxProcessor.findBlockWithName(step0, "ACTION", "A000");
+  // let actionValue = (key) => fhxProcessor.valueOf(action0, key);
+  // let action0Values = {
+  //   description: actionValue("DESCRIPTION"),
+  //   actionType: actionValue("ACTION_TYPE"),
+  //   qualifier: actionValue("QUALIFIER"),
+  //   expression: actionValue("EXPRESSION"),
+  //   confirmExpression: actionValue("CONFIRM_EXPRESSION"),
+  //   confirmTimeOut: actionValue("CONFIRM_TIME_OUT"),
+  //   delayedExpression: actionValue("DELAYED_EXPRESSION"),
+  //   delayTime: actionValue("DELAY_TIME"),
+  // };
+  // console.log(action0Values.expression);
+  fs.writeFileSync(
+    path.join(outputPath, emname, "commands", "steps", "actions.json"),
+    JSON.stringify(actionValues)
+  );
+}
+runner(em_fhxdata);

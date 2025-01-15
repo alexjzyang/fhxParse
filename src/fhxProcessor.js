@@ -338,7 +338,7 @@ function fhxReplacer(input, replacer) {
  * @param {string} name the block that needs to be found
  * @returns a fhx string that contains one single block
  */
-function fhxObject(fhxstring, type, name) {
+function findBlockWithName(fhxstring, type, name) {
   // find a list of block matching the block type
   let blocks = findBlocks(fhxstring, type);
   // within this list, find the block that matches the name
@@ -387,6 +387,12 @@ function valueOf(fhxBlock, key) {
   return fhxBlock.substring(startIndex, endIndex);
 }
 
+/**
+ * Extracts the name of a given FHX block.
+ *
+ * @param {string} fhxBlock - The FHX string of a single block.
+ * @returns {string} - The name of the block.
+ */
 function nameOf(fhxBlock) {
   // fhxBlock has to be one single block.
   let startIndex = fhxBlock.indexOf('NAME="') + 6;
@@ -394,22 +400,6 @@ function nameOf(fhxBlock) {
   if (startIndex === -1 || endIndex === -1) return;
   let name = fhxBlock.substring(startIndex, endIndex);
   return name;
-}
-// AGIT EM
-// blockType = SFC_ALGORITHM
-// keyToFind ACTION
-// criteria S_INITIAL
-
-// Find SOLID in LINE_STYLE=SOLID from BOX_GRAPHIC
-// Criteria: NAME="{A9BF3680-7195-46B2-8771-A18E09920E7B}"
-// criteria = valueOf(block, "NAME").include = "A9BF3680-7195-46B2-8771-A18E09920E7B"
-
-function valueIn(fhx_data, blockType, keyToFind, criteria) {
-  return findBlocks(fhx_data, blockType).forEach((block) => {
-    if (valueOf(block, keyToFind) === criteria) {
-      return block;
-    }
-  });
 }
 
 export {
@@ -423,8 +413,7 @@ export {
   writeCsv,
   findParameterList,
   fhxReplacer,
-  fhxObject,
+  findBlockWithName,
   valueOf,
   nameOf,
-  valueIn,
 };

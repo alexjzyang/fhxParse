@@ -42,3 +42,13 @@ For EM Commands (\_E_M_AGIT)
    ### fhxProcessor features:
 
    - Add a function to search for any block. The function signature would be `findBlock(fhx_data, blockType, keyToFind, criteria):[results]` where fhx_data is one `single root block`; keyToFind is the key to search for. This can be a key with a single value, an experssion or a block`(for example: NAME, ATTRIBUTE)`; criterion: how the item will be identified amount other items with the name key. Using the example above `(findBlock(em_data, 'FUNCTION_BLOCK', 'NAME="COMMAND_0'))` The criteria can be further generalised to take an object or an array {"DEFINITION": "ACT"; "DESCRIPTION": "Something"}
+
+## 01/15/2025
+
+For SFC codes
+
+1. STEP
+   Steps are composed of actions
+2. ACTION
+   An action consists of Action Expression; Delayed Expression|Time; Confirm Expression|TImeout
+   There are also descriptions, action types, and qualifiers.
