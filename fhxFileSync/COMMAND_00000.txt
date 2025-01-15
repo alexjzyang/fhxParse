@@ -1,0 +1,410 @@
+FUNCTION_BLOCK_DEFINITION NAME="__5D24D8BB_A831B14A__" CATEGORY=""
+ user="AYANG" time=1732568669/* "25-Nov-2024 15:04:29" */
+{
+  ATTRIBUTE NAME="ENABLED" TYPE=BOOLEAN
+  {
+    EDITABLE=F
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+    HELP_ID=337654
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="CFM_MAX_TIME" TYPE=FLOAT
+  {
+    EDITABLE=F
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+    HELP_ID=337653
+    CATEGORY { CATEGORY=COMMON }
+  }
+  SFC_ALGORITHM
+  {
+    GRAPHICS ALGORITHM=SFC
+    {
+      TEXT_GRAPHIC
+      {
+        NAME="{2D47933D-DFE1-46DC-87D0-89445534AE73}"
+        ORIGIN= { X=72 Y=41 }
+        END= { X=367 Y=56 }
+        TEXT="Disable Command for Agitator Control Equipment Module"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{0A9DD4EB-1538-456E-83D4-8CF8132D08C5}"
+        RECTANGLE= { X=61 Y=30 H=490 W=450 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DBE0527A-43A1-46C5-B14D-81AA30A1C512}"
+        RECTANGLE= { X=61 Y=30 H=28 W=450 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+    }
+    STEP NAME="S0000"
+    {
+      DESCRIPTION="Disable Hold and Sentinel Monitors"
+      RECTANGLE= { X=180 Y=89 H=40 W=190 }
+      ACTION NAME="A000"
+      {
+        DESCRIPTION="Operator Message"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/MSG1.CV' := ""Disabling Hold and Sentinel Monitors"";
+
+IF '^/MONITOR/FAILURE.CV' != """" THEN
+'^/MSG2.CV' := ""Fail Condition Activated - "" + '^/MONITOR/FAIL_SAVE.CVS';
+'^/MSG_TYPE.CV' := '_N_M_MSG_TYPE:FAILURE';
+ELSE
+'^/MSG2.CV' := """";
+'^/MSG_TYPE.CV' := '_N_M_MSG_TYPE:INFO';
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A010"
+      {
+        DESCRIPTION="If EM Failure not detected, then Disable HM02 (AGIT1_MTR Interlock is Active)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' = """" THEN
+'^/MONITOR/HM_02.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A020"
+      {
+        DESCRIPTION="If EM Failure not detected, then Disable HM03 (AGIT2_MTR Interlock is Active)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' = """" THEN
+'^/MONITOR/HM_03.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A030"
+      {
+        DESCRIPTION="If EM Failure not detected, then Disable HM04 (DRIVE FAULT Alarm is Active)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' = """" THEN
+'^/MONITOR/HM_04.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A040"
+      {
+        DESCRIPTION="If EM Failure not detected, then Disable SM01 (AGIT1_MTR)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' = """" THEN
+'^/MONITOR/SM_01.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A050"
+      {
+        DESCRIPTION="If EM Failure not detected, then Disable SM02 (AGIT2_MTR)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' = """" THEN
+'^/MONITOR/SM_02.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A060"
+      {
+        DESCRIPTION="Stop GEX_AGIT_WT_MON Composite"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF 
+'^/EQUIPMENT_LOGIC/GEX_AGIT_WT_MON/STATE.CV' = '$sfc_states:Sequence Active'
+THEN
+'^/EQUIPMENT_LOGIC/GEX_AGIT_WT_MON/COMMAND.CV' := '$sfc_commands:Stop Sequence';
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="'^/EQUIPMENT_LOGIC/GEX_AGIT_WT_MON/STATE.CV' != '$sfc_states:Sequence Active';"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A070"
+      {
+        DESCRIPTION="Reset GEX_AGIT_WT_MON Composite (After A050)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/EQUIPMENT_LOGIC/GEX_AGIT_WT_MON/COMMAND.CV':= '$sfc_commands:Reset Sequence'"
+        DELAY_EXPRESSION="'S0000/A060/STATE.CV'='$sfc_action_states:Complete'"
+        CONFIRM_EXPRESSION="'^/EQUIPMENT_LOGIC/GEX_AGIT_WT_MON/STATE.CV' = '$sfc_states:Sequence Idle'"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A080"
+      {
+        DESCRIPTION="Set EM_CMD_CMPLT to False"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/EM_CMD_CMPLT.CV' := FALSE;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+    }
+    STEP NAME="S0010"
+    {
+      DESCRIPTION="Stopping Agitator"
+      RECTANGLE= { X=185 Y=237 H=39 W=181 }
+      ACTION NAME="A000"
+      {
+        DESCRIPTION="Operator Message"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/MSG1.CV' := ""Stopping Agitators"";
+'^/MSG2.CV' := """";"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A010"
+      {
+        DESCRIPTION="Remove Weight Defined Setpoint"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/EQUIPMENT_LOGIC/GEX_AGIT_SPD_WT/WT_DEF_ENAB.CV' := 0;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A020"
+      {
+        DESCRIPTION="Set Agitator Syncing to False"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/AGIT2_MTR/_IGNORE.CV' = FALSE THEN
+'^/AGIT2_MTR/AGIT_ENAB_SYNC.CV' := FALSE;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A030"
+      {
+        DESCRIPTION="Set AGIT1_MTR and AGIT2_MTR REQ_SP to STOP (After A010)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/AGIT1_MTR/REQ_SP.CV' := '_N_M_EDC_MTRFR:Stop';
+IF '^/AGIT2_MTR/_IGNORE.CV' = FALSE THEN 
+'^/AGIT2_MTR/REQ_SP.CV' := '_N_M_EDC_MTRFR:Stop';
+ENDIF;"
+        DELAY_EXPRESSION="'S0010/A010/STATE.CV' = '$sfc_action_states:Complete';"
+        CONFIRM_EXPRESSION="('^/AGIT1_MTR/PV_D.CV' = '_N_M_EDC_MTRFR_CFM:STOPPED' And
+('^/AGIT2_MTR/PV_D.CV' = '_N_M_EDC_MTRFR_CFM:STOPPED' 
+OR '^/AGIT2_MTR/_IGNORE.CV' = TRUE));"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A040"
+      {
+        DESCRIPTION="Set AGIT1_MTR/SPEED_RSP and AGIT2_MTR/SPEED_RSP to 5 (After A030) "
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'^/AGIT1_MTR/SPEED_RSP.CV' := 5;
+IF '/AGIT2_MTR/_IGNORE.CV' = FALSE THEN
+'^/AGIT2_MTR/SPEED_RSP.CV' := 5;
+ENDIF;"
+        DELAY_EXPRESSION="'S0010/A030/STATE.CV' = '$sfc_action_states:Complete';"
+        CONFIRM_EXPRESSION="('^/AGIT1_MTR/SPEED_SP.CV' = 5 And 
+('^/AGIT2_MTR/SPEED_SP.CV' = 5 OR '/AGIT2_MTR/_IGNORE.CV' = TRUE));"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A050"
+      {
+        DESCRIPTION="Set AGIT1_MTR and AGIT2_MTR SP_PID to False (After A040)"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="'/AGIT1_MTR/SP_PID.CV' := FALSE;
+IF '/AGIT2_MTR/_IGNORE.CV' = FALSE THEN
+'/AGIT2_MTR/SP_PID.CV' := FALSE
+ENDIF;"
+        DELAY_EXPRESSION="'S0010/A040/STATE.CV' = '$sfc_action_states:Complete';"
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+    }
+    STEP NAME="S9999"
+    {
+      DESCRIPTION="Complete"
+      RECTANGLE= { X=180 Y=384 H=40 W=190 }
+      ACTION NAME="A000"
+      {
+        DESCRIPTION="Clear Messages"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/MONITOR/FAILURE.CV' != """" THEN
+'^/MSG1.CV' := ""Fail Condition Activated"";
+'^/MSG2.CV' := ""Disabled due to "" + '^/MONITOR/FAIL_SAVE.CVS'  + "" : "" +  '^/MONITOR/FAILURE_SAVE.CV'; 
+'^/MSG_TYPE.CV' := '_N_M_MSG_TYPE:FAILURE';
+ELSE
+'^/MSG1.CV' := """";
+'^/MSG_TYPE.CV' := '_N_M_MSG_TYPE:INFO';
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A010"
+      {
+        DESCRIPTION="Reset internal flag for totalizer/timer, if hold isn't active"
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF
+	'^/EM_IN_HOLD.CV' = FALSE
+THEN
+	IF
+		'^/TIMER_RESET_OK.CV' = TRUE
+	THEN
+		'^/TIMER_RESET_OK.CV' := FALSE
+	ENDIF;
+	IF
+		'^/TOT_RESET_OK.CV' = TRUE
+	THEN
+		'^/TOT_RESET_OK.CV' := FALSE
+	ENDIF;
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE"
+        CONFIRM_TIME_OUT=0
+      }
+      ACTION NAME="A020"
+      {
+        DESCRIPTION="Intialize "
+        ACTION_TYPE=ASSIGN
+        QUALIFIER=P
+        EXPRESSION="IF '^/OWNER_ID.CV' = ""First Download""
+THEN
+'^/OWNER_ID.CV' := ""(None)""
+
+ENDIF;"
+        DELAY_TIME=0
+        CONFIRM_EXPRESSION="TRUE;"
+        CONFIRM_TIME_OUT=0
+      }
+    }
+    INITIAL_STEP="S0000"
+    TRANSITION NAME="END"
+    {
+      DESCRIPTION="Complete"
+      POSITION= { X=265 Y=468 }
+      TERMINATION=T
+      EXPRESSION="'S9999/PENDING_CONFIRMS.CV'=0"
+    }
+    TRANSITION NAME="T0000"
+    {
+      DESCRIPTION="Step Complete"
+      POSITION= { X=265 Y=173 }
+      TERMINATION=F
+      EXPRESSION="'S0000/PENDING_CONFIRMS.CV' = 0;"
+    }
+    TRANSITION NAME="T0010"
+    {
+      DESCRIPTION="Step Complete"
+      POSITION= { X=265 Y=320 }
+      TERMINATION=F
+      EXPRESSION="'S0010/PENDING_CONFIRMS.CV' = 0;"
+    }
+    STEP_TRANSITION_CONNECTION STEP="S0000" TRANSITION="T0000" { }
+    STEP_TRANSITION_CONNECTION STEP="S0010" TRANSITION="T0010" { }
+    STEP_TRANSITION_CONNECTION STEP="S9999" TRANSITION="END" { }
+    TRANSITION_STEP_CONNECTION TRANSITION="T0000" STEP="S0010" { }
+    TRANSITION_STEP_CONNECTION TRANSITION="T0010" STEP="S9999" { }
+  }
+  ATTRIBUTE_INSTANCE NAME="ACT_STEPS"
+  {
+    VALUE { CV="" }
+  }
+  ATTRIBUTE_INSTANCE NAME="ACT_TRANS"
+  {
+    VALUE { CV="" }
+  }
+  ATTRIBUTE_INSTANCE NAME="AUTO_ADVANCE"
+  {
+    VALUE { CV=T }
+  }
+  ATTRIBUTE_INSTANCE NAME="COMMAND"
+  {
+    VALUE
+    {
+      SET="$sfc_commands"
+      STRING_VALUE="Start Sequence"
+      CHANGEABLE=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="CONFIRM_FAIL"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="ERROR"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="INITIAL_STATE"
+  {
+    VALUE
+    {
+      SET="$sfc_initial_states"
+      STRING_VALUE="Sequence Active"
+      CHANGEABLE=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="RERROR"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="STATE"
+  {
+    VALUE
+    {
+      SET="$sfc_states"
+      STRING_VALUE="Sequence Active"
+      CHANGEABLE=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="STATUS"
+  {
+    VALUE
+    {
+      ENUM_SET="$module_status_opts"
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="TIME"
+  {
+    VALUE { CV=0 }
+  }
+  ATTRIBUTE_INSTANCE NAME="ENABLED"
+  {
+    VALUE { CV=T }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=F
+  }
+  ATTRIBUTE_INSTANCE NAME="CFM_MAX_TIME"
+  {
+    VALUE { CV=0 }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=F
+  }
+}

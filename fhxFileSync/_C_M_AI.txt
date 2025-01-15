@@ -1,0 +1,1534 @@
+MODULE_CLASS NAME="_C_M_AI" CATEGORY="Library/Control Module Classes/M_Control_Module_Classes"
+ user="AYANG" time=1732309423
+{
+  DESCRIPTION="_M Analog Input Module with Sensor Failure CM"
+  PERIOD=1
+  PRIMARY_CONTROL_DISPLAY=""
+  INSTRUMENT_AREA_DISPLAY="GEX_AI_STD_130_FP"
+  DETAIL_DISPLAY="GEX_DIAG_130_DT"
+  TYPE="Analogue Input  Module"
+  SUB_TYPE="C_M_AI"
+  NVM=F
+  PERSIST=INITIALIZE
+  FUNCTION_BLOCK NAME="MISC_LOGIC" DEFINITION="ACT"
+  {
+    DESCRIPTION="Action"
+    ID=140611739
+    RECTANGLE= { X=50 Y=300 H=56 W=130 }
+  }
+  FUNCTION_BLOCK NAME="AI1" DEFINITION="AIWCALARM"
+  {
+    DESCRIPTION="Analog Input"
+    ID=5418069
+    RECTANGLE= { X=50 Y=220 H=56 W=130 }
+  }
+  FUNCTION_BLOCK NAME="RATE" DEFINITION="_CT_M_C_AI_RATE"
+  {
+    DESCRIPTION="MPC Analyzer Template"
+    ID=575863214
+    RECTANGLE= { X=288 Y=720 H=76 W=140 }
+    ADDITIONAL_CONNECTOR NAME="MAX_RATE_UP" TYPE=INPUT { ATTRIBUTE="MAX_RATE_UP" }
+    ADDITIONAL_CONNECTOR NAME="MAX_RATE_DWN" TYPE=INPUT { ATTRIBUTE="MAX_RATE_DWN" }
+  }
+  FUNCTION_BLOCK NAME="CND2" DEFINITION="CND"
+  {
+    DESCRIPTION="Condition"
+    ID=578428410
+    RECTANGLE= { X=50 Y=850 H=56 W=140 }
+  }
+  FUNCTION_BLOCK NAME="AND1" DEFINITION="AND"
+  {
+    DESCRIPTION="And"
+    ID=578428392
+    RECTANGLE= { X=280 Y=880 H=76 W=140 }
+    EXTENSIBLE_ATTRIBUTE { NAME="IN_D"  COUNT=2 }
+  }
+  FUNCTION_BLOCK NAME="CND1" DEFINITION="CND"
+  {
+    DESCRIPTION="Condition"
+    ID=12145130
+    RECTANGLE= { X=50 Y=1040 H=56 W=130 }
+  }
+  ATTRIBUTE NAME="VERSION_CLASS" TYPE=UINT32
+  {
+    READONLY=T
+    EDITABLE=F
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+    GROUP="Operating"
+    HELP_ID=337631
+    CATEGORY { CATEGORY=ONLINE }
+  }
+  ATTRIBUTE NAME="MODULE_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="PV" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=OUTPUT
+    RECTANGLE= { X=300 Y=230 H=20 W=110 }
+    GROUP="Operating"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="HH_ALM_ENAB" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=420 H=20 W=110 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="H_ALM_ENAB" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=460 H=20 W=110 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="L_ALM_ENAB" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=500 H=20 W=110 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="LL_ALM_ENAB" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=540 H=20 W=110 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="FAILURE" TYPE=BOOLEAN
+  {
+    CONNECTION=OUTPUT
+    RECTANGLE= { X=300 Y=1060 H=20 W=110 }
+    GROUP="Calculated"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="PV_SCALE" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=OUTPUT
+    RECTANGLE= { X=300 Y=290 H=20 W=110 }
+    GROUP="Operating"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="INS_REV" TYPE=UNICODE_STRING
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="OWNER_ID" TYPE=UNICODE_STRING
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=140 H=20 W=110 }
+    GROUP="Operating"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="PCSD_VERSION" TYPE=UNICODE_STRING
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configure"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="HI_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="HI_HI_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="LO_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="LO_LO_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="IN_SCALE" TYPE=INTERNAL_REFERENCE
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=50 Y=630 H=20 W=110 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="HI_LIM" TYPE=INTERNAL_REFERENCE
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="LO_LIM" TYPE=INTERNAL_REFERENCE
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="LO_LO_LIM" TYPE=INTERNAL_REFERENCE
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="HI_HI_LIM" TYPE=INTERNAL_REFERENCE
+  {
+    RECTANGLE= { X=-100 Y=-100 H=20 W=70 }
+    GROUP="Configuration"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="MAX_RATE_DWN" TYPE=FLOAT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=50 Y=760 H=20 W=110 }
+    GROUP="Tuning"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="MAX_RATE_UP" TYPE=FLOAT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=50 Y=740 H=20 W=110 }
+    GROUP="Tuning"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="RATE_ALM" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  ATTRIBUTE NAME="SENS_FAIL_BIT" TYPE=EXTERNAL_REFERENCE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=470 Y=850 H=20 W=130 }
+    GROUP="Alarm"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="SENS_FAIL_ENAB" TYPE=ENUMERATION_VALUE
+  {
+    CONNECTION=INPUT
+    RECTANGLE= { X=50 Y=930 H=20 W=140 }
+    GROUP="Batch"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="SENS_FAILURE" TYPE=BOOLEAN
+  {
+    CONNECTION=OUTPUT
+    RECTANGLE= { X=470 Y=900 H=20 W=130 }
+    GROUP="Calculated"
+    CATEGORY { CATEGORY=COMMON }
+  }
+  ATTRIBUTE NAME="SENSOR_FAIL" TYPE=EVENT
+  {
+    CONNECTION=INTERNAL_SOURCE
+    RECTANGLE= { X=-50 Y=-50 H=1 W=1 }
+  }
+  FBD_ALGORITHM
+  {
+    GRAPHICS ALGORITHM=FBD
+    {
+      BOX_GRAPHIC
+      {
+        NAME="{DC9804D5-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=10 H=30 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC98050E-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=1110 H=30 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC980512-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=1140 H=320 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="COPYRT_PCSD"
+        ORIGIN= { X=-400 Y=-43 }
+        END= { X=-183 Y=-71 }
+        TEXT="© Copyright Emerson Process Management
+	      - PMO Configuration Standard for DeltaV 2007 - 2016"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC9804E2-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=1460 H=30 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="00BA8701"
+        ORIGIN= { X=20 Y=199 }
+        END= { X=109 Y=213 }
+        TEXT="Indicator Algorithm"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="00BA8718"
+        RECTANGLE= { X=10 Y=190 H=190 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{157A3AE5-B5F0-11D6-8910-0050DA70F4CC}"
+        ORIGIN= { X=25 Y=1473 }
+        END= { X=120 Y=1487 }
+        TEXT="REVISION HISTORY"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{157A3AE8-B5F0-11D6-8910-0050DA70F4CC}"
+        ORIGIN= { X=22 Y=1500 }
+        END= { X=72 Y=2186 }
+        TEXT="
+Version
+=======
+ 5.0
+
+
+
+
+ 5.1
+
+
+
+
+
+
+
+
+
+
+
+
+5.2
+
+
+
+
+
+
+
+
+
+
+
+5.3
+
+
+
+
+
+12.0.0
+
+
+
+
+
+
+
+
+13.0.0"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{157A3C5E-B5F0-11D6-8910-0050DA70F4CC}"
+        ORIGIN= { X=94 Y=1500 }
+        END= { X=166 Y=2186 }
+        TEXT="
+Date
+==== 
+25-Jan-2007
+
+
+
+
+08-Jan-2009
+
+
+
+
+
+
+
+
+
+
+
+
+16-Apr-2010
+
+
+
+
+
+
+
+
+
+
+
+20-Aug-2012
+
+
+
+
+
+07-Aug-2013
+
+
+
+
+
+
+
+
+02-Jul-2015"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{157A4785-B5F0-11D6-8910-0050DA70F4CC}"
+        ORIGIN= { X=181 Y=1500 }
+        END= { X=219 Y=2186 }
+        TEXT="
+Initials
+=====
+AJM
+
+
+
+
+VBM
+
+
+
+
+
+
+
+
+
+
+
+
+AkSJ
+
+
+
+
+
+
+
+
+
+
+
+NDC
+
+
+
+
+
+MHB
+
+
+
+
+
+
+
+
+USL"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{157A48AA-B5F0-11D6-8910-0050DA70F4CC}"
+        ORIGIN= { X=244 Y=1500 }
+        END= { X=642 Y=2340 }
+        TEXT="
+Changed
+=========
+- Based on PBL '_AI' V4.5
+- Added MAX_RATE_UP and MAX_RATE_DWN parameters on top level.
+- MAX_RATE_UP and MAX_RATE_DWN parameters are wired to MAX_RATE_UP
+  and MAX_RATE_DWN of RATE Composite respectively
+- Exposed the parameters THRESHOLDS/TP0x_D
+- PCSD Track 1198:
+  - Version Number updated to '51'.
+- PCSD Track 350:
+  - Unexposed Parameters 'ALM1/DV_HI_LIM', 'ALM1/DV_LO_LIM', 'ALM1/SP'.
+- PCSD Track 857:
+  - Removed wired connection between AI1/OUT and ALM1/IN
+  - Added parameter ALM_IN which internally refers top level PV parameter.
+  - ALM_IN wired to ALM1/IN
+  - Updated VCR Count Table 
+- PCSD Track 1453:
+  - Modified configuration tips and unexposed RATE/MAX_RATE_DWN,
+    RATE/MAX_RATE_UP,RATE/RTLM1/INCREASE_MAX
+    and RATE/RTLM1/DECREASE_MAX
+- PCSD Track 1824:
+ - Version Number updated to '52' and removed color from banners.
+- PCSD Track 1674:
+ - Added 'SUBTYPE_FPDT' parameter
+- PCSD Track 1719:
+ - Deleted 'The FieldBus Block Assignment Table'
+- PCSD Track 1753:
+  - Added ACT block 'MISC_LOGIC'  
+- PCSD Track 1800:
+  - Added Owner_ID parameter
+- PCSD Track 1734:
+  - Incorrect shortcut names are corrected to default path.
+- PCSD Track 2144:
+  - Version Number updated to '53'.
+- PCSD Track 1240:
+  - Modified configuration tips to configure Alarm Limits
+- PCSD Track 2107:
+  - Added Alarm Management composite and configuration tips.
+- PCSD Track 2061:
+  - Version number updated to ‘12.0.0’
+- PCSD Track 2168:
+  - Removed Alarm block and changed the refernces to AI block parameters.
+  - Updated configuration tips
+  - Added HI_HI_LIM, HI_LIM, LO_LIM, LO_LO_LIM parameters
+  - Exposed conditional alarming parameters of AI1 
+- PCSD Track 2154:
+  - Changed parameter type of TH_XX from Boolean to Boolean with Status
+- PCSD Track 2317:
+  - Version number updated to ‘13.0.0’
+  - Updated Display properties
+- PCSD Track 2314:
+  - Removed 'SUBTYPE_FPDT' parameter.
+- PCSD Track 2365:
+  - Exposed 'OWNER_ID' parameter.
+- PCSD Track 2393:
+  - Deleted  'ALM_MNG' composite.
+ - Updated the top banner and configuration tips.
+- PCSD Track 2372:
+  - Updated Alarm shelving time to 8 hrs."
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{DC980346-0BAF-11D7-B00F-00B0D0721F48}"
+        ORIGIN= { X=20 Y=1002 }
+        END= { X=193 Y=1016 }
+        TEXT="Failure Propagation to Higher Levels"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC980349-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=990 H=120 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC98034C-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=380 H=320 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{DC9804D8-0BAF-11D7-B00F-00B0D0721F48}"
+        ORIGIN= { X=22 Y=23 }
+        END= { X=197 Y=37 }
+        TEXT="ANALOGUE INPUT MODULE"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC9804DF-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=40 H=70 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{DC9804FF-0BAF-11D7-B00F-00B0D0721F48}"
+        RECTANGLE= { X=10 Y=1460 H=880 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{DC980503-0BAF-11D7-B00F-00B0D0721F48}"
+        ORIGIN= { X=23 Y=1149 }
+        END= { X=636 Y=1401 }
+        TEXT="1) Configure the AI1/IO_IN parameter for the input DST reference.
+    Set the XD_SCALE, OUT_SCALE and L_TYPE scaling parameters as required. If there are any other parameters
+    that need to be configured, set filtering to ""Common Configuration"".
+2) Alarms may be enabled and their priorities set from the Alarms Tab in the module configuration dialog.The process alarms
+    (through the AI1 block) are conditional and are accessible on the Detail Display. HH, H, L, LL Alarms are 
+    functional only when the alarms are enabled and the relevant parameters AI1/xxx_ENAB are set.Alarms may then be  
+    enabled/ disabled/ suppressed from the detail display
+    Configure Alarm limits HI_HI_LIM/ HI_LIM, LO_LO_LIM/ LO_LIM as EU of OUT_SCALE in case of AI block. 
+3) Set the limit for Rate of Change alarming by changing the MAX_RATE_UP and MAX_RATE_DWN parameters at module level
+    and enable RATE_ALM if Rate Alarming is required.
+4) Project specific miscellaneous logic can be incorporated by adding expression in 'MISC_LOGIC' ACT block. 
+     If Module/PV is required in calculations then set appropriate execution order of 'MISC_LOGIC' ACT block. 
+5) INS_REV parameter can be used to track revision of instances
+6) Set module properties (File / Properties):
+     - Type a description (Max. 48 characters with at least one space in first 25 characters).
+     - Set the execution time based on Process Dynamics 
+     - Type the name of the Primary Control display (without the .grf extension)
+7) Modify the History Collection parameters as desired (File/History Collection).
+8) CND1 can be modified at instance level to include SENS_FAILURE parameter wherever the sensor failure feature is applicable."
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{DC98050B-0BAF-11D7-B00F-00B0D0721F48}"
+        ORIGIN= { X=20 Y=1123 }
+        END= { X=148 Y=1137 }
+        TEXT="MODULE CONFIGURATION"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{DC9804DB-0BAF-11D7-B00F-00B0D0721F48}"
+        ORIGIN= { X=21 Y=53 }
+        END= { X=1357 Y=67 }
+        TEXT="The module provides indication of a value from a conventional Analog Input. Process alarms are conditional limits which may be 
+modified by the Operator. A Failure flag, which may be propagated to higher level entities, is set whenever the defined failure 
+condition in CND1 is set."
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{7AD6E575-F3CB-447C-A388-FE2A01478956}"
+        ORIGIN= { X=20 Y=392 }
+        END= { X=112 Y=406 }
+        TEXT="Alarms"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{B846EF0A-6987-4EDB-822B-3B91752EDB50}"
+        RECTANGLE= { X=10 Y=110 H=80 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{D4CC6887-BA05-4664-9947-6ECB17268A94}"
+        ORIGIN= { X=20 Y=118 }
+        END= { X=109 Y=132 }
+        TEXT="Arbitration"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{6F3D06C3-E954-4FE5-9B4A-55819E282F3F}"
+        ORIGIN= { X=58 Y=583 }
+        END= { X=92 Y=597 }
+        TEXT="Enable Conditional Alarms"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{124B1715-1118-466F-9AB9-221E8DCC976E}"
+        RECTANGLE= { X=10 Y=2340 H=40 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{3B9A7E3A-3051-42E4-9CD7-F78A8C3221DF}"
+        ORIGIN= { X=20 Y=2356 }
+        END= { X=151 Y=2370 }
+        TEXT="REVISION HISTORY GEX"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{C887CDCD-C599-48FD-BBAE-E67804348B0A}"
+        RECTANGLE= { X=10 Y=2380 H=270 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{96C6AE9E-AB1E-49FE-81B8-78050550CF64}"
+        ORIGIN= { X=22 Y=2390 }
+        END= { X=72 Y=2586 }
+        TEXT="Version
+=======
+P1
+
+
+
+
+
+
+P2
+
+P3
+
+0
+
+1"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{CB8FCF1E-CDA0-434B-867A-9FE4C468ECB1}"
+        ORIGIN= { X=94 Y=2390 }
+        END= { X=169 Y=2656 }
+        TEXT="Date
+==== 
+11-Apr-2018
+
+
+
+
+
+
+21-June-2018
+
+10-July-2018
+
+17-July-2018
+
+20-Sep-2018
+
+
+
+
+
+"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{BA3F97B8-409A-48F8-B4DA-CFC67696EEB7}"
+        ORIGIN= { X=181 Y=2390 }
+        END= { X=219 Y=2586 }
+        TEXT="Initials
+=====
+GJ
+
+
+
+
+
+
+MK
+
+NMM
+
+PC
+
+BJJ"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{9165F1FC-BF88-4EAA-A092-E4D6B828FDAC}"
+        ORIGIN= { X=244 Y=2390 }
+        END= { X=667 Y=2642 }
+        TEXT="Changed
+=========
+- Code Complete.
+- THRESHOLDS composite deleted.
+- Alarm composite deletd.
+- Sensor Failure Logic added. 
+- Alarm parameter for alarm MODULE_ALM is changed from BAD_ACTIVE to FAILURE.
+- SENSOR_FAIL alarm added.
+
+Code Review Complete
+
+GEHC Code Review Complete 
+
+ Ready for SFAT
+
+-SFAT Complete.
+ -ZCR-005
+  -Alarm parameter for alarm MODULE_ALM is changed from FAILURE to BAD_ACTIVE."
+      }
+      BOX_GRAPHIC
+      {
+        NAME="00BA8737"
+        RECTANGLE= { X=10 Y=700 H=110 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="00BA8769"
+        ORIGIN= { X=20 Y=712 }
+        END= { X=87 Y=726 }
+        TEXT="Rate Alarming"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="00BA86F2"
+        ORIGIN= { X=306 Y=800 }
+        END= { X=412 Y=814 }
+        TEXT="Rate of Change Alarm"
+      }
+      TEXT_GRAPHIC
+      {
+        NAME="{588CA1A0-3603-40E3-AF49-ED9FF319892D}"
+        ORIGIN= { X=20 Y=825 }
+        END= { X=90 Y=839 }
+        TEXT="Sensor Failure"
+      }
+      BOX_GRAPHIC
+      {
+        NAME="{16DEE32D-B1B7-4779-BEC2-F58879E27CB3}"
+        RECTANGLE= { X=10 Y=810 H=180 W=720 }
+        LINE_STYLE=SOLID
+        LINE_WIDTH=1
+        LINE_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FGD_COLOR= { RED=255 GREEN=255 BLUE=255 }
+        BGD_COLOR= { RED=0 GREEN=0 BLUE=0 }
+        FILL_PATTERN=""
+      }
+    }
+    WIRE SOURCE="CND1/OUT_D" DESTINATION="FAILURE" { }
+    WIRE SOURCE="CND2/OUT_D" DESTINATION="AND1/IN_D1" { }
+    WIRE SOURCE="SENS_FAIL_ENAB" DESTINATION="AND1/IN_D2" { }
+    WIRE SOURCE="AND1/OUT_D" DESTINATION="SENS_FAILURE" { }
+    WIRE SOURCE="MAX_RATE_UP" DESTINATION="RATE/MAX_RATE_UP" { }
+    WIRE SOURCE="MAX_RATE_DWN" DESTINATION="RATE/MAX_RATE_DWN" { }
+  }
+  ATTRIBUTE_INSTANCE NAME="MCOMMAND"
+  {
+    VALUE
+    {
+      SET="$module_states"
+      STRING_VALUE="In Service"
+      CHANGEABLE=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="MSTATE"
+  {
+    VALUE
+    {
+      SET="$module_states"
+      STRING_VALUE="In Service"
+      CHANGEABLE=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="MERROR"
+  {
+    VALUE
+    {
+      ENUM_SET="$module_error_opts"
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="MSTATUS"
+  {
+    VALUE
+    {
+      ENUM_SET="$module_status_opts"
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="MSTATUS_MASK"
+  {
+    VALUE
+    {
+      ENUM_SET="$module_status_opts"
+      OPTION2=T
+      OPTION6=T
+    }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="MERROR_MASK"
+  {
+    VALUE
+    {
+      ENUM_SET="$module_error_opts"
+      OPTION3=T
+      OPTION5=T
+      OPTION8=T
+    }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="BAD_ACTIVE"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="ABNORM_ACTIVE"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="VERSION"
+  {
+    VALUE { CV=1 }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="BLOCK_ERR"
+  {
+    VALUE
+    {
+      ENUM_SET="$blk_err_opts"
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="EXEC_TIME"
+  {
+    VALUE { CV=0 }
+  }
+  ATTRIBUTE_INSTANCE NAME="ONTIME"
+  {
+    VALUE { CV=F }
+  }
+  ATTRIBUTE_INSTANCE NAME="VERSION_CLASS"
+  {
+    VALUE { CV=1 }
+  }
+  ATTRIBUTE_INSTANCE NAME="MODULE_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="CRITICAL"
+      ENAB=T
+      INV=F
+      ATYP="_A_M_ Module Error"
+      MONATTR=""
+      ALMATTR="BAD_ACTIVE"
+      LIMATTR=""
+      PARAM1="MERROR"
+      PARAM2="MSTATUS"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="PV"
+  {
+    VALUE { REF="AI1/OUT" }
+    HISTORY_DATA_POINT FIELD="CV"
+    {
+      DATA_CHARACTERISTIC=CONTINUOUS
+      ENABLED=T
+      SAMPLE_PERIOD_SECONDS=2
+      COMPRESSION_ENABLED=T
+      RECORD_AT_LEAST_EVERY_MINUTES=240
+      DEVIATION_LIMIT_FOR_COMPRESSION=0.01
+      DATA_REPRESENTATION=AUTOMATIC
+      EXPOSED=F
+      ENTERPRISE_COLLECTION=F
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="HH_ALM_ENAB"
+  {
+    VALUE { REF="AI1/HI_HI_ENAB" }
+  }
+  ATTRIBUTE_INSTANCE NAME="H_ALM_ENAB"
+  {
+    VALUE { REF="AI1/HI_ENAB" }
+  }
+  ATTRIBUTE_INSTANCE NAME="L_ALM_ENAB"
+  {
+    VALUE { REF="AI1/LO_ENAB" }
+  }
+  ATTRIBUTE_INSTANCE NAME="LL_ALM_ENAB"
+  {
+    VALUE { REF="AI1/LO_LO_ENAB" }
+  }
+  ATTRIBUTE_INSTANCE NAME="FAILURE"
+  {
+    VALUE { CV=F }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="PV_SCALE"
+  {
+    VALUE { REF="AI1/OUT_SCALE" }
+  }
+  ATTRIBUTE_INSTANCE NAME="INS_REV"
+  {
+    VALUE { CV="" }
+  }
+  ATTRIBUTE_INSTANCE NAME="OWNER_ID"
+  {
+    VALUE { CV="(None)" }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="PCSD_VERSION"
+  {
+    VALUE { CV="13.0.0" }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="HI_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="WARNING"
+      ENAB=F
+      INV=F
+      ATYP="High Alarm"
+      MONATTR=""
+      ALMATTR="AI1/HI_ACT"
+      LIMATTR="AI1/HI_LIM"
+      PARAM1="AI1/OUT"
+      PARAM2="AI1/HI_LIM"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="HI_HI_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="CRITICAL"
+      ENAB=F
+      INV=F
+      ATYP="High High Alarm"
+      MONATTR=""
+      ALMATTR="AI1/HI_HI_ACT"
+      LIMATTR="AI1/HI_HI_LIM"
+      PARAM1="AI1/OUT"
+      PARAM2="AI1/HI_HI_LIM"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="LO_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="WARNING"
+      ENAB=F
+      INV=F
+      ATYP="Low Alarm"
+      MONATTR=""
+      ALMATTR="AI1/LO_ACT"
+      LIMATTR="AI1/LO_LIM"
+      PARAM1="AI1/OUT"
+      PARAM2="AI1/LO_LIM"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="LO_LO_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="CRITICAL"
+      ENAB=F
+      INV=F
+      ATYP="Low Low Alarm"
+      MONATTR=""
+      ALMATTR="AI1/LO_LO_ACT"
+      LIMATTR="AI1/LO_LO_LIM"
+      PARAM1="AI1/OUT"
+      PARAM2="AI1/LO_LO_LIM"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="IN_SCALE"
+  {
+    VALUE { REF="AI1/OUT_SCALE" }
+  }
+  ATTRIBUTE_INSTANCE NAME="HI_LIM"
+  {
+    VALUE { REF="AI1/HI_LIM" }
+  }
+  ATTRIBUTE_INSTANCE NAME="LO_LIM"
+  {
+    VALUE { REF="AI1/LO_LIM" }
+  }
+  ATTRIBUTE_INSTANCE NAME="LO_LO_LIM"
+  {
+    VALUE { REF="AI1/LO_LO_LIM" }
+  }
+  ATTRIBUTE_INSTANCE NAME="HI_HI_LIM"
+  {
+    VALUE { REF="AI1/HI_HI_LIM" }
+  }
+  ATTRIBUTE_INSTANCE NAME="MAX_RATE_DWN"
+  {
+    VALUE { CV=-0.1 }
+  }
+  ATTRIBUTE_INSTANCE NAME="MAX_RATE_UP"
+  {
+    VALUE { CV=0.1 }
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE_ALM"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="ADVISORY"
+      ENAB=F
+      INV=F
+      ATYP="Rate of Change"
+      MONATTR=""
+      ALMATTR="RATE/RATE_ACT"
+      LIMATTR=""
+      PARAM1="RATE/ACT_RATE"
+      PARAM2="RATE/RATE_LIM"
+      SUPPTIMEOUT=480
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="SENS_FAIL_BIT"
+  {
+    VALUE { REF="" }
+  }
+  ATTRIBUTE_INSTANCE NAME="SENS_FAIL_ENAB"
+  {
+    VALUE
+    {
+      SET="$enable"
+      STRING_VALUE="Enabled"
+      CHANGEABLE=F
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="SENS_FAILURE"
+  {
+    VALUE { CV=F }
+    EXPOSE=F
+  EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="SENSOR_FAIL"
+  {
+    VALUE
+    {
+      PRIORITY_NAME="CRITICAL"
+      ENAB=F
+      INV=F
+      ATYP="_A_M_Sensor Failure"
+      MONATTR=""
+      ALMATTR="SENS_FAILURE"
+      LIMATTR=""
+      PARAM1="SENS_FAILURE"
+      PARAM2=""
+      SUPPTIMEOUT=1438560
+      MASK=65535
+      ISDEFAULTMASK=T
+      ALARM_FUNCTIONAL_CLASSIFICATION=0
+    }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/STATUS_OPTS"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/XD_SCALE"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/OUT_SCALE"
+  {
+    VALUE { EU100=100 EU0=0 UNITS="%" DECPT=1 }
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/MODE"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/OUT"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/SIMULATE"
+  {
+    VALUE { SVALUE=0 SSTATUS= { SQ=GOODNONCASCADE GPSS=NONSPECIFIC LS=NOTLIMITED } ENABLE=F }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LOW_CUT"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_LIM"
+  {
+    VALUE { CV=95 }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_LIM"
+  {
+    VALUE { CV=90 }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LIM"
+  {
+    VALUE { CV=10 }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_LIM"
+  {
+    VALUE { CV=5 }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/ALARM_HYS"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/SIMULATE_IN"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/BAD_MASK"
+  {
+    VALUE
+    {
+      ENUM_SET="$blk_err_opts"
+      OPTION0=T
+      OPTION8=T
+      OPTION15=T
+    }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_ENAB"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_ENAB"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_ENAB"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_ENAB"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_DELAY_OFF"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_DELAY_OFF"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_DELAY_OFF"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_DELAY_OFF"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_DELAY_ON"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_DELAY_ON"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_DELAY_ON"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_DELAY_ON"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_ENAB_DELAY"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_ENAB_DELAY"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_ENAB_DELAY"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_ENAB_DELAY"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HI_HYS"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/HI_HYS"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_HYS"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="AI1/LO_LO_HYS"
+  {
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND1/DESC"
+  {
+    VALUE { CV="Failure Propagation" }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND1/T_EXPRESSION"
+  {
+    VALUE { TYPE=CONDITION EXPRESSION="(*
+=====================================================================================
+Condition that causes the module's FAILURE flag to be set 
+(monitored at higher-level entities)
+This condition can be modified at instance level to include SENS_FAILURE parameter wherever the sensor failure feature is applicable.
+
+=====================================================================================
+*)
+'^/BAD_ACTIVE.CV' = TRUE
+(*
+=====================================================================================
+End of Code
+=====================================================================================
+*)" }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND1/ALGO_OPTS"
+  {
+    VALUE
+    {
+      ENUM_SET="$algo_opts"
+      OPTION0=T
+    }
+  }
+  ATTRIBUTE_INSTANCE NAME="CND1/TIME_DURATION"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND1/ERROR_OPT"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND2/DESC"
+  {
+    VALUE { CV="Sensor Failure" }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND2/T_EXPRESSION"
+  {
+    VALUE { TYPE=CONDITION EXPRESSION="(*
+=====================================================================================
+Conditions that indicate the probe has failed. This expression should be updated to 
+check for the appropriate failure condition depending on the equipment the instance 
+is being used for.
+=====================================================================================
+*)
+
+'^/SENS_FAIL_BIT.CV' = TRUE" }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND2/TIME_DURATION"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="CND2/ERROR_OPT"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="MISC_LOGIC/IN_D"
+  {
+    VALUE { CV=1 ST= { SQ=GOODNONCASCADE GPSS=NONSPECIFIC LS=NOTLIMITED } }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="MISC_LOGIC/T_EXPRESSION"
+  {
+    VALUE { TYPE=ACTION EXPRESSION="(*
+=====================================================================================
+Supports miscellaneous module logic
+e.g. Write to AI1 block parameters for conditional alarming
+Delete below line and replace with real evaluations(s)
+=====================================================================================
+*)
+'^/MISC_LOGIC/IN_D' := FALSE;
+(*
+=====================================================================================
+End of Code
+=====================================================================================
+*)" }
+    EXPOSE=T
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/MAX_RATE_UP"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/MAX_RATE_DWN"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/RATE_ACT"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/RTLM1/INCREASE_MAX"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/RTLM1/DECREASE_MAX"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/RTLM1/TIME_UNITS"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  ATTRIBUTE_INSTANCE NAME="RATE/RTLM1/TIMECONST"
+  {
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+  EXPOSED_PARAMETER NAME="AI1$HI_HI_HYS" ID=898709194 PATH="AI1/HI_HI_HYS" { }
+  EXPOSED_PARAMETER NAME="AI1$HI_HI_LIM" ID=27848231 PATH="AI1/HI_HI_LIM" { }
+  EXPOSED_PARAMETER NAME="AI1$HI_HYS" ID=898661847 PATH="AI1/HI_HYS" { }
+  EXPOSED_PARAMETER NAME="AI1$HI_LIM" ID=27856669 PATH="AI1/HI_LIM" { }
+  EXPOSED_PARAMETER NAME="AI1$IO_IN" ID=343022927 PATH="AI1/IO_IN" { }
+  EXPOSED_PARAMETER NAME="AI1$IO_OPTS" ID=343022917 PATH="AI1/IO_OPTS" { }
+  EXPOSED_PARAMETER NAME="AI1$L_TYPE" ID=343022920 PATH="AI1/L_TYPE" { }
+  EXPOSED_PARAMETER NAME="AI1$LO_HYS" ID=898677442 PATH="AI1/LO_HYS" { }
+  EXPOSED_PARAMETER NAME="AI1$LO_LIM" ID=27867968 PATH="AI1/LO_LIM" { }
+  EXPOSED_PARAMETER NAME="AI1$LO_LO_HYS" ID=898691490 PATH="AI1/LO_LO_HYS" { }
+  EXPOSED_PARAMETER NAME="AI1$LO_LO_LIM" ID=33158778 PATH="AI1/LO_LO_LIM" { }
+  EXPOSED_PARAMETER NAME="AI1$LOW_CUT" ID=337897681 PATH="AI1/LOW_CUT" { }
+  EXPOSED_PARAMETER NAME="AI1$OUT_SCALE" ID=343022918 PATH="AI1/OUT_SCALE" { }
+  EXPOSED_PARAMETER NAME="AI1$PV_FTIME" ID=343022921 PATH="AI1/PV_FTIME" { }
+  EXPOSED_PARAMETER NAME="AI1$XD_SCALE" ID=407996640 PATH="AI1/XD_SCALE" { }
+  EXPOSED_PARAMETER NAME="CND1$T_EXPRESSION" ID=1238010874 PATH="CND1/T_EXPRESSION" { }
+  EXPOSED_PARAMETER NAME="CND2$T_EXPRESSION" ID=578495069 PATH="CND2/T_EXPRESSION" { }
+  EXPOSED_PARAMETER NAME="HI_ALM" ID=879985582 PATH="HI_ALM" { }
+  EXPOSED_PARAMETER NAME="HI_HI_ALM" ID=414099195 PATH="HI_HI_ALM" { }
+  EXPOSED_PARAMETER NAME="INS_REV" ID=13518899 PATH="INS_REV" { }
+  EXPOSED_PARAMETER NAME="LO_ALM" ID=879999740 PATH="LO_ALM" { }
+  EXPOSED_PARAMETER NAME="LO_LO_ALM" ID=414053397 PATH="LO_LO_ALM" { }
+  EXPOSED_PARAMETER NAME="MAX_RATE_DWN" ID=575653951 PATH="MAX_RATE_DWN" { }
+  EXPOSED_PARAMETER NAME="MAX_RATE_UP" ID=575653952 PATH="MAX_RATE_UP" { }
+  EXPOSED_PARAMETER NAME="MISC_LOGIC$T_EXPRESSION" ID=140620602 PATH="MISC_LOGIC/T_EXPRESSION" { }
+  EXPOSED_PARAMETER NAME="RATE_ALM" ID=576972242 PATH="RATE_ALM" { }
+  EXPOSED_PARAMETER NAME="SENS_FAIL_BIT" ID=578495070 PATH="SENS_FAIL_BIT" { }
+  EXPOSED_PARAMETER NAME="SENS_FAIL_ENAB" ID=110122935 PATH="SENS_FAIL_ENAB" { }
+  EXPOSED_PARAMETER NAME="SENSOR_FAIL" ID=789234261 PATH="SENSOR_FAIL" { }
+  EXPOSED_PARAMETER NAME="VERSION" ID=343022886 PATH="VERSION" { }
+}
