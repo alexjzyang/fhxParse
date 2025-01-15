@@ -87,7 +87,7 @@ class FileIO {
       const prefix = files.length + 1;
       const outputFilePath = path.join(
         filepath,
-        `${prefix}_${this.addExtensions(baseFilename)}`
+        `${prefix}_${this.addExtension(baseFilename)}`
       );
       return this.writeTxtFile(
         data,
@@ -96,6 +96,11 @@ class FileIO {
         true
       );
     });
+  }
+  static addExtension(baseFilename, ext = "txt") {
+    return baseFilename.endsWith(`.${ext}`)
+      ? baseFilename
+      : `${baseFilename}.${ext}`;
   }
 }
 

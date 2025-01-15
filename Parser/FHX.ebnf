@@ -1,0 +1,4 @@
+<key-value-pair> ::= <key> ':' <value>
+<key> ::= LETTER+
+<value> ::= STRING|NUMBER|'"'STRING'"'
+

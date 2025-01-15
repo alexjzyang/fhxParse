@@ -29,3 +29,16 @@ DeltaV syntax is complex and inconsistent. Code is created with certain assumpti
 ### Lessons
 
 DeltaV Module Class's external references are always instance configuratble, where as internal references are never instance configurable
+
+## 01/13/2025
+
+For EM Commands (\_E_M_AGIT)
+
+1. The command Named_Sets is under `COMMAND_SET="_N_M_GEXE_M_AGIT"`
+2. Command definition names can be identified with `FUNCTION_BLOCK NAME="COMMAND_0`
+   example: `FUNCTION_BLOCK NAME="COMMAND_00002" DEFINITION="__5D419A19_188513E5__"`
+   However the Named Set (`ENUMERATION_SET NAME="_N_M_GEXE_M_AGIT"`) and the SFC definition (`__5D419A19_188513E5__`) are not with the EM block. Cross search within an entire FHX export is required.
+
+   ### fhxProcessor features:
+
+   - Add a function to search for any block. The function signature would be `findBlock(fhx_data, blockType, keyToFind, criteria):[results]` where fhx_data is one `single root block`; keyToFind is the key to search for. This can be a key with a single value, an experssion or a block`(for example: NAME, ATTRIBUTE)`; criterion: how the item will be identified amount other items with the name key. Using the example above `(findBlock(em_data, 'FUNCTION_BLOCK', 'NAME="COMMAND_0'))` The criteria can be further generalised to take an object or an array {"DEFINITION": "ACT"; "DESCRIPTION": "Something"}

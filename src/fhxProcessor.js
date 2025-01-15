@@ -395,6 +395,22 @@ function nameOf(fhxBlock) {
   let name = fhxBlock.substring(startIndex, endIndex);
   return name;
 }
+// AGIT EM
+// blockType = SFC_ALGORITHM
+// keyToFind ACTION
+// criteria S_INITIAL
+
+// Find SOLID in LINE_STYLE=SOLID from BOX_GRAPHIC
+// Criteria: NAME="{A9BF3680-7195-46B2-8771-A18E09920E7B}"
+// criteria = valueOf(block, "NAME").include = "A9BF3680-7195-46B2-8771-A18E09920E7B"
+
+function valueIn(fhx_data, blockType, keyToFind, criteria) {
+  return findBlocks(fhx_data, blockType).forEach((block) => {
+    if (valueOf(block, keyToFind) === criteria) {
+      return block;
+    }
+  });
+}
 
 export {
   classProperties,
@@ -410,4 +426,5 @@ export {
   fhxObject,
   valueOf,
   nameOf,
+  valueIn,
 };

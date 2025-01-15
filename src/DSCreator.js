@@ -1,4 +1,7 @@
 import * as fhxProcessor from "./fhxProcessor.js";
+import path from "path";
+const outputPath = path.join("./output");
+let ModuleClass = "MODULE_CLASS";
 
 /**
  * Find the property values of a module class block and write them to a csv file
@@ -6,7 +9,8 @@ import * as fhxProcessor from "./fhxProcessor.js";
  * @param {string} modulename the module which properties are to be found
  */
 function obtainModuleProperties(fhx_data, modulename) {
-  let block = fhxProcessor.fhxObject(fhx_data, "MODULE_CLASS", modulename); // Find the module class block
+  let blockType = ModuleClass; // The block is a module class block
+  let block = fhxProcessor.fhxObject(fhx_data, blockType, modulename); // Find the module class block
   let properties = fhxProcessor.classProperties(block); // Extract the properties of the module class block
   let header = [
     // Header row for the CSV file
@@ -25,8 +29,8 @@ function obtainModuleProperties(fhx_data, modulename) {
   fhxProcessor.writeCsv(
     header,
     records,
-    outputPath,
-    `${modulename}Properties.csv`
+    path.join(outputPath, modulename),
+    `${modulename} Properties.csv`
   ); // Write the records to a CSV file
 }
 
@@ -36,7 +40,7 @@ function obtainModuleProperties(fhx_data, modulename) {
  * @param {string} module_data - The FHX string containing the module data.
  * @returns {Array<{name: string, type:string, value: string}>} - An array of objects containing the parameter names and their default values.
  */
-function valuesOfModuleParameters(module_data) {
+function valuesOfModuleParameters(module_data, modulename) {
   let moduleParameters = fhxProcessor
     .findBlocks(module_data, "ATTRIBUTE")
     .filter((attribute) => attribute.includes("CATEGORY=COMMON"))
@@ -73,7 +77,12 @@ function valuesOfModuleParameters(module_data) {
         param.value = `$${set}:${option}`;
         break;
       case "FLOAT":
+      case "UINT8":
+      case "UINT16":
       case "UINT32": // 32 bit unsigned integer
+      case "INT8":
+      case "INT16":
+      case "INT32": // 32 bit signed integer
       case "BOOLEAN": // Boolean
       case "UNICODE_STRING": // String
         param.value = fhxProcessor.valueOf(instance, "CV");
@@ -108,7 +117,19 @@ function valuesOfModuleParameters(module_data) {
       }
     }
   });
-  return moduleParameters;
+
+  return fhxProcessor.writeCsv(
+    [
+      { id: "name", title: "Name" },
+      { id: "type", title: "Type" },
+      { id: "value", title: "Default Value" },
+      { id: "configurable", title: "Configurable" },
+    ],
+    moduleParameters,
+    path.join(outputPath, modulename),
+    `${modulename}-ModuleParameters.csv`
+  );
+  // return moduleParameters;
 }
 
 export { obtainModuleProperties, valuesOfModuleParameters };

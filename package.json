@@ -11,7 +11,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "antlr4": "^4.13.2",
     "csv-writer": "^1.6.0",
-    "fhxtool": "C:\\CodeRepo\\fhx-102024\\src\\lib"
+    "fhxtool": "C:\\CodeRepo\\fhx-102024\\src\\lib",
+    "mysql2": "^3.12.0"
   }
 }
