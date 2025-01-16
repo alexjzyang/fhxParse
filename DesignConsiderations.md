@@ -52,3 +52,5 @@ For SFC codes
 2. ACTION
    An action consists of Action Expression; Delayed Expression|Time; Confirm Expression|TImeout
    There are also descriptions, action types, and qualifiers.
+   Currently the collection of functions are able to parse out all steps, actions and trnasitions values.
+   `Need to verify if all parameters are captured`: write a fhxcrawler code which filters out all the components that the existing code can extract, and figure out what portion of the fhx is not covered. OR, if necessary, go through it manually

@@ -62,42 +62,38 @@ const cmname = "_C_M_AI";
  * @param {string} modulename - The name of the Equipment Module.
  * @returns {Array<{name: string, definition: string}>} - An array of objects containing the command names and their definitions.
  */
-function findEMCommands(fhx_data, modulename) {
-  let _E_M_AGITfhx = fhxProcessor.findBlockWithName(
-    fhx_data,
-    Module_Class,
-    modulename
-  );
+function findEMCommands(emfhx) {
+  let emname = fhxProcessor.nameOf(emfhx);
 
-  let commandsFhx = dscreator.findAll(_E_M_AGITfhx, null, Function_Block, {
+  let commandsFhx = dscreator.findAll(emfhx, null, Function_Block, {
     value: "COMMAND_00",
     key: "NAME",
   });
 
-  let _E_M_AGITcmds = commandsFhx.map((block) => {
+  let cmds = commandsFhx.map((block) => {
     let commandname = fhxProcessor.valueOf(block, "NAME");
     let commanddefinition = fhxProcessor.valueOf(block, "DEFINITION");
     return { name: commandname, definition: commanddefinition };
   });
-  return _E_M_AGITcmds;
+  return cmds;
 }
 
 /**
  * Compiles all command definitions for a given Equipment Module (EM) in the provided FHX data.
  * Extracts the command names, their definitions, and writes them to text files.
  *
- * @param {string} fhx_data - The FHX data as a string.
+ * @param {string} emFhxData - The FHX data as a string.
  * @param {string} emname - The name of the Equipment Module.
  * @returns {Array<{filename: string, data: string}>} - An array of objects containing the filenames and their data.
  */
-function compileEMCommands(fhx_data, emname) {
+function compileEMCommands(emFhxData, emname) {
   // Get a list of names and their definition for the Equipment Module (enname)
-  let emCommands = findEMCommands(fhx_data, emname);
+  let emCommands = findEMCommands(emFhxData, emname);
 
   // add fhx data to each command
   emCommands.map((command) => {
     let definitionBlock = fhxProcessor.findBlockWithName(
-      fhx_data,
+      emFhxData,
       Function_Block_Definition,
       command.definition
     );
@@ -121,43 +117,147 @@ function compileEMCommands(fhx_data, emname) {
   return files;
 }
 
-function runner(em_fhxdata) {
-  let em0fhxdata = compileEMCommands(em_fhxdata, emname)[0];
-
-  let step0 = fhxProcessor.findBlockWithName(em0fhxdata.data, "STEP", "S0000");
-  let actionBlocks = fhxProcessor.findBlocks(step0, "ACTION");
-
-  let actionValues = actionBlocks.map((block) => {
-    let actionValue = (key) => fhxProcessor.valueOf(block, key);
-    let actionValues = {
-      name: actionValue("NAME"),
-      description: actionValue("DESCRIPTION"),
-      actionType: actionValue("ACTION_TYPE"),
-      qualifier: actionValue("QUALIFIER"),
-      expression: actionValue("EXPRESSION"),
-      confirmExpression: actionValue("CONFIRM_EXPRESSION"),
-      confirmTimeOut: actionValue("CONFIRM_TIME_OUT"),
-      delayedExpression: actionValue("DELAYED_EXPRESSION"),
-      delayTime: actionValue("DELAY_TIME"),
+function SFCSteps(emFhxData) {
+  let steps = fhxProcessor.findBlocks(emFhxData, "STEP");
+  /*
+    Structure of Steps:
+    Description
+    List of ACTIONS
+  */
+  let stepValues = steps.map((step) => {
+    let getValue = (key) => fhxProcessor.valueOf(step, key);
+    let values = {
+      name: getValue("NAME"),
+      description: getValue("DESCRIPTION"),
+      actions: SFCActions(step),
     };
-    return actionValues;
+    return values;
   });
-  // let action0 = fhxProcessor.findBlockWithName(step0, "ACTION", "A000");
-  // let actionValue = (key) => fhxProcessor.valueOf(action0, key);
-  // let action0Values = {
-  //   description: actionValue("DESCRIPTION"),
-  //   actionType: actionValue("ACTION_TYPE"),
-  //   qualifier: actionValue("QUALIFIER"),
-  //   expression: actionValue("EXPRESSION"),
-  //   confirmExpression: actionValue("CONFIRM_EXPRESSION"),
-  //   confirmTimeOut: actionValue("CONFIRM_TIME_OUT"),
-  //   delayedExpression: actionValue("DELAYED_EXPRESSION"),
-  //   delayTime: actionValue("DELAY_TIME"),
-  // };
-  // console.log(action0Values.expression);
-  fs.writeFileSync(
-    path.join(outputPath, emname, "commands", "steps", "actions.json"),
-    JSON.stringify(actionValues)
-  );
+  return stepValues;
+}
+
+function SFCTransitions(cmdFhxData) {
+  let transitionBlocks = fhxProcessor.findBlocks(cmdFhxData, "TRANSITION");
+  /*
+    Structure of Transitions:
+    Transition Header
+    transition: [
+    { id: "name", title: "NAME" },
+    { id: "description", title: "DESCRIPTION" },
+    { id: "position", title: "POSITION" },
+    { id: "termination", title: "TERMINATION" },
+    { id: "expression", title: "EXPRESSION" },
+    ],
+   */
+  let transitionValues = transitionBlocks.map((block) => {
+    let transitionValue = (key) => fhxProcessor.valueOf(block, key);
+    let values = {
+      name: transitionValue("NAME"),
+      description: transitionValue("DESCRIPTION"),
+      position: transitionValue("POSITION"),
+      termination: transitionValue("TERMINATION"),
+      expression: transitionValue("EXPRESSION"),
+    };
+    return values;
+  });
+  return transitionValues;
+}
+
+function SFCActions(stepFhxData) {
+  let actionBlocks = fhxProcessor.findBlocks(stepFhxData, "ACTION");
+  /*
+      Structure of Actions:
+      Action Header
+      action: [
+      { id: "name", title: "NAME" },
+      { id: "description", title: "DESCRIPTION" },
+      { id: "actionType", title: "ACTION_TYPE" },
+      { id: "qualifier", title: "QUALIFIER" },
+      { id: "expression", title: "EXPRESSION" },
+      { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
+      { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
+      { id: "delayedExpression", title: "DELAY_EXPRESSION" },
+      { id: "delayTime", title: "DELAY_TIME" },
+      ]
+  */
+  let actionValues = actionBlocks.map((block) => {
+    let getValue = (key) => fhxProcessor.valueOf(block, key);
+    let values = {
+      name: getValue("NAME"),
+      description: getValue("DESCRIPTION"),
+      actionType: getValue("ACTION_TYPE"),
+      qualifier: getValue("QUALIFIER"),
+      expression: getValue("EXPRESSION"),
+      confirmExpression: getValue("CONFIRM_EXPRESSION"),
+      confirmTimeOut: getValue("CONFIRM_TIME_OUT"),
+      delayedExpression: getValue("DELAY_EXPRESSION"),
+      delayTime: getValue("DELAY_TIME"),
+    };
+    return values;
+  });
+
+  return actionValues;
+}
+
+const csvHeaders = {
+  action: [
+    { id: "name", title: "NAME" },
+    { id: "description", title: "DESCRIPTION" },
+    { id: "actionType", title: "ACTION_TYPE" },
+    { id: "qualifier", title: "QUALIFIER" },
+    { id: "expression", title: "EXPRESSION" },
+    { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
+    { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
+    { id: "delayedExpression", title: "DELAY_EXPRESSION" },
+    { id: "delayTime", title: "DELAY_TIME" },
+  ],
+  transition: [
+    { id: "name", title: "NAME" },
+    { id: "description", title: "DESCRIPTION" },
+    { id: "position", title: "POSITION" },
+    { id: "termination", title: "TERMINATION" },
+    { id: "expression", title: "EXPRESSION" },
+  ],
+};
+
+function findCommendFhxs(em_fhxdata, emname) {
+  let em1fhx = fhxProcessor.findBlockWithName(em_fhxdata, Module_Class, emname); // Find the Equipment Module block
+  // Identify the definition of the commands
+  let emCommands = findEMCommands(em1fhx, emname);
+  emCommands.map((command) => {
+    let definitionBlock = fhxProcessor.findBlockWithName(
+      em_fhxdata,
+      Function_Block_Definition,
+      command.definition
+    );
+    command.fhx = definitionBlock;
+  });
+  return emCommands;
+}
+
+function processSFC(cmdfhx) {
+  let steps = SFCSteps(cmdfhx);
+  let transitions = SFCTransitions(cmdfhx);
+
+  return { steps, transitions };
+}
+
+function writeJsonFile(filepath, data) {
+  fs.writeFileSync(filepath, JSON.stringify(data, null, 2), "utf8");
+}
+
+function runner(em_fhxdata) {
+  let module = emname;
+  let cmdFhxData = findCommendFhxs(em_fhxdata, module);
+  let jsonResult = cmdFhxData.map((cmd) => {
+    let sfc = processSFC(cmd.fhx);
+    return { name: cmd.name, sfc, definition: cmd.definition };
+  });
+
+  // Write the JSON result to a file
+  const jsonOutputPath = path.join(outputPath, module, "commands.json");
+  writeJsonFile(jsonOutputPath, jsonResult);
+
+  return jsonResult;
 }
 runner(em_fhxdata);
