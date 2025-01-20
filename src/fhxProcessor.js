@@ -375,6 +375,33 @@ function valueOf(fhxBlock, key) {
   if (fhxBlock[startIndex] === '"') {
     endIndex = ++startIndex;
     do {
+      endIndex = fhxBlock.indexOf('"', endIndex + 1); // find the next closing double quote
+    } while (fhxBlock[endIndex + 1] === '"');
+  } else {
+    let indexOfSpace = fhxBlock.indexOf(" ", startIndex + 1);
+    let indexOfReturn = fhxBlock.indexOf("\r\n", startIndex + 1);
+    endIndex = indexOfSpace < indexOfReturn ? indexOfSpace : indexOfReturn;
+  }
+
+  if (startIndex === -1 || endIndex === -1) return;
+  return fhxBlock.substring(startIndex, endIndex);
+}
+
+/**
+ * function valueOf(fhxBlock, key) {
+  // this function should be generalized/reworked.
+  // If the key is T_EXPRESSION, then it will be surrounded by quotes; otherwise it will not.
+  // Alternatively, we can pass in a flag indicating whether we're looking for an expression or not.
+  // valuesOfModuleParameters() currently uses the the switching option to predetermine the type of the parameter
+  key += "=";
+  let startIndex = fhxBlock.indexOf(key);
+  if (startIndex === -1) return;
+
+  startIndex += key.length;
+  let endIndex;
+  if (fhxBlock[startIndex] === '"') {
+    endIndex = ++startIndex;
+    do {
       endIndex = fhxBlock.indexOf('"', endIndex + 2); // find the next closing double quote
     } while (fhxBlock[endIndex + 1] === '"');
   } else {
@@ -386,6 +413,7 @@ function valueOf(fhxBlock, key) {
   if (startIndex === -1 || endIndex === -1) return;
   return fhxBlock.substring(startIndex, endIndex);
 }
+ */
 
 /**
  * Extracts the name of a given FHX block.

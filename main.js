@@ -3,7 +3,7 @@ import fs, { writeFileSync } from "fs";
 import path from "path";
 import * as fhxProcessor from "./src/fhxProcessor.js";
 import * as dscreator from "./src/DSCreator.js";
-import { FileIO } from "./FileIO.js";
+import { FileIO } from "./src/FileIO.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -47,7 +47,7 @@ const cmfilepath = path.join(
 // console.log("Loading file: " + fhxfilepath);
 const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
 const cm_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
-const em_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
+const ems_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
 const Function_Block = "FUNCTION_BLOCK";
 const Function_Block_Definition = "FUNCTION_BLOCK_DEFINITION";
@@ -246,9 +246,9 @@ function writeJsonFile(filepath, data) {
   fs.writeFileSync(filepath, JSON.stringify(data, null, 2), "utf8");
 }
 
-function runner(em_fhxdata) {
+function runner(ems_fhxdata) {
   let module = emname;
-  let cmdFhxData = findCommendFhxs(em_fhxdata, module);
+  let cmdFhxData = findCommendFhxs(ems_fhxdata, module);
   let jsonResult = cmdFhxData.map((cmd) => {
     let sfc = processSFC(cmd.fhx);
     return { name: cmd.name, sfc, definition: cmd.definition };
@@ -260,4 +260,89 @@ function runner(em_fhxdata) {
 
   return jsonResult;
 }
-runner(em_fhxdata);
+
+/*
+All alarm attribute instance keys
+ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
+ {
+   VALUE
+   {
+     PRIORITY_NAME="WARNING"
+     ENAB=F
+     INV=F
+     ATYP="_A_M_ Equipment Failure"
+     MONATTR=""
+     ALMATTR="FAILURE"
+     LIMATTR=""
+     PARAM1="FAIL"
+     PARAM2="MONITOR/FAILURE"
+     SUPPTIMEOUT=480
+     MASK=65535
+     ISDEFAULTMASK=T
+     ALARM_FUNCTIONAL_CLASSIFICATION=0
+   }*/
+
+/**
+ * Finding the alarm names, priority,
+ * Parameter,
+ * Parameter Limit
+ * Default limit,
+ * Enabled
+ * Alarm Message,
+ * Placeholder
+ * Priority
+ *
+ * @param {string} module_class fhx of a module class
+ */
+function getAlarms(module_class) {
+  let attribute_instances = fhxProcessor.findBlocks(
+    module_class,
+    "ATTRIBUTE_INSTANCE"
+  );
+  let alarms = attribute_instances.filter((block) => {
+    return block.includes("PRIORITY_NAME");
+  });
+
+  let alarm_attribute_instances_keys = {
+    name: "NAME",
+    priority: "PRIORITY_NAME",
+    enable: "ENAB",
+    inverted: "INV",
+    type: "ATYP",
+    monitor_attribute: "MONATTR",
+    alarm_parameter: "ALMATTR",
+    limit: "LIMATTR",
+    p1: "PARAM1",
+    p2: "PARAM2",
+    timeout: "SUPPTIMEOUT",
+  };
+  let alarm_parameters = alarms.map((alarm) => {
+    let alarm_values = {};
+    for (let key in alarm_attribute_instances_keys) {
+      let dvkey = alarm_attribute_instances_keys[key];
+      let value = fhxProcessor.valueOf(alarm, dvkey);
+      alarm_values[key] = value;
+    }
+    return alarm_values;
+  });
+  if (alarm_parameters[timeout]) {
+    alarm_parameters[timeoutHours] = alarm_parameters[timeout] / 3600;
+    alarm_parameters[timeoutMinutes] = (alarm_parameters[timeout] % 3600) / 60;
+    alarm_parameters[alarm_timeout_seconds] =
+      (alarm_parameters[timeout] % 3600) % 60;
+  }
+  return alarm_parameters;
+}
+
+function runner2(ems_fhxdata) {
+  let alarmParams = getAlarms(ems_fhxdata);
+  writeJsonFile(;
+}
+
+let fhx_E_M_AGIT = fhxProcessor.findBlockWithName(
+  ems_fhxdata,
+  Module_Class,
+  emname
+);
+runner2(fhx_E_M_AGIT);
+// runner(ems_fhxdata);

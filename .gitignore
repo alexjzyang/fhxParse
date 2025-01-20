@@ -1,4 +1,3 @@
 output/*
-*.fhx
 src/junkyard/*
 node_modules/*

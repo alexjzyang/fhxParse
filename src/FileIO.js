@@ -10,7 +10,7 @@ class FileIO {
    * @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
    * @returns {string} - The prepared file path with a .txt extension.
    */
-  static prepareFilePath(filepath, filename, replace = true) {
+  static prepareFilePath(filepath, filename, ext = "txt", replace = true) {
     // Create directory if it does not exist
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath, { recursive: true });
@@ -80,7 +80,7 @@ class FileIO {
    * @returns {Array<string>} - Array of success messages indicating the files were written successfully.
    * @throws {Error} - Throws an error if there is an issue writing any of the files.
    */
-  static writeTxtFileWithPrefix(data, filepath, baseFilename) {
+  static writeTxtFileWithPrefix(data, filepath, baseFilename, replace) {
     return data.map((data, index) => {
       // Generate auto-increment prefix
       const files = fs.readdirSync(filepath);
@@ -89,14 +89,22 @@ class FileIO {
         filepath,
         `${prefix}_${this.addExtension(baseFilename)}`
       );
-      return this.writeTxtFile(
-        data,
-        filepath,
-        baseFilename + (index + 1),
-        true
-      );
+      return this.writeTxtFile(data, filepath, baseFilename + (index + 1));
     });
   }
+
+  static writeJsonFile(data, filepath, filename, replace) {
+    let outputFilePath = this.prepareFilePath(filepath, filename, replace);
+    // Write data to the file
+    this.addExtension(outputFilePath, "json");
+    try {
+      fs.writeFileSync(outputFilePath, data, "utf8");
+      return `File successfully written to ${outputFilePath}`; // Success message
+    } catch (err) {
+      throw new Error(`Error writing to file: ${err.message}`); // Error handling
+    }
+  }
+
   static addExtension(baseFilename, ext = "txt") {
     return baseFilename.endsWith(`.${ext}`)
       ? baseFilename
