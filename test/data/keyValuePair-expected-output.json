@@ -1,0 +1,57 @@
+{
+  "attributeInstance": {
+    "name": "ATTRIBUTE_INSTANCE",
+    "value": "MODULE_ALM",
+    "_comment": "attribute instance key-value pair"
+  },
+  "boolean": {
+    "key": "ALGORITHM_GENERATED",
+    "value": true,
+    "_comment": "boolean key-value pair"
+  },
+  "enum": {
+    "key": "ENUM_SET",
+    "value": "$blk_err_opts",
+    "_comment": "enum key-value pair"
+  },
+  "expression1": {
+    "key": "CONFIRM_EXPRESSION",
+    "value": "TRUE;",
+    "_comment": "expression key-value pair"
+  },
+  "expression2": {
+    "key": "EXPRESSION",
+    "value": "IF '^/MONITOR/FAILURE.CV' = \"\" THEN\n'^/MONITOR/HM_02.CV' := FALSE;\nENDIF;",
+    "_comment": "expression key-value pair"
+  },
+  "expression3": {
+    "key": "EXPRESSION",
+    "value": "IF '^/MONITOR/FAILURE.CV' = \"\" THEN\n'^/MONITOR/HM_03.CV' := FALSE;\nENDIF;",
+    "_comment": "expression key-value pair"
+  },
+  "number1": {
+    "key": "ALARM_FUNCTIONAL_CLASSIFICATION",
+    "value": 0,
+    "_comment": "number key-value pair"
+  },
+  "number2": {
+    "key": "ID",
+    "value": 3569622216,
+    "_comment": "number key-value pair"
+  },
+  "rectangle": {
+    "key": "RECTANGLE",
+    "value": { "x": -50, "y": -50, "h": 1, "w": 1 },
+    "_comment": "rectangle key-value pair"
+  },
+  "string1": {
+    "key": "STRING_VALUE",
+    "value": "Start Sequence",
+    "_comment": "string key-value pair"
+  },
+  "string2": {
+    "key": "LIMATTR",
+    "value": "",
+    "_comment": "string key-value pair"
+  }
+}

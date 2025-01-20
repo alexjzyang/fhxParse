@@ -1,4 +1,4 @@
-import * as fhxProcessor from "./fhxProcessor.js";
+import * as fhxProcessor from "./FhxProcessor.js";
 import path from "path";
 const outputPath = path.join("./output");
 let ModuleClass = "MODULE_CLASS";

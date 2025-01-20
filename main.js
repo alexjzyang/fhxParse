@@ -1,7 +1,7 @@
 // import { FhxProcessor, FileIO, namesFromIndex } from "fhxtool";
 import fs, { writeFileSync } from "fs";
 import path from "path";
-import * as fhxProcessor from "./src/fhxProcessor.js";
+import * as fhxProcessor from "./src/FhxProcessor.js";
 import * as dscreator from "./src/DSCreator.js";
 import { FileIO } from "./src/FileIO.js";
 
@@ -336,7 +336,6 @@ function getAlarms(module_class) {
 
 function runner2(ems_fhxdata) {
   let alarmParams = getAlarms(ems_fhxdata);
-  writeJsonFile(;
 }
 
 let fhx_E_M_AGIT = fhxProcessor.findBlockWithName(
