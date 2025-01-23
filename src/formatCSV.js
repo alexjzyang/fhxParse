@@ -124,25 +124,17 @@ function main() {
 
 main();
 
-/**
- * The word file output
- * S0001 | A000 | Delay: Time | Delayed Expression
- *              | Expression  | Qualifier
- *              | Confirm: Expression | Time Out
- *       | A010 | Delay: Time | Delayed Expression
- *              | Expression  | Qualifier
- *              | Confirm: Expression | Time Out
- *       | A020 | Delay: Time | Delayed Expression
- *              | Expression  | Qualifier
- *              | Confirm: Expression | Time Out
- * S0002 | A000 | Delay: Time | Delayed Expression
- *              | Expression  | Qualifier
- *              | Confirm: Expression | Time Out
- *       | A010 | Delay: Time | Delayed Expression
- * ... ... ...
- *
- * Header
- *
- *
- *
- */
+// There are two ways to present the SFC data
+// 1. Create separate tables for Steps and Transitions, and include a screenshot of the SFC diagram.
+// 2. Create a single table with Steps and Transitions in order of execution as much as possible.
+//    In this case a manual addition of the order of the CSV records is required.
+//    Alternatively, analysis of where the Step and Transition Rectangle is created graphically can be used.
+//    This requires additional code
+
+function createSFCTableHeader() {
+  return [
+    { id: "steps", title: "Steps\r\nTransitions" },
+    { id: "actions", title: "Actions" },
+    { id: "expressions", title: "Expressions" },
+  ];
+}

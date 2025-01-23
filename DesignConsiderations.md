@@ -54,3 +54,58 @@ For SFC codes
    There are also descriptions, action types, and qualifiers.
    Currently the collection of functions are able to parse out all steps, actions and trnasitions values.
    `Need to verify if all parameters are captured`: write a fhxcrawler code which filters out all the components that the existing code can extract, and figure out what portion of the fhx is not covered. OR, if necessary, go through it manually
+
+- There are two ways to present the SFC data in tables
+  1.  Create separate tables for Steps and Transitions, and include a screenshot of the SFC diagram.
+  2.  Create a single table with Steps and Transitions in order of execution as much as possible.
+      In this case a manual addition of the order of the CSV records is required.
+      Alternatively, analysis of where the Step and Transition Rectangle is created graphically can be used.
+      This requires additional code
+
+```
+The word file output
+Steps | Act. | Expressions
+------------------------------------------------
+S0001 | A000 | Delay: Time or Delayed Expression
+      |      |----------------------------------
+      |      | Expression and Qualifier
+      |      |----------------------------------
+      |      | Confirm: Expression | Time Out
+      -------------------------------------------
+      | A010 | Delay: Time or Delayed Expression
+      |      |----------------------------------
+      |      | Expression and Qualifier
+      |      |----------------------------------
+      |      | Confirm: Expression | Time Out
+   -------------------------------------------
+      | A020 | Delay: Time or Delayed Expression
+      |      |----------------------------------
+      |      | Expression and Qualifier
+      |      |----------------------------------
+      |      | Confirm: Expression | Time Out
+------------------------------------------------
+T0001 | N/A  | Expression:
+------------------------------------------------
+S0002 | A000 | Delay: Time or Delayed Expression
+      |      |----------------------------------
+      |      | Expression and Qualifier
+      |      |----------------------------------
+      |      | Confirm: Expression | Time Out
+   -------------------------------------------
+      | A010 | Delay: Time or Delayed Expression
+```
+
+# DS Generation
+
+## List of Tables
+
+### Control Modules
+
+- Control Module Class Properties
+- Module Parameters
+- Instance Configurable Parameters (Currently using Bulk Edit EXport)
+- Function Blocks
+- Linked Composites
+- Embedded Composites
+- Alarms
+- History Collection

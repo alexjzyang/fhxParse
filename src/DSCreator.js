@@ -38,6 +38,7 @@ function obtainModuleProperties(fhx_data, modulename) {
  * Extracts the default values of module parameters from a given module data.
  *
  * @param {string} module_data - The FHX string containing the module data.
+ * @param {string} modulename - The name of the module.
  * @returns {Array<{name: string, type:string, value: string}>} - An array of objects containing the parameter names and their default values.
  */
 function valuesOfModuleParameters(module_data, modulename) {
@@ -137,32 +138,16 @@ function valuesOfModuleParameters(module_data, modulename) {
  * Optionally writes each matching block to a text file in the specified output directory.
  *
  * @param {string} fhx_data - The FHX data as a string.
- * @param {string} outputFilePath - The path to the output directory (optional).
  * @param {string} elementKey - The key of the element to search for.
- * @param {object} withValue - The criteria to filter the blocks by (e.g., { key: "CATEGORY", includes: "Equipment Module Classes" }).
+ * @param {object} includes - The criteria to filter the blocks by (e.g., { key: "CATEGORY", includes: "Equipment Module Classes" }).
  * @returns {Array} - An array of the found blocks.
  */
-function findAll(fhx_data, outputFilePath, elementKey, withValue) {
+function findAll(fhx_data, elementKey, includes) {
   let blocks = fhxProcessor.findBlocks(fhx_data, elementKey);
   let results = blocks.filter((block) => {
     // Filter blocks based on the provided criteria
-    return fhxProcessor
-      .valueOf(block, withValue.key)
-      ?.includes(withValue.value);
+    return fhxProcessor.valueOf(block, includes.key)?.includes(includes.value);
   });
-
-  if (outputFilePath)
-    // If an output file path is provided
-    results.forEach((block) => {
-      // Write each block to a text file
-      let modulename = fhxProcessor.valueOf(block, "NAME");
-      try {
-        FileIO.writeTxtFile(block, outputFilePath, modulename);
-      } catch (error) {
-        console.error("Error writing file: " + modulename);
-        console.error(error);
-      }
-    });
 
   return results;
 }
@@ -174,10 +159,10 @@ function findAll(fhx_data, outputFilePath, elementKey, withValue) {
  * @param {string} fhx_data - The FHX data as a string.
  * @param {string} [outputFilePath="output/All EMC"] - The path to the output directory (optional).
  */
-function findAllEMClasses(fhx_data, outputFilePath = "output/All EMC") {
+function findAllEMClasses(fhx_data) {
   let elementKey = "MODULE_CLASS";
   let emCriteria = { value: "Equipment Module Classes", key: "CATEGORY" };
-  return findAll(fhx_data, outputFilePath, elementKey, emCriteria);
+  return findAll(fhx_data, elementKey, emCriteria);
 }
 
 /**
@@ -187,13 +172,14 @@ function findAllEMClasses(fhx_data, outputFilePath = "output/All EMC") {
  * @param {string} fhx_data - The FHX data as a string.
  * @param {string} [outputFilePath="output/All CMC"] - The path to the output directory (optional).
  */
-function findAllCMClasses(fhx_data, outputFilePath = "output/All CMC") {
+function findAllCMClasses(fhx_data) {
   let elementKey = "MODULE_CLASS";
   let emCriteria = { value: "Equipment Module Classes", key: "CATEGORY" };
-  return findAll(fhx_data, outputFilePath, elementKey, emCriteria);
+  return findAll(fhx_data, elementKey, emCriteria);
 }
 
 /**
+ * WIP
  * Processes a specific module class block from the provided FHX data.
  * Extracts module parameters and properties, and writes them to output files.
  * Currently only processing module properties and parameters
@@ -208,15 +194,127 @@ function processModuleClass(fhx_data, blockName = "_C_M_AI") {
     "MODULE_CLASS",
     blockName
   );
-  dscreator.valuesOfModuleParameters(block, blockName);
-  dscreator.obtainModuleProperties(block, blockName);
+  valuesOfModuleParameters(block, blockName);
+  obtainModuleProperties(block, blockName);
 }
 
+/**
+ * Converts SFC data to CSV format and writes it to a file.
+ *
+ * @param {string} filepath - The path where the CSV file will be saved.
+ * @param {string} filename - The name of the CSV file.
+ * @param {string} sfcBlockFhx - The FHX of a Function Block Definition containing SFC block.
+ */
+function sfcToCsv(filepath, filename, sfcBlockFhx) {
+  let sfcDataObj = processSFC(sfcBlockFhx);
+
+  // write to csv
+  let csvHeaders = [
+    { id: "steps", title: "Steps and Transitions" },
+    { id: "actions", title: "Actions" },
+    { id: "expressions", title: "Expressions" },
+  ];
+
+  let recordsArr = [];
+
+  for (let stepIndex = 0; stepIndex < sfcDataObj.steps.length; stepIndex++) {
+    let step = sfcDataObj.steps[stepIndex];
+    let stepText = `${step.name}\n${step.description}`;
+    if (step.actions.length === 0) {
+      recordsArr.push({ steps: stepText, actions: "N/A", expressions: "N/A" });
+    }
+    for (
+      let actionIndex = 0;
+      actionIndex < step.actions.length;
+      actionIndex++
+    ) {
+      let action = step.actions[actionIndex];
+      let actionText = `${action.name}\n${action.description}`;
+      for (let expIndex = 0; expIndex < 3; expIndex++) {
+        let delay, act, confirm;
+        delay = act = confirm = "";
+        if (action.delayedExpression) {
+          delay += `Delay Expression: \n${action.delayedExpression}\n`;
+        }
+        if (action.delayTime) {
+          delay += `Delay Time: \n${action.delayTime}\n`;
+        }
+
+        act = `Action: \n${action.expression}\n`;
+
+        if (action.confirmExpression) {
+          confirm += `Confirm Expression: \n${action.confirmExpression}\n`;
+        }
+        if (action.confirmTimeOut) {
+          confirm += `Confirm TimeOut: \n${action.confirmTimeOut}\n`;
+        }
+
+        delay = delay === "" ? `Delay Time: \n0` : delay;
+        confirm =
+          confirm === ""
+            ? `Confirm Expression: True;\nConfirm TimeOut: \n0`
+            : confirm;
+        let exps = { delay, act, confirm };
+        let record = {};
+
+        record.steps = actionIndex === 0 && expIndex === 0 ? stepText : "";
+        record.actions = expIndex === 0 ? actionText : "";
+        switch (expIndex) {
+          case 0:
+            record.expressions = exps.delay;
+            break;
+          case 1:
+            record.expressions = exps.act;
+            break;
+          case 2:
+            record.expressions = exps.confirm;
+            break;
+        }
+
+        recordsArr.push(record);
+      }
+    }
+  }
+  sfcDataObj.transitions.forEach((transition) => {
+    let record = {
+      steps: `${transition.name}\n${transition.description}`, // In the transition section, csv header id is still "steps"
+      expressions: transition.expression,
+    };
+    recordsArr.push(record);
+  });
+  fhxProcessor.writeCsv(csvHeaders, recordsArr, filepath, filename);
+}
+
+/**
+ * Finds the definition of a composite block within another block.
+ * Typically used to find the definition of an SFC block.
+ *
+ * @param {string} inBlock - The FHX block containing the composite block.
+ * @param {string} inFhx - The FHX data as a string.
+ * @param {string} blockName - The name of the composite block.
+ * @returns {string} - The FHX block definition.
+ */
+function findCompositeDefinitionOf(inBlock, inFhx, blockName) {
+  let fbBlockDefinitionName = fhxProcessor.findFbdOf(blockName, inBlock, inFhx);
+  let blockNameDefinitionBlock = fhxProcessor.findBlockWithName(
+    inFhx,
+    "FUNCTION_BLOCK_DEFINITION",
+    fbBlockDefinitionName
+  );
+  return blockNameDefinitionBlock;
+}
 export {
+  // find lists of parameters
   obtainModuleProperties,
   valuesOfModuleParameters,
+  processModuleClass, // WIP
+  // find lists of blocks
   findAll,
   findAllEMClasses,
   findAllCMClasses,
-  processModuleClass,
+  // Find definition of another block's component
+  // Typically a sfc block
+  // write sfc to csv
+  sfcToCsv,
+  findCompositeDefinitionOf,
 };

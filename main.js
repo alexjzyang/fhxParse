@@ -51,6 +51,7 @@ const ems_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
 const Function_Block = "FUNCTION_BLOCK";
 const Function_Block_Definition = "FUNCTION_BLOCK_DEFINITION";
+const Definition = "DEFINITION";
 const emname = "_E_M_AGIT";
 const cmname = "_C_M_AI";
 
@@ -62,7 +63,7 @@ const cmname = "_C_M_AI";
  * @param {string} modulename - The name of the Equipment Module.
  * @returns {Array<{name: string, definition: string}>} - An array of objects containing the command names and their definitions.
  */
-function findEMCommands(emfhx) {
+function listEMCommands(emfhx) {
   let emname = fhxProcessor.nameOf(emfhx);
 
   let commandsFhx = dscreator.findAll(emfhx, null, Function_Block, {
@@ -111,154 +112,10 @@ function compileEMCommands(emFhxData, emname) {
   let emOutputPath = path.join(outputPath, emname, "commands");
 
   // Write the command files to the output path
-  FileIO.writeTxtFiles(files, emOutputPath, true);
+  // FileIO.writeTxtFiles(files, emOutputPath, true);
 
   // Return the array of files
   return files;
-}
-
-function SFCSteps(emFhxData) {
-  let steps = fhxProcessor.findBlocks(emFhxData, "STEP");
-  /*
-    Structure of Steps:
-    Description
-    List of ACTIONS
-  */
-  let stepValues = steps.map((step) => {
-    let getValue = (key) => fhxProcessor.valueOf(step, key);
-    let values = {
-      name: getValue("NAME"),
-      description: getValue("DESCRIPTION"),
-      actions: SFCActions(step),
-    };
-    return values;
-  });
-  return stepValues;
-}
-
-function SFCTransitions(cmdFhxData) {
-  let transitionBlocks = fhxProcessor.findBlocks(cmdFhxData, "TRANSITION");
-  /*
-    Structure of Transitions:
-    Transition Header
-    transition: [
-    { id: "name", title: "NAME" },
-    { id: "description", title: "DESCRIPTION" },
-    { id: "position", title: "POSITION" },
-    { id: "termination", title: "TERMINATION" },
-    { id: "expression", title: "EXPRESSION" },
-    ],
-   */
-  let transitionValues = transitionBlocks.map((block) => {
-    let transitionValue = (key) => fhxProcessor.valueOf(block, key);
-    let values = {
-      name: transitionValue("NAME"),
-      description: transitionValue("DESCRIPTION"),
-      position: transitionValue("POSITION"),
-      termination: transitionValue("TERMINATION"),
-      expression: transitionValue("EXPRESSION"),
-    };
-    return values;
-  });
-  return transitionValues;
-}
-
-function SFCActions(stepFhxData) {
-  let actionBlocks = fhxProcessor.findBlocks(stepFhxData, "ACTION");
-  /*
-      Structure of Actions:
-      Action Header
-      action: [
-      { id: "name", title: "NAME" },
-      { id: "description", title: "DESCRIPTION" },
-      { id: "actionType", title: "ACTION_TYPE" },
-      { id: "qualifier", title: "QUALIFIER" },
-      { id: "expression", title: "EXPRESSION" },
-      { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
-      { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
-      { id: "delayedExpression", title: "DELAY_EXPRESSION" },
-      { id: "delayTime", title: "DELAY_TIME" },
-      ]
-  */
-  let actionValues = actionBlocks.map((block) => {
-    let getValue = (key) => fhxProcessor.valueOf(block, key);
-    let values = {
-      name: getValue("NAME"),
-      description: getValue("DESCRIPTION"),
-      actionType: getValue("ACTION_TYPE"),
-      qualifier: getValue("QUALIFIER"),
-      expression: getValue("EXPRESSION"),
-      confirmExpression: getValue("CONFIRM_EXPRESSION"),
-      confirmTimeOut: getValue("CONFIRM_TIME_OUT"),
-      delayedExpression: getValue("DELAY_EXPRESSION"),
-      delayTime: getValue("DELAY_TIME"),
-    };
-    return values;
-  });
-
-  return actionValues;
-}
-
-const csvHeaders = {
-  action: [
-    { id: "name", title: "NAME" },
-    { id: "description", title: "DESCRIPTION" },
-    { id: "actionType", title: "ACTION_TYPE" },
-    { id: "qualifier", title: "QUALIFIER" },
-    { id: "expression", title: "EXPRESSION" },
-    { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
-    { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
-    { id: "delayedExpression", title: "DELAY_EXPRESSION" },
-    { id: "delayTime", title: "DELAY_TIME" },
-  ],
-  transition: [
-    { id: "name", title: "NAME" },
-    { id: "description", title: "DESCRIPTION" },
-    { id: "position", title: "POSITION" },
-    { id: "termination", title: "TERMINATION" },
-    { id: "expression", title: "EXPRESSION" },
-  ],
-};
-
-function findCommendFhxs(em_fhxdata, emname) {
-  let em1fhx = fhxProcessor.findBlockWithName(em_fhxdata, Module_Class, emname); // Find the Equipment Module block
-  // Identify the definition of the commands
-  let emCommands = findEMCommands(em1fhx, emname);
-  emCommands.map((command) => {
-    let definitionBlock = fhxProcessor.findBlockWithName(
-      em_fhxdata,
-      Function_Block_Definition,
-      command.definition
-    );
-    command.fhx = definitionBlock;
-  });
-  return emCommands;
-}
-
-function processSFC(cmdfhx) {
-  let steps = SFCSteps(cmdfhx);
-  let transitions = SFCTransitions(cmdfhx);
-
-  return { steps, transitions };
-}
-
-function writeJsonFile(filepath, data) {
-  fs.writeFileSync(filepath, JSON.stringify(data, null, 2), "utf8");
-}
-
-function runner(ems_fhxdata) {
-  let module = emname;
-  let cmdFhxData = findCommendFhxs(ems_fhxdata, module);
-  let jsonResult = cmdFhxData.map((cmd) => {
-    let sfc = processSFC(cmd.fhx);
-    return { name: cmd.name, sfc, definition: cmd.definition };
-  });
-
-  // Write the JSON result to a file
-  const jsonOutputPath = path.join(outputPath, module, "commands.json");
-  writeJsonFile(jsonOutputPath, jsonResult);
-
-  return jsonResult;
 }
 
 /*
@@ -295,6 +152,7 @@ ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
  * @param {string} module_class fhx of a module class
  */
 function getAlarms(module_class) {
+  // getAlarms is SIP because valueOf an empty string ("")is not yet working
   let attribute_instances = fhxProcessor.findBlocks(
     module_class,
     "ATTRIBUTE_INSTANCE"
@@ -325,23 +183,23 @@ function getAlarms(module_class) {
     }
     return alarm_values;
   });
-  if (alarm_parameters[timeout]) {
-    alarm_parameters[timeoutHours] = alarm_parameters[timeout] / 3600;
-    alarm_parameters[timeoutMinutes] = (alarm_parameters[timeout] % 3600) / 60;
-    alarm_parameters[alarm_timeout_seconds] =
+  if (alarm_parameters.timeout) {
+    alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
+    alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
+    alarm_parameters.alarm_timeout_seconds =
       (alarm_parameters[timeout] % 3600) % 60;
   }
   return alarm_parameters;
 }
 
-function runner2(ems_fhxdata) {
-  let alarmParams = getAlarms(ems_fhxdata);
+function runner(fhx) {
+  let _E_M_AGITFhx = fhxProcessor.findBlockWithName(
+    fhx,
+    Module_Class,
+    "_E_M_AGIT"
+  );
+  let alarms = getAlarms(_E_M_AGITFhx);
+  return;
 }
 
-let fhx_E_M_AGIT = fhxProcessor.findBlockWithName(
-  ems_fhxdata,
-  Module_Class,
-  emname
-);
-runner2(fhx_E_M_AGIT);
-// runner(ems_fhxdata);
+runner(ems_fhxdata);

@@ -4,8 +4,8 @@
 
 import fs from "fs";
 import path from "path";
-import * as fhxProcessor from "./src/fhxProcessor.js";
-import { FileIO } from "./FileIO.js";
+import * as fhxProcessor from "./src/FhxProcessor.js";
+// import { FileIO } from "./FileIO.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -81,7 +81,7 @@ function test() {
     "attribute instances which do not have a configurable attribute: ",
     missingAttributes
   );
-  FileIO.writeTxtFileConcat(missingAttributes, "output", "missingAttributes");
+  // FileIO.writeTxtFileConcat(missingAttributes, "output", "missingAttributes");
 }
 
 // test(fhx_data);
@@ -119,4 +119,16 @@ function findValueInTree(fhx_data, tree, property) {
   // can be used for both after modifying the function signature.
 }
 
-findValueInTree(cm_fhxdata, tree, property);
+function runner() {
+  let headers = [
+    { id: "steps", title: "Steps" },
+    { id: "actions", title: "Actions" },
+    { id: "expressions", title: "Expressions" },
+  ];
+  let records = [
+    { steps: 1, actions: 2, expressions: 3 },
+    { steps: 4, actions: 5, expressions: 6 },
+  ];
+  fhxProcessor.writeCsv(headers, records);
+}
+runner();

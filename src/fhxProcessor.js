@@ -1,4 +1,4 @@
-import { FhxProcessor, FileIO, namesFromIndex } from "fhxtool";
+import { FileIO } from "./FileIO.js";
 
 import fs from "fs";
 import path from "path";
@@ -241,7 +241,7 @@ function writeCsv(
   csvWriter
     .writeRecords(records) // returns a promise
     .then(() => {
-      console.log("CSV file was written successfully.");
+      console.log("CSV file was written successfully." + filename);
     });
 }
 
@@ -338,11 +338,15 @@ function fhxReplacer(input, replacer) {
  * @param {string} name the block that needs to be found
  * @returns a fhx string that contains one single block
  */
-function findBlockWithName(fhxstring, type, name) {
+function findBlockWithName(fhxstring, type, name, print = false) {
   // find a list of block matching the block type
   let blocks = findBlocks(fhxstring, type);
   // within this list, find the block that matches the name
-  return identifyBlock(type, name, blocks);
+  let res = identifyBlock(type, name, blocks);
+  if (print) {
+    FileIO.writeTxtFile(res, "output/temp", name);
+  }
+  return res;
 }
 /*
     In order to find the defauly values of the parameters, we need to find
@@ -388,34 +392,6 @@ function valueOf(fhxBlock, key) {
 }
 
 /**
- * function valueOf(fhxBlock, key) {
-  // this function should be generalized/reworked.
-  // If the key is T_EXPRESSION, then it will be surrounded by quotes; otherwise it will not.
-  // Alternatively, we can pass in a flag indicating whether we're looking for an expression or not.
-  // valuesOfModuleParameters() currently uses the the switching option to predetermine the type of the parameter
-  key += "=";
-  let startIndex = fhxBlock.indexOf(key);
-  if (startIndex === -1) return;
-
-  startIndex += key.length;
-  let endIndex;
-  if (fhxBlock[startIndex] === '"') {
-    endIndex = ++startIndex;
-    do {
-      endIndex = fhxBlock.indexOf('"', endIndex + 2); // find the next closing double quote
-    } while (fhxBlock[endIndex + 1] === '"');
-  } else {
-    let indexOfSpace = fhxBlock.indexOf(" ", startIndex + 1);
-    let indexOfReturn = fhxBlock.indexOf("\r\n", startIndex + 1);
-    endIndex = indexOfSpace < indexOfReturn ? indexOfSpace : indexOfReturn;
-  }
-
-  if (startIndex === -1 || endIndex === -1) return;
-  return fhxBlock.substring(startIndex, endIndex);
-}
- */
-
-/**
  * Extracts the name of a given FHX block.
  *
  * @param {string} fhxBlock - The FHX string of a single block.
@@ -428,6 +404,108 @@ function nameOf(fhxBlock) {
   if (startIndex === -1 || endIndex === -1) return;
   let name = fhxBlock.substring(startIndex, endIndex);
   return name;
+}
+
+/**
+ * Finds the function block definition of a composite block (FUNCTION_BLOCK)
+ * in a fhx Block (FUNCTION_BLOCK_DEFINITION).
+ * @param {string} blockName the name of the composite block
+ * @param {string} fbOfObj the fhx block where the composite block is in
+ * @param {string} fromFhx the fhx where the composite block is defined
+ * @returns {string} the function block definition of the composite block
+ */
+function findFbdOf(blockName, fbOfObj, fromFhx) {
+  let fbBlock = findBlockWithName(fbOfObj, "FUNCTION_BLOCK", blockName);
+  let fbdDefName = valueOf(fbBlock, "DEFINITION");
+  return findBlockWithName(fromFhx, "FUNCTION_BLOCK_DEFINITION", fbdDefName);
+}
+
+function SFCSteps(emFhxData) {
+  let steps = fhxProcessor.findBlocks(emFhxData, "STEP");
+  /*
+    Structure of Steps:
+    Description
+    List of ACTIONS
+  */
+  let stepValues = steps.map((step) => {
+    let getValue = (key) => fhxProcessor.valueOf(step, key);
+    let values = {
+      name: getValue("NAME"),
+      description: getValue("DESCRIPTION"),
+      actions: SFCActions(step),
+    };
+    return values;
+  });
+  return stepValues;
+}
+
+function SFCTransitions(cmdFhxData) {
+  let transitionBlocks = fhxProcessor.findBlocks(cmdFhxData, "TRANSITION");
+  /*
+    Structure of Transitions:
+    Transition Header
+    transition: [
+    { id: "name", title: "NAME" },
+    { id: "description", title: "DESCRIPTION" },
+    { id: "position", title: "POSITION" },
+    { id: "termination", title: "TERMINATION" },
+    { id: "expression", title: "EXPRESSION" },
+    ],
+   */
+  let transitionValues = transitionBlocks.map((block) => {
+    let transitionValue = (key) => fhxProcessor.valueOf(block, key);
+    let values = {
+      name: transitionValue("NAME"),
+      description: transitionValue("DESCRIPTION"),
+      position: transitionValue("POSITION"),
+      termination: transitionValue("TERMINATION"),
+      expression: transitionValue("EXPRESSION"),
+    };
+    return values;
+  });
+  return transitionValues;
+}
+
+function SFCActions(stepFhxData) {
+  let actionBlocks = fhxProcessor.findBlocks(stepFhxData, "ACTION");
+  /*
+      Structure of Actions:
+      Action Header
+      action: [
+      { id: "name", title: "NAME" },
+      { id: "description", title: "DESCRIPTION" },
+      { id: "actionType", title: "ACTION_TYPE" },
+      { id: "qualifier", title: "QUALIFIER" },
+      { id: "expression", title: "EXPRESSION" },
+      { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
+      { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
+      { id: "delayedExpression", title: "DELAY_EXPRESSION" },
+      { id: "delayTime", title: "DELAY_TIME" },
+      ]
+  */
+  let actionValues = actionBlocks.map((block) => {
+    let getValue = (key) => fhxProcessor.valueOf(block, key);
+    let values = {
+      name: getValue("NAME"),
+      description: getValue("DESCRIPTION"),
+      actionType: getValue("ACTION_TYPE"),
+      qualifier: getValue("QUALIFIER"),
+      expression: getValue("EXPRESSION"),
+      confirmExpression: getValue("CONFIRM_EXPRESSION"),
+      confirmTimeOut: getValue("CONFIRM_TIME_OUT"),
+      delayedExpression: getValue("DELAY_EXPRESSION"),
+      delayTime: getValue("DELAY_TIME"),
+    };
+    return values;
+  });
+
+  return actionValues;
+}
+
+function processSFC(cmdfhx) {
+  let steps = SFCSteps(cmdfhx);
+  let transitions = SFCTransitions(cmdfhx);
+  return { steps, transitions };
 }
 
 export {
@@ -444,4 +522,10 @@ export {
   findBlockWithName,
   valueOf,
   nameOf,
+  findFbdOf,
+  // SFC related functions
+  SFCSteps,
+  SFCTransitions,
+  SFCActions,
+  processSFC,
 };

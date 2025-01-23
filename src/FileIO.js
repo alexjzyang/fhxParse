@@ -10,13 +10,13 @@ class FileIO {
    * @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
    * @returns {string} - The prepared file path with a .txt extension.
    */
-  static prepareFilePath(filepath, filename, ext = "txt", replace = true) {
+  static prepareFilePath(filepath, filename, ext = "txt") {
     // Create directory if it does not exist
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath, { recursive: true });
     }
 
-    filename = filename.endsWith(".txt") ? filename : `${filename}.txt`;
+    filename = filename.endsWith(ext) ? filename : `${filename}.${ext}`;
     return path.join(filepath, filename);
   }
 
@@ -30,9 +30,12 @@ class FileIO {
    * @returns {string} - Success message indicating the file was written successfully.
    * @throws {Error} - Throws an error if there is an issue writing the file.
    */
-  static writeTxtFile(data, filepath, filename, replace) {
-    let outputFilePath = this.prepareFilePath(filepath, filename, replace);
+  static writeTxtFile(data, filepath, filename, replace = false) {
+    let outputFilePath = this.prepareFilePath(filepath, filename, "txt");
     // Write data to the file
+    if (replace && fs.existsSync(outputFilePath)) {
+      fs.unlinkSync(outputFilePath);
+    }
     try {
       fs.writeFileSync(outputFilePath, data, "utf8");
       return `File successfully written to ${outputFilePath}`; // Success message
@@ -94,11 +97,16 @@ class FileIO {
   }
 
   static writeJsonFile(data, filepath, filename, replace) {
-    let outputFilePath = this.prepareFilePath(filepath, filename, replace);
+    let outputFilePath = this.prepareFilePath(
+      filepath,
+      filename,
+      "json",
+      replace
+    );
     // Write data to the file
     this.addExtension(outputFilePath, "json");
     try {
-      fs.writeFileSync(outputFilePath, data, "utf8");
+      fs.writeFileSync(outputFilePath, JSON.stringify(data), "utf8");
       return `File successfully written to ${outputFilePath}`; // Success message
     } catch (err) {
       throw new Error(`Error writing to file: ${err.message}`); // Error handling
