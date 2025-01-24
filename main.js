@@ -46,7 +46,7 @@ const cmfilepath = path.join(
 
 // console.log("Loading file: " + fhxfilepath);
 const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
-const cm_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
+const cms_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
 const ems_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
 const Function_Block = "FUNCTION_BLOCK";
@@ -118,80 +118,6 @@ function compileEMCommands(emFhxData, emname) {
   return files;
 }
 
-/*
-All alarm attribute instance keys
-ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
- {
-   VALUE
-   {
-     PRIORITY_NAME="WARNING"
-     ENAB=F
-     INV=F
-     ATYP="_A_M_ Equipment Failure"
-     MONATTR=""
-     ALMATTR="FAILURE"
-     LIMATTR=""
-     PARAM1="FAIL"
-     PARAM2="MONITOR/FAILURE"
-     SUPPTIMEOUT=480
-     MASK=65535
-     ISDEFAULTMASK=T
-     ALARM_FUNCTIONAL_CLASSIFICATION=0
-   }*/
-
-/**
- * Finding the alarm names, priority,
- * Parameter,
- * Parameter Limit
- * Default limit,
- * Enabled
- * Alarm Message,
- * Placeholder
- * Priority
- *
- * @param {string} module_class fhx of a module class
- */
-function getAlarms(module_class) {
-  // getAlarms is SIP because valueOf an empty string ("")is not yet working
-  let attribute_instances = fhxProcessor.findBlocks(
-    module_class,
-    "ATTRIBUTE_INSTANCE"
-  );
-  let alarms = attribute_instances.filter((block) => {
-    return block.includes("PRIORITY_NAME");
-  });
-
-  let alarm_attribute_instances_keys = {
-    name: "NAME",
-    priority: "PRIORITY_NAME",
-    enable: "ENAB",
-    inverted: "INV",
-    type: "ATYP",
-    monitor_attribute: "MONATTR",
-    alarm_parameter: "ALMATTR",
-    limit: "LIMATTR",
-    p1: "PARAM1",
-    p2: "PARAM2",
-    timeout: "SUPPTIMEOUT",
-  };
-  let alarm_parameters = alarms.map((alarm) => {
-    let alarm_values = {};
-    for (let key in alarm_attribute_instances_keys) {
-      let dvkey = alarm_attribute_instances_keys[key];
-      let value = fhxProcessor.valueOf(alarm, dvkey);
-      alarm_values[key] = value;
-    }
-    return alarm_values;
-  });
-  if (alarm_parameters.timeout) {
-    alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
-    alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
-    alarm_parameters.alarm_timeout_seconds =
-      (alarm_parameters[timeout] % 3600) % 60;
-  }
-  return alarm_parameters;
-}
-
 function runner(fhx) {
   let _E_M_AGITFhx = fhxProcessor.findBlockWithName(
     fhx,
@@ -202,4 +128,22 @@ function runner(fhx) {
   return;
 }
 
-runner(ems_fhxdata);
+// runner(ems_fhxdata);
+import { createObjectCsvWriter, createArrayCsvWriter } from "csv-writer";
+
+function cmRunner(fhx) {
+  // obtain cmFhx
+  let cmname = "_C_M_AI";
+  let cmFhx = fhxProcessor.findBlockWithName(fhx, Module_Class, cmname);
+
+  //write cmFhx to text file
+  let cmFhxPath = path.join(outputPath, cmname);
+
+  // Get module properties
+  let moduleProperties = dscreator.obtainModuleProperties(cmFhx, cmname);
+  let csvwriter = createArrayCsvWriter;
+
+  return;
+}
+
+cmRunner(cms_fhxdata);

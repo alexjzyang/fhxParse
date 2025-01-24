@@ -4,40 +4,6 @@ import fs from "fs";
 import path from "path";
 import { createObjectCsvWriter as createCsvWriter } from "csv-writer";
 
-function classProperties(block) {
-  // This is supposed to be an input values
-  // const blockIdentity = `MODULE_CLASS NAME="_C_M_AGIT_M"`;
-  let blockHeader = {
-    desc: { fhxkey: "DESCRIPTION", DVname: "Description" },
-    rate: { fhxkey: "PERIOD", DVname: "Scan Rate" },
-    pic: {
-      fhxkey: "PRIMARY_CONTROL_DISPLAY",
-      DVname: "Primary Control Display",
-    },
-    fp: { fhxkey: "INSTRUMENT_AREA_DISPLAY", DVname: "Faceplate" },
-    dt: { fhxkey: "DETAIL_DISPLAY", DVname: "Detail Display" },
-    type: { fhxkey: "TYPE", DVname: "Module Type " },
-    subtype: { fhxkey: "SUB_TYPE", DVname: "Module Subtype" },
-    nvm: { fhxkey: "NVM", DVname: "TBD" },
-    restart: { fhxkey: "PERSIST", DVname: "TBD-Restart Mode" },
-  };
-
-  for (const key in blockHeader) {
-    if (Object.prototype.hasOwnProperty.call(blockHeader, key)) {
-      const fhxkey = blockHeader[key].fhxkey;
-      let searchFor = `${fhxkey}=`;
-      let startIndex = block.indexOf(searchFor) + searchFor.length;
-      let endIndex = block.indexOf("\r\n", startIndex);
-      let value = block.substring(startIndex, endIndex);
-      if (value[0] === '"' && value[value.length - 1] === '"') {
-        value = value.substring(1, value.length - 1);
-      }
-      blockHeader[key]["value"] = value;
-    }
-  }
-  return blockHeader;
-}
-
 /**
  * findBlocks takes an entire fhx string and finds all the blocks of given type
  * by using indexOf over the block type and isolating block content by counting
@@ -509,7 +475,6 @@ function processSFC(cmdfhx) {
 }
 
 export {
-  classProperties,
   findBlocks,
   identifyBlock,
   extractValueFrom,

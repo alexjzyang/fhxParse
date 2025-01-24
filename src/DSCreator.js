@@ -1,38 +1,4 @@
 import * as fhxProcessor from "./FhxProcessor.js";
-import path from "path";
-const outputPath = path.join("./output");
-let ModuleClass = "MODULE_CLASS";
-
-/**
- * Find the property values of a module class block and write them to a csv file
- * @param {string} fhx_data input fhx data
- * @param {string} modulename the module which properties are to be found
- */
-function obtainModuleProperties(fhx_data, modulename) {
-  let blockType = ModuleClass; // The block is a module class block
-  let block = fhxProcessor.findBlockWithName(fhx_data, blockType, modulename); // Find the module class block
-  let properties = fhxProcessor.classProperties(block); // Extract the properties of the module class block
-  let header = [
-    // Header row for the CSV file
-    { id: "Name", title: "Name" },
-    { id: "Item", title: "Item" },
-  ];
-  let records = []; // Records to be written to the CSV
-
-  for (const key in properties) {
-    // Loop through the properties object
-    if (Object.hasOwnProperty.call(properties, key)) {
-      const property = properties[key];
-      records.push({ Name: property.DVname, Item: property.value }); // Add the property name and value to the records
-    }
-  }
-  fhxProcessor.writeCsv(
-    header,
-    records,
-    path.join(outputPath, modulename),
-    `${modulename} Properties.csv`
-  ); // Write the records to a CSV file
-}
 
 /**
  * Extracts the default values of module parameters from a given module data.
@@ -179,26 +145,6 @@ function findAllCMClasses(fhx_data) {
 }
 
 /**
- * WIP
- * Processes a specific module class block from the provided FHX data.
- * Extracts module parameters and properties, and writes them to output files.
- * Currently only processing module properties and parameters
- *
- * @param {string} fhx_data - The FHX data as a string.
- * @param {string} blockName - The name of the module class block to process.
- */
-function processModuleClass(fhx_data, blockName = "_C_M_AI") {
-  //
-  let block = fhxProcessor.findBlockWithName(
-    fhx_data,
-    "MODULE_CLASS",
-    blockName
-  );
-  valuesOfModuleParameters(block, blockName);
-  obtainModuleProperties(block, blockName);
-}
-
-/**
  * Converts SFC data to CSV format and writes it to a file.
  *
  * @param {string} filepath - The path where the CSV file will be saved.
@@ -303,11 +249,65 @@ function findCompositeDefinitionOf(inBlock, inFhx, blockName) {
   );
   return blockNameDefinitionBlock;
 }
+
+/**
+ * Finding the alarm names, priority,
+ * Parameter,
+ * Parameter Limit
+ * Default limit,
+ * Enabled
+ * Alarm Message,
+ * Placeholder
+ * Priority
+ *
+ * @param {string} module_class fhx of a module class
+ */
+function getAlarms(module_class) {
+  // getAlarms is SIP because valueOf an empty string ("")is not yet working
+  let attribute_instances = fhxProcessor.findBlocks(
+    module_class,
+    "ATTRIBUTE_INSTANCE"
+  );
+  let alarms = attribute_instances.filter((block) => {
+    return block.includes("PRIORITY_NAME");
+  });
+
+  let alarm_attribute_instances_keys = {
+    name: "NAME",
+    priority: "PRIORITY_NAME",
+    enable: "ENAB",
+    inverted: "INV",
+    type: "ATYP",
+    monitor_attribute: "MONATTR",
+    alarm_parameter: "ALMATTR",
+    limit: "LIMATTR",
+    p1: "PARAM1",
+    p2: "PARAM2",
+    timeout: "SUPPTIMEOUT",
+  };
+  let alarm_parameters = alarms.map((alarm) => {
+    let alarm_values = {};
+    for (let key in alarm_attribute_instances_keys) {
+      let dvkey = alarm_attribute_instances_keys[key];
+      let value = fhxProcessor.valueOf(alarm, dvkey);
+      alarm_values[key] = value;
+    }
+    return alarm_values;
+  });
+  if (alarm_parameters.timeout) {
+    alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
+    alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
+    alarm_parameters.alarm_timeout_seconds =
+      (alarm_parameters[timeout] % 3600) % 60;
+  }
+  return alarm_parameters;
+}
+
+function moduleProperties(moduleFhx) {}
 export {
   // find lists of parameters
-  obtainModuleProperties,
   valuesOfModuleParameters,
-  processModuleClass, // WIP
+  moduleProperties,
   // find lists of blocks
   findAll,
   findAllEMClasses,
@@ -317,4 +317,5 @@ export {
   // write sfc to csv
   sfcToCsv,
   findCompositeDefinitionOf,
+  getAlarms, // WIP to be tested
 };
