@@ -7,6 +7,10 @@ import { FileIO } from "./src/v1/_FileIO.js";
 import { getModuleParameters } from "./src/DSSpecific/ModuleParameterTable.js";
 import { getModuleProperties } from "./src/DSSpecific/ModulePropertyTable.js";
 import { writeCsvFile } from "./src/FileIO.js";
+import { getFunctionBlocks } from "./src/DSSpecific/FunctionBlockTable.js";
+import { getCompositeBlocks } from "./src/DSSpecific/CompositeTable.js";
+import { getAlarms } from "./src/DSSpecific/AlarmTable.js";
+import { getHistoryCollection } from "./src/DSSpecific/HistoryTable.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -142,74 +146,77 @@ ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
      ALARM_FUNCTIONAL_CLASSIFICATION=0
    }*/
 
-/**
- * Finding the alarm names, priority,
- * Parameter,
- * Parameter Limit
- * Default limit,
- * Enabled
- * Alarm Message,
- * Placeholder
- * Priority
- *
- * @param {string} module_class fhx of a module class
- */
-function getAlarms(module_class) {
-  // getAlarms is SIP because valueOf an empty string ("")is not yet working
-  let attribute_instances = fhxProcessor.findBlocks(
-    module_class,
-    "ATTRIBUTE_INSTANCE"
-  );
-  let alarms = attribute_instances.filter((block) => {
-    return block.includes("PRIORITY_NAME");
-  });
+// function getAlarms() {
+//   // getAlarms is SIP because valueOf an empty string ("")is not yet working
+//   let attribute_instances = fhxProcessor.findBlocks(
+//     module_class,
+//     "ATTRIBUTE_INSTANCE"
+//   );
+//   let alarms = attribute_instances.filter((block) => {
+//     return block.includes("PRIORITY_NAME");
+//   });
 
-  let alarm_attribute_instances_keys = {
-    name: "NAME",
-    priority: "PRIORITY_NAME",
-    enable: "ENAB",
-    inverted: "INV",
-    type: "ATYP",
-    monitor_attribute: "MONATTR",
-    alarm_parameter: "ALMATTR",
-    limit: "LIMATTR",
-    p1: "PARAM1",
-    p2: "PARAM2",
-    timeout: "SUPPTIMEOUT",
-  };
-  let alarm_parameters = alarms.map((alarm) => {
-    let alarm_values = {};
-    for (let key in alarm_attribute_instances_keys) {
-      let dvkey = alarm_attribute_instances_keys[key];
-      let value = fhxProcessor.valueOfParameter(alarm, dvkey);
-      alarm_values[key] = value;
-    }
-    return alarm_values;
-  });
-  if (alarm_parameters.timeout) {
-    alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
-    alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
-    alarm_parameters.alarm_timeout_seconds =
-      (alarm_parameters[timeout] % 3600) % 60;
-  }
-  return alarm_parameters;
-}
+//   let alarm_attribute_instances_keys = {
+//     name: "NAME",
+//     priority: "PRIORITY_NAME",
+//     enable: "ENAB",
+//     inverted: "INV",
+//     type: "ATYP",
+//     monitor_attribute: "MONATTR",
+//     alarm_parameter: "ALMATTR",
+//     limit: "LIMATTR",
+//     p1: "PARAM1",
+//     p2: "PARAM2",
+//     timeout: "SUPPTIMEOUT",
+//   };
+//   let alarm_parameters = alarms.map((alarm) => {
+//     let alarm_values = {};
+//     for (let key in alarm_attribute_instances_keys) {
+//       let dvkey = alarm_attribute_instances_keys[key];
+//       let value = fhxProcessor.valueOfParameter(alarm, dvkey);
+//       alarm_values[key] = value;
+//     }
+//     return alarm_values;
+//   });
+//   if (alarm_parameters.timeout) {
+//     alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
+//     alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
+//     alarm_parameters.alarm_timeout_seconds =
+//       (alarm_parameters[timeout] % 3600) % 60;
+//   }
+//   return alarm_parameters;
+// }
 
-function runner(fhx) {
+function runner() {
   let res = {
-    parameters: getModuleParameters(),
-    properties: getModuleProperties(),
+    // parameters: getModuleParameters(),
+    // properties: getModuleProperties(),
+    // functionBlocks: getFunctionBlocks(),
+    // compositeBlocks: getCompositeBlocks(),
+    alarms: getAlarms(),
+    getHistoryCollection: getHistoryCollection(),
   };
 
+  // writeFileSync(
+  //   path.join(outputPath, "parameters.csv"),
+  //   res.parameters.toCsvString(),
+  //   "utf-8"
+  // );
+  // writeFileSync(
+  //   path.join(outputPath, "properties.csv"),
+  //   res.properties.toCsvString(),
+  //   "utf-8"
+  // );
+  // writeFileSync(
+  //   path.join(outputPath, "functionBlocks.csv"),
+  //   res.functionBlocks.linkedComposite.toCsvString(),
+  //   "utf-8"
+  // );
   writeFileSync(
-    path.join(outputPath, "parameters.csv"),
-    res.parameters.toCsvString(),
+    path.join(outputPath, "getHistoryCollection.csv"),
+    res.getHistoryCollection.toCsvString(),
     "utf-8"
   );
-  writeFileSync(
-    path.join(outputPath, "properties.csv"),
-    res.properties.toCsvString(),
-    "utf-8"
-  );
+  return;
 }
-runner(ems_fhxdata);
+runner();

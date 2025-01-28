@@ -342,14 +342,17 @@ function valueOfParameter(fhxBlock, key) {
 
   startIndex += key.length;
   let endIndex;
-  if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] !== '"') {
-    endIndex = ++startIndex;
+  if (
+    fhxBlock[startIndex] === '"'
+    // && fhxBlock[startIndex + 1] !== '"'
+  ) {
+    endIndex = startIndex++;
     do {
       endIndex = fhxBlock.indexOf('"', endIndex + 1); // find the next closing double quote
     } while (fhxBlock[endIndex + 1] === '"');
-  } else if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] === '"') {
-    // this code is to be refactored and decoupled
-    endIndex = startIndex + 2;
+    // } else if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] === '"') {
+    //   // this code is to be refactored and decoupled
+    //   endIndex = startIndex + 2;
   } else {
     let indexOfSpace = fhxBlock.indexOf(" ", startIndex + 1);
     let indexOfReturn = fhxBlock.indexOf("\r\n", startIndex + 1);

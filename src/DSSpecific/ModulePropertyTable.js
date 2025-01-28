@@ -13,7 +13,8 @@
 
 import path from "path";
 import fs from "fs";
-import { findBlockWithName, valueOf } from "../v1/_FhxProcessor.js";
+import { findBlockWithName, valueOfParameter } from "../v1/_FhxProcessor.js";
+import { DSTable } from "./Common.js";
 
 // Module Properties
 
@@ -89,7 +90,7 @@ function getModuleProperties() {
   // obtain all module properties
   let cmProperties = moduleProperties.map((property) => {
     // instead of mapping, we can possibly use an switch statement like in module property table.js
-    let value = valueOf(module_fhxdata, property);
+    let value = valueOfParameter(module_fhxdata, property);
     return new moduleProperty(property, value);
   });
 

@@ -16,10 +16,12 @@ class DSTable {
   }
 }
 
-class DSTable {
-  constructor(tableName, tableHeader, data) {
-    this.tableName = tableName;
-    this.tableHeader = tableHeader;
-    this.data = data;
-  }
-}
+// class DSTable {
+//   constructor(tableName, tableHeader, data) {
+//     this.tableName = tableName;
+//     this.tableHeader = tableHeader;
+//     this.data = data;
+//   }
+// }
+
+export { DSTable };

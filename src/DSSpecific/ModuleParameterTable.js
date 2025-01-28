@@ -16,8 +16,9 @@ import fs from "fs";
 import {
   findBlocks,
   findBlockWithName,
-  valueOf as valueOfParameter,
+  valueOfParameter,
 } from "../v1/_FhxProcessor.js";
+import { DSTable } from "./Common.js";
 
 // Module Parameters
 
