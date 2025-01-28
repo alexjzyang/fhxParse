@@ -107,14 +107,6 @@ class moduleProperty {
   }
 }
 
-class DSTable {
-  constructor(tableName, tableHeader, data) {
-    this.tableName = tableName;
-    this.tableHeader = tableHeader;
-    this.data = data;
-  }
-}
-
 class PropertyTable extends DSTable {
   constructor(moduleProperties) {
     super("Module Properties", null, moduleProperties);
