@@ -114,7 +114,7 @@ function findValueInTree(fhx_data, tree, property) {
   for (let i = 0; i < tree.length; i++) {
     block = fhxProcessor.fhxObject(block, tree[i].block, tree[i].property);
   }
-  return fhxProcessor.valueOf(block, property); // valueOf needs to be detect
+  return fhxProcessor.valueOfParameter(block, property); // valueOf needs to be detect
   // whether the user is looking for a block or a property. So that findValueInTree
   // can be used for both after modifying the function signature.
 }

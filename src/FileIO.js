@@ -11,22 +11,17 @@ import path from "path";
  * Prepares the directory and file path for writing.
  * @param {string} filepath - The directory path.
  * @param {string} filename - The file name.
- * @param {boolean} replace - Whether to replace the file if it exists.
  * @param {string} extension - The file extension to ensure.
  * @returns {string} - The full file path.
  */
-function prepareFilePath(filepath, filename, replace, extension) {
+function prepareFilePath(filepath, filename, extension) {
   if (!fs.existsSync(filepath)) {
     fs.mkdirSync(filepath, { recursive: true });
   }
   if (!filename.endsWith(extension)) {
     filename += extension;
   }
-  const fullPath = path.join(filepath, filename);
-  if (replace && fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
-  }
-  return fullPath;
+  return path.join(filepath, filename);
 }
 
 /**
@@ -34,10 +29,9 @@ function prepareFilePath(filepath, filename, replace, extension) {
  * @param {string} data - The data to write.
  * @param {string} filepath - The directory path.
  * @param {string} filename - The file name.
- * @param {boolean} replace - Whether to replace the file if it exists.
  */
-function writeTxtFile(data, filepath, filename, replace = true) {
-  const fullPath = prepareFilePath(filepath, filename, replace, ".txt");
+function writeTxtFile(data, filepath, filename) {
+  const fullPath = prepareFilePath(filepath, filename, ".txt");
   fs.writeFileSync(fullPath, data, "utf8");
 }
 
@@ -46,10 +40,9 @@ function writeTxtFile(data, filepath, filename, replace = true) {
  * @param {Object} data - The data to write.
  * @param {string} filepath - The directory path.
  * @param {string} filename - The file name.
- * @param {boolean} replace - Whether to replace the file if it exists.
  */
-function writeJsonFile(data, filepath, filename, replace = true) {
-  const fullPath = prepareFilePath(filepath, filename, replace, ".json");
+function writeJsonFile(data, filepath, filename) {
+  const fullPath = prepareFilePath(filepath, filename, ".json");
   fs.writeFileSync(fullPath, JSON.stringify(data, null, 2), "utf8");
 }
 
@@ -59,10 +52,9 @@ function writeJsonFile(data, filepath, filename, replace = true) {
  * @param {string[][]} records - The CSV records.
  * @param {string} filepath - The directory path.
  * @param {string} filename - The file name.
- * @param {boolean} replace - Whether to replace the file if it exists.
  */
-function writeCsvFile(header, records, filepath, filename, replace = true) {
-  const fullPath = prepareFilePath(filepath, filename, replace, ".csv");
+function writeCsvFile(header, records, filepath, filename) {
+  const fullPath = prepareFilePath(filepath, filename, ".csv");
   const csvContent = [
     header.join(","),
     ...records.map((row) => row.join(",")),

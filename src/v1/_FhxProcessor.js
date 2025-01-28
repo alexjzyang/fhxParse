@@ -331,7 +331,7 @@ function findBlockWithName(fhxstring, type, name, print = false) {
  * Example: Extracting CATEGORY from a MODULE_CLASS block
  */
 
-function valueOf(fhxBlock, key) {
+function valueOfParameter(fhxBlock, key) {
   // this function should be generalized/reworked.
   // If the key is T_EXPRESSION, then it will be surrounded by quotes; otherwise it will not.
   // Alternatively, we can pass in a flag indicating whether we're looking for an expression or not.
@@ -342,11 +342,14 @@ function valueOf(fhxBlock, key) {
 
   startIndex += key.length;
   let endIndex;
-  if (fhxBlock[startIndex] === '"') {
+  if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] !== '"') {
     endIndex = ++startIndex;
     do {
       endIndex = fhxBlock.indexOf('"', endIndex + 1); // find the next closing double quote
     } while (fhxBlock[endIndex + 1] === '"');
+  } else if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] === '"') {
+    // this code is to be refactored and decoupled
+    endIndex = startIndex + 2;
   } else {
     let indexOfSpace = fhxBlock.indexOf(" ", startIndex + 1);
     let indexOfReturn = fhxBlock.indexOf("\r\n", startIndex + 1);
@@ -382,7 +385,7 @@ function nameOf(fhxBlock) {
  */
 function findFbdOf(blockName, fbOfObj, fromFhx) {
   let fbBlock = findBlockWithName(fbOfObj, "FUNCTION_BLOCK", blockName);
-  let fbdDefName = valueOf(fbBlock, "DEFINITION");
+  let fbdDefName = valueOfParameter(fbBlock, "DEFINITION");
   return findBlockWithName(fromFhx, "FUNCTION_BLOCK_DEFINITION", fbdDefName);
 }
 
@@ -394,7 +397,7 @@ function SFCSteps(emFhxData) {
     List of ACTIONS
   */
   let stepValues = steps.map((step) => {
-    let getValue = (key) => fhxProcessor.valueOf(step, key);
+    let getValue = (key) => valueOfParameter(step, key);
     let values = {
       name: getValue("NAME"),
       description: getValue("DESCRIPTION"),
@@ -419,7 +422,7 @@ function SFCTransitions(cmdFhxData) {
     ],
    */
   let transitionValues = transitionBlocks.map((block) => {
-    let transitionValue = (key) => fhxProcessor.valueOf(block, key);
+    let transitionValue = (key) => valueOfParameter(block, key);
     let values = {
       name: transitionValue("NAME"),
       description: transitionValue("DESCRIPTION"),
@@ -450,7 +453,7 @@ function SFCActions(stepFhxData) {
       ]
   */
   let actionValues = actionBlocks.map((block) => {
-    let getValue = (key) => fhxProcessor.valueOf(block, key);
+    let getValue = (key) => valueOfParameter(block, key);
     let values = {
       name: getValue("NAME"),
       description: getValue("DESCRIPTION"),
@@ -485,7 +488,7 @@ export {
   findParameterList,
   fhxReplacer,
   findBlockWithName,
-  valueOf,
+  valueOfParameter,
   nameOf,
   findFbdOf,
   // SFC related functions

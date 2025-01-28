@@ -4,6 +4,9 @@ import path from "path";
 import * as fhxProcessor from "./src/v1/_FhxProcessor.js";
 import * as dscreator from "./src/v1/_DSCreator.js";
 import { FileIO } from "./src/v1/_FileIO.js";
+import { getModuleParameters } from "./src/DSSpecific/ModuleParameterTable.js";
+import { getModuleProperties } from "./src/DSSpecific/ModulePropertyTable.js";
+import { writeCsvFile } from "./src/FileIO.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -72,8 +75,8 @@ function listEMCommands(emfhx) {
   });
 
   let cmds = commandsFhx.map((block) => {
-    let commandname = fhxProcessor.valueOf(block, "NAME");
-    let commanddefinition = fhxProcessor.valueOf(block, "DEFINITION");
+    let commandname = fhxProcessor.valueOfParameter(block, "NAME");
+    let commanddefinition = fhxProcessor.valueOfParameter(block, "DEFINITION");
     return { name: commandname, definition: commanddefinition };
   });
   return cmds;
@@ -178,7 +181,7 @@ function getAlarms(module_class) {
     let alarm_values = {};
     for (let key in alarm_attribute_instances_keys) {
       let dvkey = alarm_attribute_instances_keys[key];
-      let value = fhxProcessor.valueOf(alarm, dvkey);
+      let value = fhxProcessor.valueOfParameter(alarm, dvkey);
       alarm_values[key] = value;
     }
     return alarm_values;
@@ -193,13 +196,20 @@ function getAlarms(module_class) {
 }
 
 function runner(fhx) {
-  let _E_M_AGITFhx = fhxProcessor.findBlockWithName(
-    fhx,
-    Module_Class,
-    "_E_M_AGIT"
-  );
-  let alarms = getAlarms(_E_M_AGITFhx);
-  return;
-}
+  let res = {
+    parameters: getModuleParameters(),
+    properties: getModuleProperties(),
+  };
 
-// runner(ems_fhxdata);
+  writeFileSync(
+    path.join(outputPath, "parameters.csv"),
+    res.parameters.toCsvString(),
+    "utf-8"
+  );
+  writeFileSync(
+    path.join(outputPath, "properties.csv"),
+    res.properties.toCsvString(),
+    "utf-8"
+  );
+}
+runner(ems_fhxdata);

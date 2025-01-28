@@ -48,7 +48,7 @@ function valuesOfModuleParameters(module_data, modulename) {
     .map((attribute) => {
       return {
         name: fhxProcessor.nameOf(attribute),
-        type: fhxProcessor.valueOf(attribute, "TYPE"),
+        type: fhxProcessor.valueOfParameter(attribute, "TYPE"),
         value: "",
         configurable: "",
       };
@@ -73,8 +73,8 @@ function valuesOfModuleParameters(module_data, modulename) {
     // identify what type of parameter it is before extracting the value
     switch (param.type) {
       case "ENUMERATION_VALUE":
-        let set = fhxProcessor.valueOf(instance, "SET");
-        let option = fhxProcessor.valueOf(instance, "STRING_VALUE");
+        let set = fhxProcessor.valueOfParameter(instance, "SET");
+        let option = fhxProcessor.valueOfParameter(instance, "STRING_VALUE");
         param.value = `$${set}:${option}`;
         break;
       case "FLOAT":
@@ -86,11 +86,11 @@ function valuesOfModuleParameters(module_data, modulename) {
       case "INT32": // 32 bit signed integer
       case "BOOLEAN": // Boolean
       case "UNICODE_STRING": // String
-        param.value = fhxProcessor.valueOf(instance, "CV");
+        param.value = fhxProcessor.valueOfParameter(instance, "CV");
         break;
       case "INTERNAL_REFERENCE": // Internal Reference
       case "EXTERNAL_REFERENCE": // External Reference
-        param.value = fhxProcessor.valueOf(instance, "REF") || "";
+        param.value = fhxProcessor.valueOfParameter(instance, "REF") || "";
         break;
       case "EVENT": // Alarm
         param.value = "ALARM";
@@ -103,9 +103,9 @@ function valuesOfModuleParameters(module_data, modulename) {
 
     // Determine if the parameter is instant configurable
     if (instance.includes("EXPOSE=")) {
-      if (fhxProcessor.valueOf(instance, "EXPOSE") === "T") {
+      if (fhxProcessor.valueOfParameter(instance, "EXPOSE") === "T") {
         param.configurable = "True";
-      } else if (fhxProcessor.valueOf(instance, "EXPOSE") === "F") {
+      } else if (fhxProcessor.valueOfParameter(instance, "EXPOSE") === "F") {
         param.configurable = "False";
       }
     } else {
@@ -146,7 +146,9 @@ function findAll(fhx_data, elementKey, includes) {
   let blocks = fhxProcessor.findBlocks(fhx_data, elementKey);
   let results = blocks.filter((block) => {
     // Filter blocks based on the provided criteria
-    return fhxProcessor.valueOf(block, includes.key)?.includes(includes.value);
+    return fhxProcessor
+      .valueOfParameter(block, includes.key)
+      ?.includes(includes.value);
   });
 
   return results;
