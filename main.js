@@ -39,22 +39,22 @@ const FHX_Filenames_temp = {
 const FHX_Filename = FHX_Filenames_18NOV24.Control_Module_Class;
 const outputPath = "output";
 
-const emfilepath = path.join(
+const emsfilepath = path.join(
   FHX_Path,
   FHX_Export_25NOV24,
   FHX_Filenames_25NOV24.Equipment_Module_Class
 );
 
-const cmfilepath = path.join(
+const cmsfilepath = path.join(
   FHX_Path,
   FHX_Export_25NOV24,
   FHX_Filenames_25NOV24.Control_Module_Class
 );
 
 // console.log("Loading file: " + fhxfilepath);
-const fhx_data = fs.readFileSync(cmfilepath, "utf-16le");
-const cm_fhxdata = fs.readFileSync(cmfilepath, "utf-16le");
-const ems_fhxdata = fs.readFileSync(emfilepath, "utf-16le");
+const fhx_data = fs.readFileSync(cmsfilepath, "utf-16le");
+const cms_fhxdata = fs.readFileSync(cmsfilepath, "utf-16le");
+const ems_fhxdata = fs.readFileSync(emsfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
 const Function_Block = "FUNCTION_BLOCK";
 const Function_Block_Definition = "FUNCTION_BLOCK_DEFINITION";
@@ -71,9 +71,9 @@ const cmname = "_C_M_AI";
  * @returns {Array<{name: string, definition: string}>} - An array of objects containing the command names and their definitions.
  */
 function listEMCommands(emfhx) {
-  let emname = fhxProcessor.nameOf(emfhx);
+  // let emname = fhxProcessor.nameOf(emfhx);
 
-  let commandsFhx = dscreator.findAll(emfhx, null, Function_Block, {
+  let commandsFhx = dscreator.findAll(emfhx, Function_Block, {
     value: "COMMAND_00",
     key: "NAME",
   });
@@ -187,36 +187,106 @@ ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
 //   return alarm_parameters;
 // }
 
-function runner() {
-  let res = {
-    // parameters: getModuleParameters(),
-    // properties: getModuleProperties(),
-    // functionBlocks: getFunctionBlocks(),
-    // compositeBlocks: getCompositeBlocks(),
-    alarms: getAlarms(),
-    getHistoryCollection: getHistoryCollection(),
-  };
+function runner(fhxdata) {
+  let modulenames = fhxProcessor
+    .findBlocks(fhxdata, "MODULE_CLASS")
+    .map((block) => {
+      return fhxProcessor.valueOfParameter(block, "NAME");
+    });
 
-  // writeFileSync(
-  //   path.join(outputPath, "parameters.csv"),
-  //   res.parameters.toCsvString(),
-  //   "utf-8"
-  // );
-  // writeFileSync(
-  //   path.join(outputPath, "properties.csv"),
-  //   res.properties.toCsvString(),
-  //   "utf-8"
-  // );
-  // writeFileSync(
-  //   path.join(outputPath, "functionBlocks.csv"),
-  //   res.functionBlocks.linkedComposite.toCsvString(),
-  //   "utf-8"
-  // );
-  writeFileSync(
-    path.join(outputPath, "getHistoryCollection.csv"),
-    res.getHistoryCollection.toCsvString(),
-    "utf-8"
-  );
+  modulenames.forEach((modulename) => {
+    let res = {
+      parameters: getModuleParameters(fhxdata, modulename),
+      properties: getModuleProperties(fhxdata, modulename),
+      functionBlocks: getFunctionBlocks(fhxdata, modulename),
+      compositeBlocks: getCompositeBlocks(fhxdata, modulename),
+      alarms: getAlarms(fhxdata, modulename),
+      historyCollection: getHistoryCollection(fhxdata, modulename),
+    };
+    let outputPath = path.join("output", "Run_1", modulename);
+
+    let modulefhx = fhxProcessor.findBlockWithName(
+      fhxdata,
+      "MODULE_CLASS",
+      modulename
+    );
+    // FileIO.writeTxtFile(modulefhx, outputPath, `${modulename}.txt`, false);
+
+    let propertiesCsv = res.properties.toCsvString();
+    let parametersCsv = res.parameters.toCsvString();
+    let functionBlocksCsv = res.functionBlocks.toCsvString();
+    let embeddedCompositeBlocksCsv = res.compositeBlocks.embedded.toCsvString();
+    let linkedCompositeBlocksCsv = res.compositeBlocks.linked.toCsvString();
+    let alarmsCsv = res.alarms.toCsvString();
+    let historyCollectionCsv = res.historyCollection.toCsvString();
+
+    FileIO.writeFile(propertiesCsv, path.join(outputPath), "properties.csv");
+    FileIO.writeFile(parametersCsv, path.join(outputPath), "parameters.csv");
+    FileIO.writeFile(
+      functionBlocksCsv,
+      path.join(outputPath),
+      "functionBlocks.csv"
+    );
+    FileIO.writeFile(
+      embeddedCompositeBlocksCsv,
+      path.join(outputPath),
+      "emBeddedCompositeBlocks.csv"
+    );
+    FileIO.writeFile(
+      linkedCompositeBlocksCsv,
+      path.join(outputPath),
+      "linkedCompositeBlocks.csv"
+    );
+    FileIO.writeFile(alarmsCsv, path.join(outputPath), "alarms.csv");
+    FileIO.writeFile(
+      historyCollectionCsv,
+      path.join(outputPath),
+      "getHistoryCollection.csv"
+    );
+
+    // Combine all CSV strings into one with respective names and extra lines between them
+    let combinedCsv = `Properties,Table Size: 2 X ${
+      res.properties.data.length
+    }\n${propertiesCsv}
+    \nParameters,Table Size: 3 X ${
+      res.parameters.data.length + 1
+    }\n${parametersCsv}
+    \nFunction Blocks,Table Size: 2 X ${
+      res.functionBlocks.data.length + 1
+    }\n${functionBlocksCsv}
+    \nEmbedded Composite Blocks,Table Size: 1 X ${
+      res.compositeBlocks.embedded.data.length + 1
+    }\n${embeddedCompositeBlocksCsv}
+    \nLinked Composite Blocks,Table Size: 2 X ${
+      res.compositeBlocks.linked.data.length + 1
+    }\n${linkedCompositeBlocksCsv}
+    \nAlarms,Table Size: 7 X ${res.alarms.data.length + 1}\n${alarmsCsv}
+    \nHistory Collection,Table Size: 8 X ${
+      res.historyCollection.data.length + 1
+    }\n${historyCollectionCsv}`;
+
+    // Write the combined CSV string to a new file
+    FileIO.writeFile(combinedCsv, path.join(outputPath), "combined.csv");
+  });
   return;
 }
-runner();
+
+function cmdrunner(ems_fhxdata) {
+  let emfhxdata = fhxProcessor.findBlockWithName(
+    ems_fhxdata,
+    Module_Class,
+    emname
+  );
+  let emCommands = listEMCommands(emfhxdata);
+  let cmdFhx = dscreator.findCompositeDefinitionOf(
+    emfhxdata,
+    ems_fhxdata,
+    emCommands[0].name
+  );
+
+  let sfcdata = fhxProcessor.processSFC(cmdFhx);
+  dscreator.sfcToCsv(outputPath, "sfc.csv", cmdFhx);
+  return;
+}
+cmdrunner(ems_fhxdata);
+runner(cms_fhxdata);

@@ -9,36 +9,6 @@ import {
   valueOfParameter,
 } from "../v1/_FhxProcessor.js";
 import { DSTable } from "./Common.js";
-import path from "path";
-import fs from "fs";
-
-// Inputs
-const folderPath = "./fhx";
-const filename = "Mixer Control_Module_Classes.fhx";
-const cmsfilepath = path.join(folderPath, filename);
-const moduleNames = [
-  "_C_M_AI",
-  "_C_M_AGIT_M",
-  "_C_M_AI_TARE",
-  "_C_M_DI",
-  "_C_M_PID_1AI_M",
-  "_C_M_PID_2AI_M",
-  "_C_M_PID",
-  "_C_M_TCU",
-  "_C_M_UHM_M",
-  "_C_M_USM_M",
-];
-const testCmName = "_C_M_AGIT_M";
-
-function readFhx(filepath) {
-  let data;
-  try {
-    data = fs.readFileSync(filepath, "utf16le");
-  } catch (err) {
-    console.error("Error reading file:", err);
-  }
-  return data;
-}
 
 /**
  * The Function Block table should be generated in the following format:
@@ -49,14 +19,8 @@ function readFhx(filepath) {
  *
  */
 
-function getFunctionBlocks() {
-  // Find module block
-  let cms_fhxdata = readFhx(cmsfilepath);
-  let module_fhxdata = findBlockWithName(
-    cms_fhxdata,
-    "MODULE_CLASS",
-    testCmName
-  );
+function getFunctionBlocks(fhxdata, modulename) {
+  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
 
   let functionBlocksFhx = findBlocks(module_fhxdata, "FUNCTION_BLOCK");
   // if a function block has a definition that can be found in the overall fhx,
@@ -72,7 +36,7 @@ function getFunctionBlocks() {
   //Filter out linked composites
   functionBlocks = functionBlocks.filter((fb) => {
     let definitionBlock = findBlockWithName(
-      cms_fhxdata,
+      fhxdata,
       "FUNCTION_BLOCK_DEFINITION",
       fb.definition
     );

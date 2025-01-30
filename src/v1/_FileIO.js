@@ -10,14 +10,37 @@ class FileIO {
    * @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
    * @returns {string} - The prepared file path with a .txt extension.
    */
-  static prepareFilePath(filepath, filename, ext = "txt") {
+  static prepareFilePath(filepath, filename, ext) {
     // Create directory if it does not exist
     if (!fs.existsSync(filepath)) {
       fs.mkdirSync(filepath, { recursive: true });
     }
-
-    filename = filename.endsWith(ext) ? filename : `${filename}.${ext}`;
+    if (ext)
+      filename = filename.endsWith(ext) ? filename : `${filename}.${ext}`;
     return path.join(filepath, filename);
+  }
+  /**
+   * Writes data to a text file at the specified path.
+   *
+   * @param {string} data - The data to be written to the text file.
+   * @param {string} filepath - The path where the text file will be written.
+   * @param {string} filename - The name of the file to be written.
+   * @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
+   * @returns {string} - Success message indicating the file was written successfully.
+   * @throws {Error} - Throws an error if there is an issue writing the file.
+   */
+  static writeFile(data, filepath, filename, replace = false) {
+    let outputFilePath = this.prepareFilePath(filepath, filename);
+    // Write data to the file
+    if (replace && fs.existsSync(outputFilePath)) {
+      fs.unlinkSync(outputFilePath);
+    }
+    try {
+      fs.writeFileSync(outputFilePath, data, "utf8");
+      return `File successfully written to ${outputFilePath}`; // Success message
+    } catch (err) {
+      throw new Error(`Error writing to file: ${err.message}`); // Error handling
+    }
   }
 
   /**

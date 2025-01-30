@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import { createObjectCsvWriter as createCsvWriter } from "csv-writer";
 
+import * as fhxProcessor from "./_FhxProcessor.js";
+
 /**
  * findBlocks takes an entire fhx string and finds all the blocks of given type
  * by using indexOf over the block type and isolating block content by counting

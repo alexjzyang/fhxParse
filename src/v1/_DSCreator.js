@@ -208,7 +208,7 @@ function processModuleClass(fhx_data, blockName = "_C_M_AI") {
  * @param {string} sfcBlockFhx - The FHX of a Function Block Definition containing SFC block.
  */
 function sfcToCsv(filepath, filename, sfcBlockFhx) {
-  let sfcDataObj = processSFC(sfcBlockFhx);
+  let sfcDataObj = fhxProcessor.processSFC(sfcBlockFhx);
 
   // write to csv
   let csvHeaders = [
@@ -297,13 +297,13 @@ function sfcToCsv(filepath, filename, sfcBlockFhx) {
  * @returns {string} - The FHX block definition.
  */
 function findCompositeDefinitionOf(inBlock, inFhx, blockName) {
-  let fbBlockDefinitionName = fhxProcessor.findFbdOf(blockName, inBlock, inFhx);
-  let blockNameDefinitionBlock = fhxProcessor.findBlockWithName(
-    inFhx,
-    "FUNCTION_BLOCK_DEFINITION",
-    fbBlockDefinitionName
-  );
-  return blockNameDefinitionBlock;
+  let fbd = fhxProcessor.findFbdOf(blockName, inBlock, inFhx);
+  // let blockNameDefinitionBlock = fhxProcessor.findBlockWithName(
+  //   inFhx,
+  //   "FUNCTION_BLOCK_DEFINITION",
+  //   fbBlockDefinitionName
+  // );
+  return fbd;
 }
 export {
   // find lists of parameters

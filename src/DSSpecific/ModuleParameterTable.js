@@ -11,8 +11,6 @@
  * Where new features are added, they will be explicitly written in this file
  */
 
-import path from "path";
-import fs from "fs";
 import {
   findBlocks,
   findBlockWithName,
@@ -20,54 +18,8 @@ import {
 } from "../v1/_FhxProcessor.js";
 import { DSTable } from "./Common.js";
 
-// Module Parameters
-
-/**
- * Table Format: Three Column Table with Name, Type, Default Value
- *
- * Name      | Parameter Type    | Default Value
- * ----------|-------------------|----------------------------
- * A_COMMAND | ENUMERATION_VALUE | <$_N_M_GEXE_M_AGIT:Disable>
- * TIME_SAVE | FLOAT             | <0>
- * TASK_PTR  | UINT8             | <0>
- */
-
-// Inputs
-const folderPath = "./fhx";
-const filename = "Mixer Control_Module_Classes.fhx";
-const cmsfilepath = path.join(folderPath, filename);
-const moduleNames = [
-  "_C_M_AI",
-  "_C_M_AGIT_M",
-  "_C_M_AI_TARE",
-  "_C_M_DI",
-  "_C_M_PID_1AI_M",
-  "_C_M_PID_2AI_M",
-  "_C_M_PID",
-  "_C_M_TCU",
-  "_C_M_UHM_M",
-  "_C_M_USM_M",
-];
-const testCmName = "_C_M_AGIT_M";
-
-function readFhx(filepath) {
-  let data;
-  try {
-    data = fs.readFileSync(filepath, "utf16le");
-  } catch (err) {
-    console.error("Error reading file:", err);
-  }
-  return data;
-}
-
-function getModuleParameters() {
-  // Find module block
-  let cms_fhxdata = readFhx(cmsfilepath);
-  let module_fhxdata = findBlockWithName(
-    cms_fhxdata,
-    "MODULE_CLASS",
-    testCmName
-  );
+function getModuleParameters(fhxdata, modulename) {
+  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
 
   let moduleParameters = [];
 
@@ -154,11 +106,16 @@ function valueFromBlock({ type, block }) {
     case "INT32": // 32 bit signed integer
     case "BOOLEAN": // Boolean
     case "UNICODE_STRING": // String
+    case "FLOAT_WITH_STATUS": // Float with Status"
       value = valueOfParameter(block, "CV");
       break;
     case "INTERNAL_REFERENCE": // Internal Reference
     case "EXTERNAL_REFERENCE": // External Reference
+    case "DYNAMIC_REFERENCE": // Dynamic Reference
       value = valueOfParameter(block, "REF") || "";
+      break;
+    case "MODE": // Mode
+      value = valueFromMode(block);
       break;
     case "EVENT": // Alarm
       value = "ALARM";
@@ -168,6 +125,58 @@ function valueFromBlock({ type, block }) {
       return;
   }
   return value;
+}
+
+/**
+ * Sample Mode Attribute Instance Block
+ *  ATTRIBUTE_INSTANCE NAME="REQ_MODE"
+  {
+    VALUE
+    {
+      OOS_P=F
+      IMAN_P=T
+      LOV_P=T
+      MAN_P=F
+      AUTO_P=F
+      CAS_P=T
+      RCAS_P=T
+      ROUT_P=T
+      OOS_A=T
+      IMAN_A=T
+      LOV_A=T
+      MAN_A=T
+      AUTO_A=T
+      CAS_A=T
+      RCAS_A=T
+      ROUT_A=T
+      TARGET=RCAS
+      NORMAL=RCAS
+    }
+    EXPOSE=F
+    EXPOSE_IS_OVERRIDDEN=T
+  }
+ * 
+ */
+function valueFromMode(block) {
+  let modeOptions = [
+    { fhxKey: "OOS_P", modeName: "Out of Servive" },
+    { fhxKey: "IMAN_P", modeName: "Initialization Manual" },
+    { fhxKey: "LOV_P", modeName: "Local Override" },
+    { fhxKey: "MAN_P", modeName: "Manual" },
+    { fhxKey: "AUTO_P", modeName: "Auto" },
+    { fhxKey: "CAS_P", modeName: "Cascade" },
+    { fhxKey: "RCAS_P", modeName: "Remote Cascade" },
+    { fhxKey: "ROUT_P", modeName: "Remote Out" },
+  ];
+
+  let textValue = "Permitted Modes: ";
+  if (block.includes(`OOS_P=T`)) textValue += "Out of Service";
+  if (block.includes(`MAN_P=T`)) textValue += " Manual";
+  if (block.includes(`AUTO_P=T`)) textValue += " Auto";
+  if (block.includes(`CAS_P=T`)) textValue += " Cascade";
+  if (block.includes(`RCAS_P=T`)) textValue += " Remote Cascade";
+  if (block.includes(`ROUT_P=T`)) textValue += " Remote Out";
+  return textValue;
 }
 
 export { getModuleParameters };
