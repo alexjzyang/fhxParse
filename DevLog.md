@@ -240,3 +240,10 @@ Some of these handlers are hardcoded for the moment.
 
 Next up, use the same logic to parse Equipment module tables.
 current v1 version of dscreator.sfcToCsv() and fhxProcessor.processSFC functions still work
+
+## 01/30/2025
+
+Included code to create EM child devices table and commands table
+
+Need to loop and create tables for the nested EM embedded composites
+And do the same with Command SFC's, which are found as part of embedded Composites

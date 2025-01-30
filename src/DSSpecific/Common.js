@@ -1,3 +1,7 @@
+/**
+ * Represents a design specification table.
+ * @class
+ */
 class DSTable {
   constructor(tableName, tableHeader, data) {
     this.tableName = tableName;
@@ -15,13 +19,5 @@ class DSTable {
     return tableString;
   }
 }
-
-// class DSTable {
-//   constructor(tableName, tableHeader, data) {
-//     this.tableName = tableName;
-//     this.tableHeader = tableHeader;
-//     this.data = data;
-//   }
-// }
 
 export { DSTable };

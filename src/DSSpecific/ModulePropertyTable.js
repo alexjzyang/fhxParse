@@ -28,6 +28,7 @@ import { DSTable } from "./Common.js";
  */
 
 const moduleProperties = [
+  // list of module properties
   "DESCRIPTION",
   "PERIOD",
   "PRIMARY_CONTROL_DISPLAY",
@@ -39,21 +40,40 @@ const moduleProperties = [
   "PERSIST",
 ];
 
+/**
+ * Retrieves module properties for a given module name.
+ * @param {Object} fhxdata - The overall FHX data
+ * @param {string} modulename - The name of the module.
+ * @returns {PropertyTable} - The table of module properties.
+ */
 function getModuleProperties(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
+  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
 
   // obtain all module properties
   let cmProperties = moduleProperties.map((property) => {
+    // find all module properties based on the list of module properties above
     // instead of mapping, we can possibly use an switch statement like in module property table.js
     let value = valueOfParameter(module_fhxdata, property);
-    return new moduleProperty(property, value);
+    return new ModuleProperty(property, value);
   });
 
   // compiling into table
-  return new PropertyTable(cmProperties);
+  return new PropertyTable(cmProperties); // Create a new PropertyTable object with the list of module properties
 }
 
-class moduleProperty {
+/**
+ * Represents a module property.
+ * @class
+ */
+
+class ModuleProperty {
+  /**
+   * Creates an instance of moduleProperty.
+   * For example, the property = "DESCRIPTION"; value= "Analogue Input Module"
+   *
+   * @param {string} property - The property name.
+   * @param {string} value - The property value.
+   */
   constructor(property, value) {
     this.property = property;
     this.value = value;
@@ -63,12 +83,22 @@ class moduleProperty {
   }
 }
 
+/**
+ * Represents a table of module properties.
+ * @class
+ * @extends DSTable
+ */
 class PropertyTable extends DSTable {
+  /**
+   * Creates an instance of PropertyTable.
+   * @param {Array<ModuleProperty>} moduleProperties - The list of module properties.
+   */
   constructor(moduleProperties) {
-    super("Module Properties", null, moduleProperties);
+    super("Module Properties", null, moduleProperties); // Instantiate a table of properties with Table name, header and data
   }
 
   toCsvString() {
+    // Convert the table to a CSV string
     let csv = "";
     if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
 

@@ -11,6 +11,8 @@ import { getFunctionBlocks } from "./src/DSSpecific/FunctionBlockTable.js";
 import { getCompositeBlocks } from "./src/DSSpecific/CompositeTable.js";
 import { getAlarms } from "./src/DSSpecific/AlarmTable.js";
 import { getHistoryCollection } from "./src/DSSpecific/HistoryTable.js";
+import { getEMCommands } from "./src/DSSpecific/EMCommands.js";
+import { getEMChildDevices } from "./src/DSSpecific/EMChildDevices.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -125,92 +127,46 @@ function compileEMCommands(emFhxData, emname) {
   return files;
 }
 
-/*
-All alarm attribute instance keys
-ATTRIBUTE_INSTANCE NAME="FAIL_ALM"
- {
-   VALUE
-   {
-     PRIORITY_NAME="WARNING"
-     ENAB=F
-     INV=F
-     ATYP="_A_M_ Equipment Failure"
-     MONATTR=""
-     ALMATTR="FAILURE"
-     LIMATTR=""
-     PARAM1="FAIL"
-     PARAM2="MONITOR/FAILURE"
-     SUPPTIMEOUT=480
-     MASK=65535
-     ISDEFAULTMASK=T
-     ALARM_FUNCTIONAL_CLASSIFICATION=0
-   }*/
-
-// function getAlarms() {
-//   // getAlarms is SIP because valueOf an empty string ("")is not yet working
-//   let attribute_instances = fhxProcessor.findBlocks(
-//     module_class,
-//     "ATTRIBUTE_INSTANCE"
-//   );
-//   let alarms = attribute_instances.filter((block) => {
-//     return block.includes("PRIORITY_NAME");
-//   });
-
-//   let alarm_attribute_instances_keys = {
-//     name: "NAME",
-//     priority: "PRIORITY_NAME",
-//     enable: "ENAB",
-//     inverted: "INV",
-//     type: "ATYP",
-//     monitor_attribute: "MONATTR",
-//     alarm_parameter: "ALMATTR",
-//     limit: "LIMATTR",
-//     p1: "PARAM1",
-//     p2: "PARAM2",
-//     timeout: "SUPPTIMEOUT",
-//   };
-//   let alarm_parameters = alarms.map((alarm) => {
-//     let alarm_values = {};
-//     for (let key in alarm_attribute_instances_keys) {
-//       let dvkey = alarm_attribute_instances_keys[key];
-//       let value = fhxProcessor.valueOfParameter(alarm, dvkey);
-//       alarm_values[key] = value;
-//     }
-//     return alarm_values;
-//   });
-//   if (alarm_parameters.timeout) {
-//     alarm_parameters.timeoutHours = alarm_parameters.timeout / 3600;
-//     alarm_parameters.timeoutMinutes = (alarm_parameters.timeout % 3600) / 60;
-//     alarm_parameters.alarm_timeout_seconds =
-//       (alarm_parameters[timeout] % 3600) % 60;
-//   }
-//   return alarm_parameters;
-// }
-
-function runner(fhxdata) {
-  let modulenames = fhxProcessor
+function moduleRunner(fhxdata) {
+  let modules = fhxProcessor
     .findBlocks(fhxdata, "MODULE_CLASS")
     .map((block) => {
-      return fhxProcessor.valueOfParameter(block, "NAME");
+      return {
+        name: fhxProcessor.valueOfParameter(block, "NAME"),
+        category: fhxProcessor.valueOfParameter(block, "CATEGORY"),
+      };
     });
 
-  modulenames.forEach((modulename) => {
+  modules.forEach((module) => {
+    if (module.category.includes("Library/Equipment Module Classes")) {
+      module.type = "EM";
+    } else if (module.category.includes("Library/Control Module Classes")) {
+      module.type = "CM";
+    } else {
+      throw new Error("Unidentified module with CATEGORY" + module.category);
+    }
+
     let res = {
-      parameters: getModuleParameters(fhxdata, modulename),
-      properties: getModuleProperties(fhxdata, modulename),
-      functionBlocks: getFunctionBlocks(fhxdata, modulename),
-      compositeBlocks: getCompositeBlocks(fhxdata, modulename),
-      alarms: getAlarms(fhxdata, modulename),
-      historyCollection: getHistoryCollection(fhxdata, modulename),
+      properties: getModuleProperties(fhxdata, module.name),
+      parameters: getModuleParameters(fhxdata, module.name),
+      functionBlocks: getFunctionBlocks(fhxdata, module.name),
+      compositeBlocks: getCompositeBlocks(fhxdata, module.name),
+      alarms: getAlarms(fhxdata, module.name),
+      historyCollection: getHistoryCollection(fhxdata, module.name),
     };
-    let outputPath = path.join("output", "Run_1", modulename);
+
+    if (module.type === "EM") {
+      res.commands = getEMCommands(fhxdata, module.name);
+      res.childDevices = getEMChildDevices(fhxdata, module.name);
+    }
+    let outputPath = path.join("output", "Run_2", module.name);
 
     let modulefhx = fhxProcessor.findBlockWithName(
       fhxdata,
       "MODULE_CLASS",
-      modulename
+      module.name
     );
-    // FileIO.writeTxtFile(modulefhx, outputPath, `${modulename}.txt`, false);
+    FileIO.writeTxtFile(modulefhx, outputPath, `${module.name}.txt`, false);
 
     let propertiesCsv = res.properties.toCsvString();
     let parametersCsv = res.parameters.toCsvString();
@@ -219,6 +175,11 @@ function runner(fhxdata) {
     let linkedCompositeBlocksCsv = res.compositeBlocks.linked.toCsvString();
     let alarmsCsv = res.alarms.toCsvString();
     let historyCollectionCsv = res.historyCollection.toCsvString();
+    let commandsCsv, childDevicesCsv;
+    if (module.type === "EM") {
+      commandsCsv = res.commands.toCsvString();
+      childDevicesCsv = res.childDevices.toCsvString();
+    }
 
     FileIO.writeFile(propertiesCsv, path.join(outputPath), "properties.csv");
     FileIO.writeFile(parametersCsv, path.join(outputPath), "parameters.csv");
@@ -243,12 +204,21 @@ function runner(fhxdata) {
       path.join(outputPath),
       "getHistoryCollection.csv"
     );
-
+    if (module.type === "EM") {
+      FileIO.writeFile(commandsCsv, path.join(outputPath), "commands.csv");
+      FileIO.writeFile(
+        childDevicesCsv,
+        path.join(outputPath),
+        "childDevices.csv"
+      );
+    }
     // Combine all CSV strings into one with respective names and extra lines between them
-    let combinedCsv = `Properties,Table Size: 2 X ${
-      res.properties.data.length
-    }\n${propertiesCsv}
-    \nParameters,Table Size: 3 X ${
+    let combinedCsv = `Properties,Table Size: 2 X ${res.properties.data.length}\n${propertiesCsv}`;
+    if (module.type === "EM") {
+      combinedCsv += `\nCommands,Table Size: 2 X ${res.commands.data.length}\n${commandsCsv}
+\nChild Devices,Table Size: 3 X ${res.childDevices.data.length}\n${childDevicesCsv}`;
+    }
+    combinedCsv += `\nParameters,Table Size: 3 X ${
       res.parameters.data.length + 1
     }\n${parametersCsv}
     \nFunction Blocks,Table Size: 2 X ${
@@ -271,7 +241,7 @@ function runner(fhxdata) {
   return;
 }
 
-function cmdrunner(ems_fhxdata) {
+function cmdRunner(ems_fhxdata) {
   let emfhxdata = fhxProcessor.findBlockWithName(
     ems_fhxdata,
     Module_Class,
@@ -288,5 +258,51 @@ function cmdrunner(ems_fhxdata) {
   dscreator.sfcToCsv(outputPath, "sfc.csv", cmdFhx);
   return;
 }
-cmdrunner(ems_fhxdata);
-runner(cms_fhxdata);
+
+// function runner(ems_fhxdata) {
+//   let modulenames = fhxProcessor
+//     .findBlocks(ems_fhxdata, "MODULE_CLASS")
+//     .filter((block) => block.includes("Library/Equipment Module Classes"))
+//     .map((block) => {
+//       return fhxProcessor.valueOfParameter(block, "NAME");
+//     });
+
+//   let modulename = modulenames[0];
+//   let emfhxdata = fhxProcessor.findBlockWithName(
+//     ems_fhxdata,
+//     Module_Class,
+//     modulename
+//   );
+
+//   let parameters = getModuleParameters(emfhxdata, modulename);
+//   let properties = getModuleProperties(emfhxdata, modulename);
+//   let commands = getEMCommands(ems_fhxdata, modulename);
+//   let childDevices = getEMChildDevices(ems_fhxdata, modulename);
+
+//   FileIO.writeFile(
+//     parameters.toCsvString(),
+//     path.join(outputPath),
+//     "parameters.csv"
+//   );
+//   FileIO.writeFile(
+//     properties.toCsvString(),
+//     path.join(outputPath),
+//     "properties.csv"
+//   );
+
+//   FileIO.writeFile(
+//     commands.toCsvString(),
+//     path.join(outputPath),
+//     "commands.csv"
+//   );
+//   FileIO.writeFile(
+//     childDevices.toCsvString(),
+//     path.join(outputPath),
+//     "childDevices.csv"
+//   );
+// }
+
+// cmdRunner(ems_fhxdata);
+// cmRunner(cms_fhxdata);
+moduleRunner(ems_fhxdata);
+// moduleRunner(ems_fhxdata);

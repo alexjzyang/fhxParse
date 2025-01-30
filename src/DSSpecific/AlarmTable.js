@@ -12,6 +12,12 @@ import {
 } from "../v1/_FhxProcessor.js";
 import { DSTable } from "./Common.js";
 
+/**
+ * Retrieves alarms for a given module name.
+ * @param {Object} fhxdata - The overall FHX data.
+ * @param {string} modulename - The name of the module.
+ * @returns {AlarmTable} - The table of alarms.
+ */
 function getAlarms(fhxdata, modulename) {
   let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
 
@@ -52,7 +58,16 @@ function getAlarms(fhxdata, modulename) {
       ALARM_FUNCTIONAL_CLASSIFICATION=0
     }
  */
+
+/**
+ * Represents an alarm parameter.
+ * @class
+ */
 class AlarmParameter {
+  /**
+   * Creates an instance of AlarmParameter.
+   * @param {Object} block - The block containing alarm data.
+   */
   constructor(block) {
     // the commented out parameters are typically not used in DeltaV
     this.name = valueOfParameter(block, "NAME");
@@ -106,7 +121,17 @@ class AlarmParameter {
  *
  *
  */
+
+/**
+ * Represents a table of alarms.
+ * @class
+ * @extends DSTable
+ */
 class AlarmTable extends DSTable {
+  /**
+   * Creates an instance of AlarmTable.
+   * @param {Array<AlarmParameter>} alarmParameters - The list of alarm parameters.
+   */
   constructor(alarmParameters) {
     super(
       "Function Blocks",

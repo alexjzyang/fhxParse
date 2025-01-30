@@ -1,13 +1,3 @@
-/**
- * Composite Blocks have a similar structure to Function Blocks
- * Except that their definition can be found in the fhx file
- *
- * If the CATEGORY of the composite's FUNCTION_BLOCK_DEFINITION
- * constains "Library/CompositeTemplates", then it is a linked composite
- * if the CATEGORY of the composite's FUNCTION_BLOCK_DEFINITION
- * is an empty string, then it is a embedded composite
- */
-
 import {
   findBlocks,
   findBlockWithName,
@@ -16,21 +6,12 @@ import {
 import { DSTable } from "./Common.js";
 
 /**
- * The Function Block table should be generated in the following format:
- *
- * Name | Function Block Type
- * AI1  | AI
- *
- *
- */
-
-/**
  * Retrieves composite blocks for a given module name.
  * @param {Object} fhxdata - The overall FHX data.
  * @param {string} modulename - The name of the module.
  * @returns {Object} - An object containing embedded and linked composite block tables.
  */
-function getCompositeBlocks(fhxdata, modulename) {
+function getEmbeddedCompositeBlocks(fhxdata, modulename) {
   let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
 
   let functionBlocksFhx = findBlocks(module_fhxdata, "FUNCTION_BLOCK");
@@ -185,4 +166,4 @@ class EmbeddedCompositeBlockTable extends DSTable {
   }
 }
 
-export { getCompositeBlocks };
+export { getEmbeddedCompositeBlocks };

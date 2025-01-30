@@ -49,7 +49,7 @@ class FileIO {
    * @param {string} data - The data to be written to the text file.
    * @param {string} filepath - The path where the text file will be written.
    * @param {string} filename - The name of the file to be written.
-   * @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
+   @param {boolean} [replace=true] - Flag indicating whether to replace the file if it exists.
    * @returns {string} - Success message indicating the file was written successfully.
    * @throws {Error} - Throws an error if there is an issue writing the file.
    */

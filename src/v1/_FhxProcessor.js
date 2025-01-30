@@ -358,7 +358,10 @@ function valueOfParameter(fhxBlock, key) {
   } else {
     let indexOfSpace = fhxBlock.indexOf(" ", startIndex + 1);
     let indexOfReturn = fhxBlock.indexOf("\r\n", startIndex + 1);
-    endIndex = indexOfSpace < indexOfReturn ? indexOfSpace : indexOfReturn;
+    if (indexOfSpace === -1 && indexOfReturn !== -1) endIndex = indexOfReturn;
+    else if (indexOfSpace !== -1 && indexOfReturn === -1)
+      endIndex = indexOfSpace;
+    else endIndex = indexOfSpace < indexOfReturn ? indexOfSpace : indexOfReturn;
   }
 
   if (startIndex === -1 || endIndex === -1) return;

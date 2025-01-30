@@ -1,31 +1,4 @@
 /**
- * Historised parameters are parameters with HISTORY_DATA_POINT
- * block in their ATTRIBUTE_INSTANCE blocks.
- *
- */
-
-import {
-  findBlocks,
-  findBlockWithName,
-  valueOfParameter,
-} from "../v1/_FhxProcessor.js";
-import { DSTable } from "./Common.js";
-
-function getHistoryCollection(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
-
-  let historizedParameterBlocks = findBlocks(
-    module_fhxdata,
-    "ATTRIBUTE_INSTANCE"
-  ).filter((attribute) => attribute.includes("HISTORY_DATA_POINT"));
-
-  let historyParameters = historizedParameterBlocks.map((block) => {
-    return new HistorisedParameter(block);
-  });
-
-  return new HistoryCollectionTable(historyParameters);
-}
-/**
  * History collection fhx data looks like this:
  * It is a list of ATTRIBUTE_INSTANCE blocks with HISTORY_DATA_POINT blocks.
  * 
@@ -46,9 +19,48 @@ function getHistoryCollection(fhxdata, modulename) {
  *   }
   }
  */
+import {
+  findBlocks,
+  findBlockWithName,
+  valueOfParameter,
+} from "../v1/_FhxProcessor.js";
+import { DSTable } from "./Common.js";
+
+/**
+ * Retrieves historised parameters for a given module name.
+ * @param {Object} fhxdata - The overall FHX data.
+ * @param {string} modulename - The name of the module.
+ * @returns {HistoryCollectionTable} - The table of historised parameters.
+ */
+function getHistoryCollection(fhxdata, modulename) {
+  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
+
+  let historizedParameterBlocks = findBlocks(
+    // find all parameters which are historized
+    module_fhxdata,
+    "ATTRIBUTE_INSTANCE"
+  ).filter((attribute) => attribute.includes("HISTORY_DATA_POINT"));
+
+  let historyParameters = historizedParameterBlocks.map((block) => {
+    // create a list of HistorisedParameter objects from those parameters
+    return new HistorisedParameter(block);
+  });
+
+  return new HistoryCollectionTable(historyParameters);
+}
+
+/**
+ * Represents a historised parameter.
+ * @class
+ */
 class HistorisedParameter {
+  /**
+   * Stores DeltaV parameters' history collection data.
+   * @param {Object} block - The attribute instance block of the parameter where historisation is enabled
+   */
   constructor(block) {
     this.block = block;
+    // all history collection parameters
     this.name = valueOfParameter(block, "NAME");
     this.field = valueOfParameter(block, "FIELD");
     this.dataCharacteristic = valueOfParameter(block, "DATA_CHARACTERISTIC");
@@ -79,9 +91,19 @@ class HistorisedParameter {
  * PV.CV          | Yes     | Automatic              | Continuous           | 2               | Yes         | 0.001     | 240
  */
 
+/**
+ * Represents a table of historised parameters.
+ * @class
+ * @extends DSTable
+ */
 class HistoryCollectionTable extends DSTable {
+  /**
+   * Creates an instance of HistoryCollectionTable.
+   * @param {Array<HistorisedParameter>} historyParameters - The list of historised parameters.
+   */
   constructor(historyParameters) {
     super(
+      // Instantiate the table with, table name, table header, and data
       "Historised Parameters",
       [
         "Value Recorded",
@@ -98,6 +120,7 @@ class HistoryCollectionTable extends DSTable {
   }
 
   toCsvString() {
+    // Convert the table data to a CSV string
     let csv = "";
     if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
 

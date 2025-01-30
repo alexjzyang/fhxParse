@@ -18,17 +18,23 @@ import {
 } from "../v1/_FhxProcessor.js";
 import { DSTable } from "./Common.js";
 
+/**
+ * Retrieves module parameters for a given module name.
+ * @param {Object} fhxdata - The FHX data.
+ * @param {string} modulename - The name of the module.
+ * @returns {ModuleParameterTable} - The table of module parameters.
+ */
 function getModuleParameters(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
+  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
 
   let moduleParameters = [];
 
   // Find Attribute blocks with CATEGORY=COMMON
-  let attributes = findBlocks(module_fhxdata, "ATTRIBUTE").filter((attribute) =>
-    attribute.includes("CATEGORY=COMMON")
+  let attributes = findBlocks(module_fhxdata, "ATTRIBUTE").filter(
+    (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
   );
   // Find Attribute Instance blocks of the Module Parameters
-  let attributeInstances = findBlocks(module_fhxdata, "ATTRIBUTE_INSTANCE");
+  let attributeInstances = findBlocks(module_fhxdata, "ATTRIBUTE_INSTANCE"); // Find  all attribute instances of the module
 
   // for each module parameter defined in attribute instance
   // find the parameter value described in attribute instances
@@ -38,10 +44,12 @@ function getModuleParameters(fhxdata, modulename) {
       const attributeInstance = attributeInstances[attrInstanceIndex];
       const attribute = attributes[attrIndex];
       if (
+        // find the attribute instance associated with the attribute that are module parameters
         valueOfParameter(attribute, "NAME") ===
         valueOfParameter(attributeInstance, "NAME")
       ) {
         moduleParameters.push(
+          // Create a list of ModuleParameter objects from those parameters
           new ModuleParameter(
             valueOfParameter(attributeInstance, "NAME"),
             valueOfParameter(attribute, "TYPE"),
@@ -55,7 +63,17 @@ function getModuleParameters(fhxdata, modulename) {
   return new ModuleParameterTable(moduleParameters);
 }
 
+/**
+ * Represents a module parameter.
+ * @class
+ */
 class ModuleParameter {
+  /**
+   * Creates an instance of ModuleParameter.
+   * @param {string} name - The name of the parameter.
+   * @param {string} type - The type of the parameter.
+   * @param {Object} block - The block containing parameter data.
+   */
   constructor(name, type, block) {
     this.name = name;
     this.type = type;
@@ -67,15 +85,26 @@ class ModuleParameter {
   }
 }
 
+/**
+ * Represents a table of module parameters.
+ * @class
+ * @extends DSTable
+ */
 class ModuleParameterTable extends DSTable {
+  /**
+   * Creates an instance of ModuleParameterTable.
+   * @param {Array<ModuleParameter>} moduleParameters - The list of module parameters.
+   */
   constructor(moduleParameters) {
     super(
+      // Instantiate a table object with tableName, tableHeader and data
       "Module Parameters",
       ["Name", "Parameter Type", "Default Value"],
       moduleParameters
     );
   }
   toCsvString() {
+    // convert the table object to a csv string ready to be written to a csv file
     let csv = "";
     if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
 
@@ -89,6 +118,13 @@ class ModuleParameterTable extends DSTable {
   }
 }
 
+/**
+ * Extracts the value from a value block based on its type.
+ * @param {Object} param - The parameter object containing type of the parameter
+ * found in the ATTRIBUTE block; The block parameter contains the associated
+ * ATTRIBUTE_INSTANCE block.
+ * @returns {string} - The extracted value of the parameter
+ */
 function valueFromBlock({ type, block }) {
   let value;
   switch (type) {
@@ -156,6 +192,13 @@ function valueFromBlock({ type, block }) {
     EXPOSE_IS_OVERRIDDEN=T
   }
  * 
+ */
+
+/**
+ * Extracts the mode value from a block.
+ * Similar to valueFromBlock, but handling the Mode parameter type.
+ * @param {Object} block - The block containing mode information.
+ * @returns {string} - The extracted mode value.
  */
 function valueFromMode(block) {
   let modeOptions = [
