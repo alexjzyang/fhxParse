@@ -5,7 +5,7 @@ import path from "path";
  * Increments the run number based on existing folders in the base directory.
  * @param {string} baseDir - The base directory where folders are located.
  * @param {string} baseName - The base name for the folders.
- * @returns {number} - The incremented run number.
+ * @returns {string} - The incremented run number.
  */
 function incrementRunNumber(baseDir, baseName) {
   const existingFolders = fs.readdirSync(baseDir);

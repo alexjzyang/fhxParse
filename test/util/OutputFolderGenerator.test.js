@@ -15,12 +15,14 @@ const __dirname = path.dirname(__filename);
 describe("OutputFolderGenerator", function () {
   const baseDir = path.join(__dirname, "test_output");
   const baseName = "RUN";
+
   before(function () {
     if (fs.existsSync(baseDir)) {
       fs.rmSync(baseDir, { recursive: true, force: true });
     }
     fs.mkdirSync(baseDir);
   });
+
   afterEach(function () {
     fs.readdirSync(baseDir).forEach((dir) => {
       const filePath = path.join(baseDir, dir);
@@ -29,6 +31,7 @@ describe("OutputFolderGenerator", function () {
       }
     });
   });
+
   describe("incrementRunNumber", function () {
     afterEach(function () {
       fs.readdirSync(baseDir).forEach((dir) => {
@@ -38,6 +41,7 @@ describe("OutputFolderGenerator", function () {
         }
       });
     });
+
     it("should return the correct incremented run number", function () {
       const folder1 = path.join(baseDir, "RUN1_20250101");
       const folder2 = path.join(baseDir, "RUN2_20250102");
@@ -58,6 +62,7 @@ describe("OutputFolderGenerator", function () {
         }
       });
     });
+
     it("should return the correct folder name", function () {
       const folder = createTestFolder(baseDir, baseName);
       const today = new Date();
