@@ -251,4 +251,6 @@ And do the same with Command SFC's, which are found as part of embedded Composit
 ## 02/03/2025
 
 **Created plans and sprint schedules. Targeting milestones, complete package of DS creation code by March 14.**
-Today: Examine tables for neseted blocks
+Today: Examine tables for nested blocks
+
+EOD: New code to automatically generate test run folders. Created its associated unit tests.
