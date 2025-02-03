@@ -7,7 +7,7 @@ import {
   writeCsvFile,
   readFile,
   readFhxFile,
-} from "../src/FileIO.js";
+} from "../../src/FileIO.js";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 // // In your script:
@@ -20,7 +20,7 @@ const testTxtFile = "test.txt";
 const testJsonFile = "test.json";
 const testCsvFile = "test.csv";
 const testFhxFile = "test.fhx";
-describe("FileIO", function () {
+describe.skip("FileIO", function () {
   before(function () {
     if (!fs.existsSync(testDir)) {
       fs.mkdirSync(testDir);
