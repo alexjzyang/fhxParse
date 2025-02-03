@@ -233,7 +233,7 @@ Table generation for all modules - done
 Bulk edit and create the table for instance configurable parameters - done
 
 EOD update:
-All control module class tables are successfully generated. Further test desired
+All control module class tables are successfully generated. Further test required
 Also, wrote code to handle empty string values (two back to back double quotes "" of a string parameter)
 code to handle permitted mode.
 Some of these handlers are hardcoded for the moment.
@@ -243,7 +243,12 @@ current v1 version of dscreator.sfcToCsv() and fhxProcessor.processSFC functions
 
 ## 01/30/2025
 
-Included code to create EM child devices table and commands table
+TODO: Included code to create EM child devices table and commands table
 
 Need to loop and create tables for the nested EM embedded composites
 And do the same with Command SFC's, which are found as part of embedded Composites
+
+## 02/03/2025
+
+**Created plans and sprint schedules. Targeting milestones, complete package of DS creation code by March 14.**
+Today: Examine tables for neseted blocks
