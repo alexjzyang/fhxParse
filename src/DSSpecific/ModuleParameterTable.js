@@ -131,7 +131,7 @@ function valueFromBlock({ type, block }) {
     case "ENUMERATION_VALUE":
       let set = valueOfParameter(block, "SET");
       let option = valueOfParameter(block, "STRING_VALUE");
-      value = `$${set}:${option}`;
+      value = `${set}:${option}`;
       break;
     case "FLOAT":
     case "UINT8":

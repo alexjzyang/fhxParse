@@ -7,7 +7,7 @@ import {
   writeCsvFile,
   readFile,
   readFhxFile,
-} from "../../src/FileIO.js";
+} from "../../src/util/FileIO.js";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 // // In your script:

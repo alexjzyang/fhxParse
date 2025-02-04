@@ -254,3 +254,8 @@ And do the same with Command SFC's, which are found as part of embedded Composit
 Today: Examine tables for nested blocks
 
 EOD: New code to automatically generate test run folders. Created its associated unit tests.
+
+## 02/04/2025
+
+Study EM, and architect code to digest nested code.
+EOD: structured code to encapsulate FHX component and Function Block; Also started the HandleComposites.js file, intended to identify and handle various composites and nested composites.

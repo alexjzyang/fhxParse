@@ -28,7 +28,7 @@ import { DSTable } from "./Common.js";
  * Retrieves composite blocks for a given module name.
  * @param {Object} fhxdata - The overall FHX data.
  * @param {string} modulename - The name of the module.
- * @returns {Object} - An object containing embedded and linked composite block tables.
+ * @returns {Object} {embedded, linked} - An object containing embedded and linked composite block tables.
  */
 function getCompositeBlocks(fhxdata, modulename) {
   let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);

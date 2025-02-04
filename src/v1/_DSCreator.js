@@ -75,7 +75,7 @@ function valuesOfModuleParameters(module_data, modulename) {
       case "ENUMERATION_VALUE":
         let set = fhxProcessor.valueOfParameter(instance, "SET");
         let option = fhxProcessor.valueOfParameter(instance, "STRING_VALUE");
-        param.value = `$${set}:${option}`;
+        param.value = `${set}:${option}`;
         break;
       case "FLOAT":
       case "UINT8":

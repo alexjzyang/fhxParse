@@ -8,7 +8,7 @@ import path from "path";
  * @returns {string} - The incremented run number.
  */
 function incrementRunNumber(baseDir, baseName) {
-  const existingFolders = fs.readdirSync(baseDir);
+  const existingFolders = fs.existsSync(baseDir) ? fs.readdirSync(baseDir) : [];
 
   let runNumber = 1;
 
@@ -32,7 +32,7 @@ function createTestFolder(baseDir, baseName, date = new Date()) {
   let dateString = `${String(date.getFullYear())}${String(
     date.getMonth() + 1
   ).padStart(2, "0")}${String(date.getDate() + 1).padStart(2, "0")}`;
-  const existingFolders = fs.readdirSync(baseDir);
+  const existingFolders = fs.existsSync(baseDir) ? fs.readdirSync(baseDir) : [];
 
   for (const folder of existingFolders) {
     if (folder.includes(dateString)) {
@@ -42,7 +42,7 @@ function createTestFolder(baseDir, baseName, date = new Date()) {
   let runNumber = incrementRunNumber(baseDir, baseName);
   const newFolderName = `${runNumber}_${dateString}`;
   let newFolderPath = path.join(baseDir, newFolderName);
-  fs.mkdirSync(newFolderPath);
+  fs.mkdirSync(newFolderPath, { recursive: true });
   return newFolderPath;
 }
 
