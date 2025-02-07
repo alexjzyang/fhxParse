@@ -7,7 +7,8 @@ import {
     ModuleParameter,
     ModuleParameterTable,
 } from "./src/DSSpecific/ModuleParameterTable.js";
-import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
+// import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
+import { componentRunner } from "./src/v3/Components.js";
 
 const outputPath = "output";
 
@@ -48,21 +49,21 @@ function runner() {
     console.log(fs.readdirSync("./fhx"));
 }
 
-function runner2() {
-    // const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
+// function runner2() {
+//     // const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
 
-    const fhx = em_E_M_AGITFhx;
+//     const fhx = em_E_M_AGITFhx;
 
-    let _E_M_AGITModuleClass = new SimpleModuleClass(fhx); // create a simple module class object
-    let paramTable = _E_M_AGITModuleClass.createParameterTable();
-    fs.writeFileSync(path.join(outputPath, "temp.csv"), paramTable, {
-        recursive: true,
-    });
+//     let _E_M_AGITModuleClass = new SimpleModuleClass(fhx); // create a simple module class object
+//     let paramTable = _E_M_AGITModuleClass.createParameterTable();
+//     fs.writeFileSync(path.join(outputPath, "temp.csv"), paramTable, {
+//         recursive: true,
+//     });
 
-    return;
-}
+//     return;
+// }
 // runner(fhx);
-runner2();
+// runner2();
 
 function getModuleParameters(moduleBlock) {
     let moduleParameters = [];
@@ -106,3 +107,7 @@ function getModuleParameters(moduleBlock) {
 
     return new ModuleParameterTable(moduleParameters);
 }
+
+// ------------------------------------------------------------------------------ //
+
+componentRunner(em_E_M_AGITFhx);
