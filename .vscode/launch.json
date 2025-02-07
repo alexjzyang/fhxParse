@@ -1,39 +1,39 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Mocha Tests",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["test/**/*.test.js", "./src/**/*.test.js"],
-      "internalConsoleOptions": "openOnSessionStart"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Custom Test",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["test/moduleRunner.test.js"],
-      "internalConsoleOptions": "openOnSessionStart"
-    },
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": ["test/**/*.test.js", "./src/**/*.test.js"],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Custom Test",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": ["test/moduleRunner.test.js"],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
 
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Sandbox",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}\\sandbox.js"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Main",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}\\main.js"
-    }
-  ]
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Sandbox",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}\\sandbox.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Main",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/main.js"
+        }
+    ]
 }

@@ -13,35 +13,35 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe("moduleRunner", function () {
-  const inputFilePath = path.join(__dirname, "data", "emsFhx.fhx");
-  const outputDir = path.join(__dirname, "test_output");
+    const inputFilePath = path.join(__dirname, "data", "emsFhx.fhx");
+    const outputDir = path.join(__dirname, "test_output");
 
-  // Clean up before test
-  if (fs.existsSync(outputDir)) {
-    fs.rmSync(outputDir, { recursive: true });
-  }
-  let fhx = fs.readFileSync(inputFilePath, "utf-16le");
-
-  function testFunc() {
-    moduleRunner(fhx, {
-      outputBaseDir: outputDir,
-      outputBaseName: "RUN",
-    });
-    return 1;
-  }
-  after(function () {
-    // Clean up after test
+    // Clean up before test
     if (fs.existsSync(outputDir)) {
-      fs.rmSync(outputDir, { recursive: true });
+        fs.rmSync(outputDir, { recursive: true });
     }
-  });
-  it("should run successfully", function () {
-    (function () {
-      testFunc();
-    }).should.not.throw();
-  });
+    let fhx = fs.readFileSync(inputFilePath, "utf-16le");
 
-  it("should create the correct folders and files", function () {
-    expect(true).to.be.true;
-  });
+    function testFunc() {
+        moduleRunner(fhx, {
+            outputBaseDir: outputDir,
+            outputBaseName: "RUN",
+        });
+        return 1;
+    }
+    after(function () {
+        // Clean up after test
+        if (fs.existsSync(outputDir)) {
+            fs.rmSync(outputDir, { recursive: true });
+        }
+    });
+    it("should run successfully", function () {
+        (function () {
+            testFunc();
+        }).should.not.throw();
+    });
+
+    it("should create the correct folders and files", function () {
+        expect(true).to.be.true;
+    });
 });
