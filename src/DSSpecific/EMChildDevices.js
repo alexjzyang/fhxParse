@@ -9,10 +9,13 @@ import { DSTable } from "./Common.js";
 // Find module block of the EM (EM's fhx)
 // Look for MODULE_BLOCK of the EM's fhx these are embedded modules of the EM
 
-function getEMChildDevices(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
-
-  let moduleBlocks = findBlocks(module_fhxdata, "MODULE_BLOCK"); // find all module blocks in the module class block
+/**
+ *
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
+ * @returns {EMChildDeviceTable} - The table of EM child devices.
+ */
+function getEMChildDevices(moduleBlock) {
+  let moduleBlocks = findBlocks(moduleBlock, "MODULE_BLOCK"); // find all module blocks in the module class block
 
   let childDevices = moduleBlocks.map((mb) => {
     let name = valueOfParameter(mb, "NAME");

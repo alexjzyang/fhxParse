@@ -1,9 +1,32 @@
+import { valueOfParameter } from "../../v1/_FhxProcessor.js";
+
+/**
+ * @class FhxComponents encapsulates the common methods of all components in the FHX objects
+ * testIdentical, testSimilar, getDifference, diffChars are methods that assists with testing
+ * the level of FHX digestibility.
+ */
 export class FhxComponents {
   constructor(fhxblock) {
     this.fhx = fhxblock;
+    this.name = this.findName();
+    this.associatedComponents = [];
   }
+
+  findName() {
+    if ((this.name = valueOfParameter(fhxblock, "NAME") === undefined)) {
+      throw new Error(
+        "Component does not have a name, it is not a valid FHX Block"
+      );
+    }
+  }
+  addComponent(component) {
+    this.associatedComponents.push(component);
+  }
+
   toString() {}
+
   testIdentical() {
+    //Test whether the original fhx text is identical to the reconstituted (toString) text
     // removes '\r' from the string before comparing
     return this.fhx.replaceAll("\r", "") == this.toString();
   }

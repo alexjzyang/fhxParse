@@ -44,12 +44,16 @@ import { FhxComponents } from "./Components.js";
 //   },
 // };
 
+/**
+ * Encapsulates a FHX FunctionBlock object
+ */
 export class FunctionBlock extends FhxComponents {
   constructor(fhxblock) {
     super(fhxblock);
     this.fhx = fhxblock;
     this.name = valueOfParameter(fhxblock, "NAME");
     this.definition = valueOfParameter(fhxblock, "DEFINITION");
+    this.description = valueOfParameter(fhxblock, "DESCRIPTION");
     this.id = valueOfParameter(fhxblock, "ID");
     this.rectangle = {
       x: valueOfParameter(fhxblock, "X"),
@@ -61,6 +65,7 @@ export class FunctionBlock extends FhxComponents {
     this.additionalConnectors = this.getAdditionalConnectors(fhxblock);
   }
 
+  // Since AdditionalConnector has its own clas, add a method to create the array of AdditionalConnector objects
   getAdditionalConnectors() {
     let additionalConnectors = [];
     let additionalConnectorBlocks = this.fhx.split("ADDITIONAL_CONNECTOR");
@@ -72,18 +77,31 @@ export class FunctionBlock extends FhxComponents {
   }
 
   toString() {
-    const idLine = this.id ? `    ID=${this.id}\n` : "";
+    const tab = "    ";
+    const descLine = this.description
+      ? `${tab}DESCRIPTION="${this.description}"\n`
+      : "";
+    const idLine = this.id ? `${tab}ID=${this.id}\n` : "";
     const recLine = this.rectangle
-      ? `    RECTANGLE= { X=${this.rectangle.x} Y=${this.rectangle.y} H=${this.rectangle.h} W=${this.rectangle.w} }\n`
+      ? `${tab}RECTANGLE= { X=${this.rectangle.x} Y=${this.rectangle.y} H=${this.rectangle.h} W=${this.rectangle.w} }\n`
+      : "";
+    const connectorLines = this.additionalConnectors
+      ? `${this.additionalConnectors
+          .map((connector) => connector.toString())
+          .join("")}`
       : "";
     const algorithmLine = this.algorithmGenerated
-      ? `    ALGORITHM_GENERATED=${this.algorithmGenerated}\n`
+      ? `${tab}ALGORITHM_GENERATED=${this.algorithmGenerated}\n`
       : "";
     return `FUNCTION_BLOCK NAME="${this.name}" DEFINITION="${this.definition}"
-  {\n${idLine}${recLine}${algorithmLine}  }`;
+  {\n${descLine}${idLine}${recLine}${connectorLines}${algorithmLine}  }`;
   }
 }
 
+/**
+ * For properties that are more complexed, i.e. with multiple key-value pairs within its own block,
+ * create a new class for that property.
+ */
 class AdditionalConnector extends FhxComponents {
   constructor(fhxblock) {
     super(fhxblock);
@@ -94,6 +112,7 @@ class AdditionalConnector extends FhxComponents {
     this.attribute = valueOfParameter(fhxblock, "ATTRIBUTE");
   }
   toString() {
-    return `ADDITIONAL_CONNECTOR NAME="${this.name}" TYPE=${this.type} { ATTRIBUTE="${this.attribute}" }`;
+    const tab = "    ";
+    return `${tab}ADDITIONAL_CONNECTOR NAME="${this.name}" TYPE=${this.type} { ATTRIBUTE="${this.attribute}" }\n`;
   }
 }

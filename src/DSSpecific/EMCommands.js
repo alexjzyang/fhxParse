@@ -7,14 +7,11 @@ import { DSTable } from "./Common.js";
 
 /**
  * Retrieves EM commands from the FHX data for a given module name.
- * @param {string} fhxdata - The FHX data.
- * @param {string} modulename - The name of the module.
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
  * @returns {EMCommandsTable} - The table of EM commands.
  */
-function getEMCommands(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
-
-  let commandNamedSet = valueOfParameter(module_fhxdata, "COMMAND_SET"); // find the command set in the em block
+function getEMCommands(fhxdata, moduleBlock) {
+  let commandNamedSet = valueOfParameter(moduleBlock, "COMMAND_SET"); // find the command set in the em block
   let namedSetBlock = findBlockWithName(
     fhxdata,
     "ENUMERATION_SET",

@@ -259,3 +259,31 @@ EOD: New code to automatically generate test run folders. Created its associated
 
 Study EM, and architect code to digest nested code.
 EOD: structured code to encapsulate FHX component and Function Block; Also started the HandleComposites.js file, intended to identify and handle various composites and nested composites.
+
+## 02/06/2025
+
+The effort of reconstitution of the fhx with methods in the Components and their associated unit tests still need bugfixes
+The reconsitution feature is less relevant to the DS project at this point.
+
+Nested block design:
+process a module
+get a list of function blocks
+identify any fb to be an embedded block,
+find its definition (if it is an embedded composite, it has an definintion),
+Process the definition with the same function that processed the module.
+
+EOD: Very little progress has been made. As before, I'm running in circles when it comes to design the data model. The goal is to find a function block and find its definition, and process that function block definition. But I can't seem to be able to come up with a good solution to associate the function block and its definition with the original object, a module for instance.
+Also I spent way too much time to figure out how to test pieces of code, which became a cumbersome and pointless exercis.
+Currently I'm using the SimpleModuleClass class to capture the bare minimun info of a module class block (attribute, attribute instances, and function blocks) There are methods to identify the function block's name and definition and another method to find the function block definition given an overall fhx as input.
+
+In order to process nested blocks, I can either have a global string object storing the overall fhx and be used by all the loop and nested iterations. Or I can somehow store the necessary fhx info in the subjects. The second method requires each object being aware of its associated definition objects. This might be a better approach but requiring the digestion of the entire overall fhx in order to look up all fhx blocks.
+
+The first approach might be better, even though more data needs to be stored and processed.
+
+1. Identify and create a block object (Module Class), and process the block, by extracting module parameter and other tables \*
+2. Identify its function blocks, and ones that have custom definitions (Composites).
+3. Identify which ones are Embedded blocks
+4. Use the block processing code to process embedded blocks. Some tables only apply for module class, not embedded blocks, same goes with EM. Therefore the processing should identify what tables to create based on the type of block passed to its arguments.
+
+- The processing of a block, i.e. creating parameter and other tables should be handled separately. So it can be reused by the nested blocks.
+- Should identify the type of the block in order to return the correct tables.

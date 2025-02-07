@@ -28,16 +28,13 @@ import { DSTable } from "./Common.js";
 
 /**
  * Retrieves historised parameters for a given module name.
- * @param {Object} fhxdata - The overall FHX data.
- * @param {string} modulename - The name of the module.
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
  * @returns {HistoryCollectionTable} - The table of historised parameters.
  */
-function getHistoryCollection(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
-
+function getHistoryCollection(moduleBlock) {
   let historizedParameterBlocks = findBlocks(
     // find all parameters which are historized
-    module_fhxdata,
+    moduleBlock,
     "ATTRIBUTE_INSTANCE"
   ).filter((attribute) => attribute.includes("HISTORY_DATA_POINT"));
 

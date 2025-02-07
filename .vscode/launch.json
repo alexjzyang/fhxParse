@@ -5,19 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CmTableGenerator",
-      "program": "${workspaceFolder}/CmTableGenerator.js",
+      "type": "node",
       "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "name": "Mocha Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": ["test/**/*.test.js", "./src/**/*.test.js"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
-
     {
-      "name": "formatCsv",
-      "program": "${workspaceFolder}/formatCsv.js",
+      "type": "node",
       "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "name": "Custom Test",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": ["test/moduleRunner.test.js"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
 
     {

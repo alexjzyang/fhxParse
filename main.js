@@ -2,20 +2,15 @@
 import fs, { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import * as fhxProcessor from "./src/v1/_FhxProcessor.js";
-import * as dscreator from "./src/v1/_DSCreator.js";
+import { createTables, moduleRunner, moduleType } from "./moduleRunner.js";
+import {
+  ModuleParameter,
+  ModuleParameterTable,
+} from "./src/DSSpecific/ModuleParameterTable.js";
 import { FileIO } from "./src/v1/_FileIO.js";
-import { getModuleParameters } from "./src/DSSpecific/ModuleParameterTable.js";
-import { getModuleProperties } from "./src/DSSpecific/ModulePropertyTable.js";
-import { writeCsvFile } from "./src/util/FileIO.js";
-import { getFunctionBlocks } from "./src/DSSpecific/FunctionBlockTable.js";
-import { getCompositeBlocks } from "./src/DSSpecific/CompositeTable.js";
-import { getAlarms } from "./src/DSSpecific/AlarmTable.js";
-import { getHistoryCollection } from "./src/DSSpecific/HistoryTable.js";
-import { getEMCommands } from "./src/DSSpecific/EMCommands.js";
-import { getEMChildDevices } from "./src/DSSpecific/EMChildDevices.js";
-import { createTestFolder } from "./src/util/OutputFolderGenerator.js";
-import { moduleRunner } from "./moduleRunner.js";
-import { FunctionBlock } from "./src/v2/FhxComponents/FunctionBlock.js";
+import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
+// import { getModuleParameters } from "./src/DSSpecific/ModuleParameterTable.js";
+// import { getFunctionBlocks } from "./src/DSSpecific/FunctionBlockTable.js";
 
 const FHX_Path = "C:/NCTM Mixers SDS Creation/FHX NCTM MXRs/";
 const FHX_Export_25NOV24 = "NCTM Mixers DVfhx Export 25NOV24";
@@ -59,31 +54,81 @@ const cmsfilepath = path.join(
 // console.log("Loading file: " + fhxfilepath);
 const fhx_data = fs.readFileSync(cmsfilepath, "utf-16le");
 const cms_fhxdata = fs.readFileSync(cmsfilepath, "utf-16le");
-const ems_fhxdata = fs.readFileSync(emsfilepath, "utf-16le");
+const fhx = fs.readFileSync(emsfilepath, "utf-16le");
 const Module_Class = "MODULE_CLASS";
 const Function_Block = "FUNCTION_BLOCK";
 const Function_Block_Definition = "FUNCTION_BLOCK_DEFINITION";
 const Definition = "DEFINITION";
 const emname = "_E_M_AGIT";
 const cmname = "_C_M_AI";
+const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
 
 function runner(fhx) {
-  let _E_M_AGIT_fhx = fhxProcessor.findBlockWithName(fhx, Module_Class, emname);
-  let functionBlocks = fhxProcessor
-    .findBlocks(_E_M_AGIT_fhx, Function_Block)
-    .map((fb) => {
-      return new FunctionBlock(fb);
-    });
-  let fb = functionBlocks[5];
+  moduleRunner(fhx);
+}
 
-  console.log(fb.name);
-  console.log(fb.fhx);
-  console.log("Object To String:");
-  console.log(fb.toString());
-  console.log(fb.testSimilar());
-  console.log(fb.testIdentical());
+function runner2() {
+  // const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
+
+  const fhx = em_E_M_AGITFhx;
+
+  let _E_M_AGITModuleClass = new SimpleModuleClass(fhx); // create a simple module class object
+
+  let fblist = _E_M_AGITModuleClass.listFunctionBlocks();
+  let FBs = _E_M_AGITModuleClass.functionBlocks; // use the class function to find all function blocks
+  let FBsDef = FBs.map((fb) => {
+    // use the class function to find all function block definitions
+    const def = _E_M_AGITModuleClass.findFunctionBlockDefinition(
+      fhx,
+      fb.definition
+    ); // find the type of the function block definition it is
+    let type;
+    if (def) type = moduleType(def);
+    else type = "OOB";
+    return type; // return the type of the function block definition
+  });
 
   return;
 }
+// runner(fhx);
+runner2(fhx);
 
-runner(ems_fhxdata);
+function getModuleParameters(moduleBlock) {
+  let moduleParameters = [];
+
+  // Find Attribute blocks with CATEGORY=COMMON
+  let attributes = fhxProcessor.findBlocks(moduleBlock, "ATTRIBUTE").filter(
+    (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
+  );
+  // Find Attribute Instance blocks of the Module Parameters
+  let attributeInstances = fhxProcessor.findBlocks(
+    moduleBlock,
+    "ATTRIBUTE_INSTANCE"
+  ); // Find  all attribute instances of the module
+
+  // for each module parameter defined in attribute instance
+  // find the parameter value described in attribute instances
+  // every module parameter should have a value, if not throw an error
+  for (const attrIndex in attributes) {
+    for (const attrInstanceIndex in attributeInstances) {
+      const attributeInstance = attributeInstances[attrInstanceIndex];
+      const attribute = attributes[attrIndex];
+      if (
+        // find the attribute instance associated with the attribute that are module parameters
+        fhxProcessor.valueOfParameter(attribute, "NAME") ===
+        fhxProcessor.valueOfParameter(attributeInstance, "NAME")
+      ) {
+        moduleParameters.push(
+          // Create a list of ModuleParameter objects from those parameters
+          new ModuleParameter(
+            fhxProcessor.valueOfParameter(attributeInstance, "NAME"),
+            fhxProcessor.valueOfParameter(attribute, "TYPE"),
+            attributeInstance
+          )
+        );
+      }
+    }
+  }
+
+  return new ModuleParameterTable(moduleParameters);
+}

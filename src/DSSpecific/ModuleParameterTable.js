@@ -20,21 +20,18 @@ import { DSTable } from "./Common.js";
 
 /**
  * Retrieves module parameters for a given module name.
- * @param {Object} fhxdata - The FHX data.
- * @param {string} modulename - The name of the module.
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
  * @returns {ModuleParameterTable} - The table of module parameters.
  */
-function getModuleParameters(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
-
+function getModuleParameters(moduleBlock) {
   let moduleParameters = [];
 
   // Find Attribute blocks with CATEGORY=COMMON
-  let attributes = findBlocks(module_fhxdata, "ATTRIBUTE").filter(
+  let attributes = findBlocks(moduleBlock, "ATTRIBUTE").filter(
     (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
   );
   // Find Attribute Instance blocks of the Module Parameters
-  let attributeInstances = findBlocks(module_fhxdata, "ATTRIBUTE_INSTANCE"); // Find  all attribute instances of the module
+  let attributeInstances = findBlocks(moduleBlock, "ATTRIBUTE_INSTANCE"); // Find  all attribute instances of the module
 
   // for each module parameter defined in attribute instance
   // find the parameter value described in attribute instances
@@ -67,7 +64,7 @@ function getModuleParameters(fhxdata, modulename) {
  * Represents a module parameter.
  * @class
  */
-class ModuleParameter {
+export class ModuleParameter {
   /**
    * Creates an instance of ModuleParameter.
    * @param {string} name - The name of the parameter.
@@ -90,7 +87,7 @@ class ModuleParameter {
  * @class
  * @extends DSTable
  */
-class ModuleParameterTable extends DSTable {
+export class ModuleParameterTable extends DSTable {
   /**
    * Creates an instance of ModuleParameterTable.
    * @param {Array<ModuleParameter>} moduleParameters - The list of module parameters.
@@ -125,7 +122,7 @@ class ModuleParameterTable extends DSTable {
  * ATTRIBUTE_INSTANCE block.
  * @returns {string} - The extracted value of the parameter
  */
-function valueFromBlock({ type, block }) {
+export function valueFromBlock({ type, block }) {
   let value;
   switch (type) {
     case "ENUMERATION_VALUE":

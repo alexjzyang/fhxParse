@@ -42,18 +42,15 @@ const moduleProperties = [
 
 /**
  * Retrieves module properties for a given module name.
- * @param {Object} fhxdata - The overall FHX data
- * @param {string} modulename - The name of the module.
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
  * @returns {PropertyTable} - The table of module properties.
  */
-function getModuleProperties(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename); // isolate the module class block
-
+function getModuleProperties(moduleBlock) {
   // obtain all module properties
   let cmProperties = moduleProperties.map((property) => {
     // find all module properties based on the list of module properties above
     // instead of mapping, we can possibly use an switch statement like in module property table.js
-    let value = valueOfParameter(module_fhxdata, property);
+    let value = valueOfParameter(moduleBlock, property);
     return new ModuleProperty(property, value);
   });
 

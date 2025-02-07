@@ -14,20 +14,17 @@ import { DSTable } from "./Common.js";
 
 /**
  * Retrieves alarms for a given module name.
- * @param {Object} fhxdata - The overall FHX data.
- * @param {string} modulename - The name of the module.
+ * @param {string} moduleBlock - The fhx string of a single MODULE_CLASS block
  * @returns {AlarmTable} - The table of alarms.
  */
-function getAlarms(fhxdata, modulename) {
-  let module_fhxdata = findBlockWithName(fhxdata, "MODULE_CLASS", modulename);
-
-  let alarmAttributeBlocks = findBlocks(module_fhxdata, "ATTRIBUTE").filter(
+function getAlarms(moduleBlock) {
+  let alarmAttributeBlocks = findBlocks(moduleBlock, "ATTRIBUTE").filter(
     (attribute) => attribute.includes("TYPE=EVENT")
   );
 
   let alarmAttributeInstances = alarmAttributeBlocks.map((alarmBlock) => {
     let alarmName = valueOfParameter(alarmBlock, "NAME");
-    return findBlockWithName(module_fhxdata, "ATTRIBUTE_INSTANCE", alarmName);
+    return findBlockWithName(moduleBlock, "ATTRIBUTE_INSTANCE", alarmName);
   });
 
   let alarmParameters = alarmAttributeInstances.map((instance) => {
