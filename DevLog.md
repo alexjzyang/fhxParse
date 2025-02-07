@@ -288,3 +288,9 @@ The first approach might be better, even though more data needs to be stored and
 
 -   The processing of a block, i.e. creating parameter and other tables should be handled separately. So it can be reused by the nested blocks.
 -   Should identify the type of the block in order to return the correct tables.
+
+## 02/07/2025
+
+Pivotted the design to start fhx processing version 3. See the v3 folder for design philosophy.
+Created mock processing functions, console logs. The processing function down the nested tree needs to be optimized, based on where and how to call these functions in the different objects.
+Tests need to be created so that future modification of the FhxProcessor and other components' effect on existing code can be closely monitored.
