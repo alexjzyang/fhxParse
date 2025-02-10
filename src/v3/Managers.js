@@ -7,10 +7,10 @@ export class ObjectManager {
   }
 
   add(obj) {
-    if (this.objects[obj.name] !== undefined)
-      throw new Error("Duplicate Object Found: " + obj.name);
+    // if (this.objects[obj.name] !== undefined) return;
+    //   throw new Error("Duplicate Object Found: " + obj.name);
     this.objects[obj.name] = obj;
-    obj.objManager = this;
+    // obj.objManager = this;
   }
 
   get(name) {
@@ -23,17 +23,18 @@ export class ObjectManager {
  * It has the added benefit to monitor how much of the fhx file is left to process
  */
 export class ObjectCreator {
+  #objectManager;
   constructor(fhx) {
     this.original = fhx;
     this.remaining = "";
-    this.objectManager = new ObjectManager();
+    this.#objectManager = new ObjectManager();
   }
 
   findNextComponent() {
     // save start index, current depth is 0
     let startIndex = 0;
     let depth = 0;
-    let endIndex, currIndex, openBracketIndex, closeBracketIndex;
+    let currIndex, openBracketIndex, closeBracketIndex;
     currIndex = 0;
 
     do {
@@ -61,21 +62,16 @@ export class ObjectCreator {
     // attempt to create the object with the substring, if successful, create a
     let fhxStr = this.original.substring(startIndex, currIndex + 1); // isolate the processed string
 
-    try {
-      // Attempt to create a component object with the substring
-      let obj = new Component(fhxStr);
-      this.objectManager.add(obj);
-    } catch (e) {
-      // If unable to create the object, log the error and add the unproceed string to the remaining string
-      console.log(e);
-      this.remaining = this.remaining + fhxStr;
-    }
+    let obj = new Component(fhxStr);
+    if (obj) this.#objectManager.add(obj);
+    else this.remaining = this.remaining + fhxStr;
+
     this.original = this.original.substring(currIndex + 1); // modify the original string to remmove already processed string
     return 1;
   }
 
   createManager() {
-    return this.objectManager;
+    return this.#objectManager;
   }
 }
 

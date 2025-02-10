@@ -8,7 +8,7 @@ export class Component {
   constructor(blockFhx) {
     this.block = blockFhx;
     this.name = this._getName();
-    this.key = this._getType();
+    this.type = this._getType();
     this.id = Math.random().toString(36).substring(2, 9);
   }
 
@@ -28,22 +28,23 @@ export class Component {
   _getType() {
     //this version of _getType uses _getName. This means it assumes that if the name is not found, the type is not handled
     let name = this._getName();
-    if (this.name === undefined) {
-      throw new Error(
-        "Name not found in block. Fhx block is not currently identified"
-      );
-    }
+    if (this.name === undefined) return;
+    // {
+    //   throw new Error(
+    //     "Name not found in block. Fhx block is not currently identified"
+    //   );
+    // }
     let search = ` NAME="${name}"`;
     let endIndex = this.block.indexOf(search);
     let startIndex =
       this.block.lastIndexOf("\r\n", endIndex) !== -1
-        ? this.block.lastIndexOf("\r\n") + 2
+        ? this.block.lastIndexOf("\r\n", endIndex) + 2
         : 0;
     return this.block.substring(startIndex, endIndex);
   }
 
   process() {
-    console.log(`Component ${this.name} is a ${this.key}`);
+    console.log(`Component ${this.name} is a ${this.type}`);
   }
 }
 
@@ -126,7 +127,7 @@ class AttributeInstanceComponent extends Component {
 class AttributeComponent extends Component {
   constructor(blockFhx) {
     super(blockFhx);
-    this.key = valueOfParameter(blockFhx, "TYPE");
+    this.type = valueOfParameter(blockFhx, "TYPE");
   }
 }
 
