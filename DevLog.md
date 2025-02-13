@@ -300,4 +300,4 @@ Tests need to be created so that future modification of the FhxProcessor and oth
 EOD:
 Created ways to digest fhx, findNextComponent, and adding the components found in the object manager. Created tests to test relevant code.
 Next step, making sure all the relevant objects are consumed and included in the object manager.
-Generalize the previous process function to create data ables.
+Generalize the previous processing function to create data ables.

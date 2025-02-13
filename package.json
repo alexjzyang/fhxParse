@@ -1,23 +1,23 @@
 {
-  "name": "fhxparse",
-  "version": "1.0.0",
-  "main": "main.js",
-  "scripts": {
-    "test": "mocha test/**/*.test.js ./src/**/*.test.js",
-    "testonly": "mocha test/**/*.test.js"
-  },
-  "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "antlr4": "^4.13.2",
-    "csv-writer": "^1.6.0",
-    "mysql2": "^3.12.0"
-  },
-  "devDependencies": {
-    "chai": "^5.1.2",
-    "mocha": "^11.0.1"
-  }
+    "name": "fhxparse",
+    "version": "1.0.0",
+    "main": "main.js",
+    "scripts": {
+        "test": "mocha ./test/**/*.test.js ./test/*.test.js ./src/**/*.test.js",
+        "testonly": "mocha test/**/*.test.js"
+    },
+    "type": "module",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "antlr4": "^4.13.2",
+        "csv-writer": "^1.6.0",
+        "mysql2": "^3.12.0"
+    },
+    "devDependencies": {
+        "chai": "^5.1.2",
+        "mocha": "^11.0.1"
+    }
 }

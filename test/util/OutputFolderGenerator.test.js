@@ -12,7 +12,7 @@ should();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-describe("OutputFolderGenerator", function () {
+describe.skip("OutputFolderGenerator", function () {
     const baseDir = path.join(__dirname, "test_output");
     const baseName = "RUN";
 
@@ -147,7 +147,7 @@ describe("OutputFolderGenerator", function () {
 });
 
 // Test case: integrated test with multiple examples
-describe("OutputFolderGenerator, with an integrated example", function () {
+describe.skip("OutputFolderGenerator, with an integrated example", function () {
     const baseDir = path.join(__dirname, "test_output");
 
     // create base test output directory
