@@ -1,4 +1,6 @@
 import { findBlocks, valueOfParameter } from "../v1/_FhxProcessor.js";
+import { ComponentProcessor } from "./ComponentProcessor.js";
+import { DesignSpecTables } from "./DSProcessor.js";
 
 export class ComponentCreator {
   #getType(block) {
@@ -33,6 +35,9 @@ class Component {
     this.name = this.getName();
     this.type = this.getType();
     this.id = Math.random().toString(36).substring(2, 9);
+  }
+  process() {
+    console.log(`Processing ${this.type} ${this.name}`);
   }
 
   getName() {
@@ -79,68 +84,19 @@ export class ModuleClassComponent extends Component {
     );
   }
 
-  process(objManager) {
-    super.process();
-    console.log(
-      `Module: ${this.name} contains:
-            ${this.attributes.length} attributes
-            ${this.attributeInstances.length} attribute instances
-            ${this.functionBlocks.length} function blocks
-            Each function block has a definition
-            `
-    );
-    // this.functionBlocks.forEach((fb) => {
-    //     fb.findDefinition(objManager)?.process(objManager);
-    // });
-
-    this.functionBlocks.forEach((fb) => {
-      // fb.process(objManager);
-      console.log(
-        `Processing Function Block ${fb.name}, with definition ${fb.definition}`
-      );
-      fb.findDefinition(objManager)?.process(objManager);
-    });
+  processDSTable() {
+    // this object should be created by the
+    // Object Manager or whoever is calling for the DStable creations. And the
+    // object should be passed in as an argument
+    let dsTables = new DesignSpecTables();
+    this.attributes.forEach((attr) => dsTables.add(attr));
+    this.attributeInstances.forEach((ai) => dsTables.add(ai));
+    this.functionBlocks.forEach((fb) => dsTables.add(fb));
+    return dsTables.createModuleParameterTable();
   }
 }
 
-// one design could be running process function in Object Manager.
-// When Object Manager processing is called with one module class, a list of
-// items to be processed is created. This list initially consists of the attribute,
-// instance, functionblock etc lists in the module class. The Object Manager will
-// then loop through the list and process (calling the objects process function)
-// each item in the list. As it processes each item, more items will be added to
-// the object manager's process list.
-// For example function block component's process function will identify the
-// definition block and adding it to the object manager's process list
-export class FunctionBlockComponent extends Component {
-  constructor(blockFhx) {
-    super(blockFhx);
-    this.definition = valueOfParameter(blockFhx, "DEFINITION");
-  }
-  findDefinition(objManager) {
-    return objManager.get(this.definition);
-  }
-  process(objManager) {
-    super.process();
-    console.log(`Function Block ${this.name} has definition ${this.definition}
-            `);
-  }
-}
-
-export class AttributeInstanceComponent extends Component {
-  constructor(blockFhx) {
-    super(blockFhx);
-    this.value = { fhx: findBlocks(blockFhx, "VALUE")[0] };
-  }
-}
-
-export class AttributeComponent extends Component {
-  constructor(blockFhx) {
-    super(blockFhx);
-    this.type = valueOfParameter(blockFhx, "TYPE");
-  }
-}
-
+// FHX Objects
 export class FunctionBlockDefinitionComponent extends Component {
   attributes;
   attributeInstances;
@@ -164,7 +120,7 @@ export class FunctionBlockDefinitionComponent extends Component {
     );
   }
   // test to match type obtained from getType vs the component's intended type
-  process(objManager) {
+  process() {
     console.log(`Processing Function Block Definition ${this.name}
             It has ${this.attributeInstances.length} attribute instances
             This block also has ${this.functionBlocks.length} function blocks
@@ -176,6 +132,59 @@ export class FunctionBlockDefinitionComponent extends Component {
       // fb.process(objManager);
       fb.findDefinition(objManager)?.process(objManager);
     });
+  }
+}
+
+// one design could be running process function in Object Manager.
+// When Object Manager processing is called with one module class, a list of
+// items to be processed is created. This list initially consists of the attribute,
+// instance, functionblock etc lists in the module class. The Object Manager will
+// then loop through the list and process (calling the objects process function)
+// each item in the list. As it processes each item, more items will be added to
+// the object manager's process list.
+// For example function block component's process function will identify the
+// definition block and adding it to the object manager's process list
+
+export class AttributeComponent extends Component {
+  constructor(blockFhx) {
+    super(blockFhx);
+    this.type = valueOfParameter(blockFhx, "TYPE");
+    // this.value
+  }
+
+  process() {
+    console.log(`Attribute ${this.name} has type ${this.type}`);
+  }
+}
+
+export class AttributeInstanceComponent extends Component {
+  constructor(blockFhx) {
+    super(blockFhx);
+    this.value = this.getValue();
+  }
+
+  getValue() {
+    return "[Attribute Instance Value]";
+  }
+
+  process() {
+    console.log(`Attribute Instance ${this.name} has value ${this.value}`);
+  }
+}
+
+export class FunctionBlockComponent extends Component {
+  constructor(blockFhx) {
+    super(blockFhx);
+    this.definition = valueOfParameter(blockFhx, "DEFINITION");
+  }
+  findDefinition(objManager) {
+    return objManager.get(this.definition);
+  }
+
+  process() {
+    console.log(
+      `Function Block ${this.name} has definition ${this.definition}`
+    );
   }
 }
 

@@ -301,3 +301,12 @@ EOD:
 Created ways to digest fhx, findNextComponent, and adding the components found in the object manager. Created tests to test relevant code.
 Next step, making sure all the relevant objects are consumed and included in the object manager.
 Generalize the previous processing function to create data ables.
+
+## 02/13/2025
+
+EOD:
+Refactored ModuleClass component to call for its own table creation.
+Created DSProcessor.js to handle DS specific functions, which includes aseembling necessary information from the components and create table from them.
+Each create table class is targetted for a single table in the design specification, so additional tables can be added in the future should new tables are needed. DeignSpecTables master class simply need to call the additional tables.
+Refactored ObjectCreator to ComponentCreator, which handles switching the type of component to create the correct one. _This code might be redundant, as DSProcessor also does the check of whether the compone is an instance of a specific component class._ the type information already exist with in the component (a parent class field)
+This is the end of sprint 02/03-02/13. I should do sprint retrospective

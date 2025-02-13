@@ -10,6 +10,7 @@ import {
 // import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
 import { componentRunner, ModuleClassComponent } from "./src/v3/Components.js";
 import { debugManager, FhxProcessor } from "./src/v3/Managers.js";
+import { FileIO } from "./src/v1/_FileIO.js";
 
 const outputPath = "output";
 
@@ -123,7 +124,6 @@ let runner3 = (() => {
   let mgr = objectCreator.createManager();
   let moduleClassFhx = mgr.objects._E_M_AGIT.block;
   let moduleClass = new ModuleClassComponent(moduleClassFhx);
-  // console.log(moduleClass.functionBlocks);
   let composites = moduleClass.functionBlocks
     .map((fb) => mgr.get(fb.definition))
     .filter((fb) => fb.type === "FUNCTION_BLOCK_DEFINITION");
@@ -135,5 +135,18 @@ let runner3 = (() => {
   return;
 })();
 
-console.log("I am called");
-debugManager(fhx);
+// debugManager(fhx);
+
+(() => {
+  let fhx = fs.readFileSync("./fhx/Mixer Mixer_EM_Classes.fhx", "utf16le");
+  let module = "_E_M_AGIT";
+  // associating function block definitions with the module class blocks, as precursor
+  let objectCreator = new FhxProcessor(fhx);
+  let mgr = objectCreator.createManager();
+  let moduleClassComponent = mgr.get(module);
+  let res = moduleClassComponent.processDSTable();
+  fs.writeFileSync("output/temp/" + module + ".csv", res, { encoding: "utf8" });
+  return;
+
+  // of processing the module class and its associated function blocks
+})();

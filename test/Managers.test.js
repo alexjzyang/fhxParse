@@ -48,7 +48,7 @@ describe("FhxProcessor, with fhx file containing multiple modules", function () 
   let fhx = fs.readFileSync(textFilePath, "utf16le");
   let mgr = new FhxProcessor(fhx).createManager();
   describe("ObjectManager created by FhxProcessor.createManager", function () {
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_DC_ML, _CT_M_C_AI_RATE, _CT_M_C_C_ML, _CT_M_C_USM_TM", function () {
+    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_DC_ML, __5D419B06_1888B27C__, _CT_M_SNTL_16MON from the fhx file", function () {
       let obj;
       obj = mgr.get("_CT_M_C_DC_ML");
       obj.should.exist;
@@ -61,7 +61,7 @@ describe("FhxProcessor, with fhx file containing multiple modules", function () 
       obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
     });
     // it should contain the following module class: _C_M_AI, _C_M_AI_TARE, _C_M_DI
-    it("should contain MODULE_CLASS: _C_M_AI, _C_M_AI_TARE, _C_M_DI", function () {
+    it("should contain MODULE_CLASS: _C_M_AGIT_M, _E_M_TEMP, _C_M_TCU", function () {
       let obj;
       obj = mgr.get("_C_M_AGIT_M");
       obj.should.exist;
@@ -73,7 +73,7 @@ describe("FhxProcessor, with fhx file containing multiple modules", function () 
       obj.should.exist;
       obj.type.should.equal("MODULE_CLASS");
     });
-    it("should create the components as instance of the correct component classes", function () {
+    it("should create the components as instances of the correct component classes", function () {
       let obj;
       obj = mgr.get("__5D24CE4A_A808E6E3__");
       obj.should.exist;
@@ -94,5 +94,4 @@ describe("FhxProcessor, with fhx file containing multiple modules", function () 
   });
 });
 
-// describe objectmanager as
 // describe();
