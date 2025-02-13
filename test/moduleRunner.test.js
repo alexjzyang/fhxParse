@@ -12,7 +12,7 @@ should();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-describe.skip("moduleRunner", function () {
+describe("moduleRunner", function () {
   const inputFilePath = path.join(__dirname, "data", "emsFhx.fhx");
   const outputDir = path.join(__dirname, "test_output");
 

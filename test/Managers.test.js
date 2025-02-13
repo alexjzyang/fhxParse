@@ -1,88 +1,98 @@
 import { expect, should } from "chai";
 import fs from "fs";
 import path from "path";
-import { ObjectCreator, ObjectManager } from "../src/v3/Managers.js";
+import { FhxProcessor, ObjectManager } from "../src/v3/Managers.js";
+import {
+  FunctionBlockDefinitionComponent,
+  ModuleClassComponent,
+} from "../src/v3/Components.js";
 
 should();
 
-describe("ObjectCreator, with fhx containing a single module block, _E_M_AGIT", function () {
-    let textFilePath = "./test/data/_E_M_AGIT.txt";
-    let fhx = fs.readFileSync(textFilePath, "utf8");
+describe("FhxProcessor, with fhx containing a single module block, _E_M_AGIT", function () {
+  let textFilePath = "./test/data/_E_M_AGIT.txt";
+  let fhx = fs.readFileSync(textFilePath, "utf8");
 
-    // it should instantiate an ObjectCreator object
-    it("should instantiate an ObjectCreator object", function () {
-        let objectCreator = new ObjectCreator(fhx);
-        objectCreator.should.exist.and.be.an.instanceof(ObjectCreator);
+  // it should instantiate an FhxProcessor object
+  it("should instantiate an FhxProcessor object", function () {
+    let fhxProcessor = new FhxProcessor(fhx);
+    fhxProcessor.should.exist.and.be.an.instanceof(FhxProcessor);
+  });
+  describe("createManager", function () {
+    let fhxProcessor = new FhxProcessor(fhx);
+    let mgr = fhxProcessor.createManager();
+
+    // it should create an ObjectManager once create Manger
+    it("should create an ObjectManager object", function () {
+      mgr.should.exist.and.be.an.instanceof(ObjectManager);
     });
-    describe("createManager", function () {
-        let objectCreator = new ObjectCreator(fhx);
-        let mgr = objectCreator.createManager();
 
-        // it should create an ObjectManager once create Manger
-        it("should create an ObjectManager object", function () {
-            mgr.should.exist.and.be.an.instanceof(ObjectManager);
-        });
-
-        // once object manager is created, it should contain one object called _E_M_AGIT
-        // based on the input file
-        it("should contain one object called _E_M_AGIT", function () {
-            mgr.get("_E_M_AGIT").should.exist;
-        });
-
-        // once object manager is created, the objectCreator should contain an empty
-        // original string and an empty remaining string
-
-        it("should consume the entire fhx string once the manager is created", function () {
-            objectCreator.original.should.equal("");
-            objectCreator.remaining.should.equal("");
-        });
+    // once object manager is created, it should contain one object called _E_M_AGIT
+    // based on the input file
+    it("should contain one object called _E_M_AGIT", function () {
+      mgr.get("_E_M_AGIT").should.exist;
     });
+
+    // once object manager is created, the FhxProcessor should contain an empty
+    // original string and an empty remaining string
+
+    it("should consume the entire fhx string once the manager is created", function () {
+      fhxProcessor.original.should.equal("");
+      fhxProcessor.remaining.should.equal("");
+    });
+  });
 });
 
-describe("ObjectCreator, with fhx file containing multiple modules", function () {
-    let textFilePath = "./test/data/Mixer Control_Module_Classes.fhx";
-    let fhx = fs.readFileSync(textFilePath, "utf16le");
-    let mgr = new ObjectCreator(fhx).createManager();
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_DC_ML", function () {
-        let obj = mgr.get("_CT_M_C_DC_ML");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
+describe("FhxProcessor, with fhx file containing multiple modules", function () {
+  let textFilePath = "./test/data/Mixer Mixer_EM_Classes.fhx";
+  let fhx = fs.readFileSync(textFilePath, "utf16le");
+  let mgr = new FhxProcessor(fhx).createManager();
+  describe("ObjectManager created by FhxProcessor.createManager", function () {
+    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_DC_ML, _CT_M_C_AI_RATE, _CT_M_C_C_ML, _CT_M_C_USM_TM", function () {
+      let obj;
+      obj = mgr.get("_CT_M_C_DC_ML");
+      obj.should.exist;
+      obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
+      obj = mgr.get("__5D419B06_1888B27C__");
+      obj.should.exist;
+      obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
+      obj = mgr.get("_CT_M_SNTL_16MON");
+      obj.should.exist;
+      obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
     });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_AI_RATE", function () {
-        let obj = mgr.get("_CT_M_C_AI_RATE");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
+    // it should contain the following module class: _C_M_AI, _C_M_AI_TARE, _C_M_DI
+    it("should contain MODULE_CLASS: _C_M_AI, _C_M_AI_TARE, _C_M_DI", function () {
+      let obj;
+      obj = mgr.get("_C_M_AGIT_M");
+      obj.should.exist;
+      obj.type.should.equal("MODULE_CLASS");
+      obj = mgr.get("_E_M_TEMP");
+      obj.should.exist;
+      obj.type.should.equal("MODULE_CLASS");
+      obj = mgr.get("_C_M_TCU");
+      obj.should.exist;
+      obj.type.should.equal("MODULE_CLASS");
     });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_ALMCHNGDLY", function () {
-        let obj = mgr.get("_CT_M_ALMCHNGDLY");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
+    it("should create the components as instance of the correct component classes", function () {
+      let obj;
+      obj = mgr.get("__5D24CE4A_A808E6E3__");
+      obj.should.exist;
+      obj.should.be.an.instanceof(FunctionBlockDefinitionComponent);
+      obj = mgr.get("_CT_M_CNL_WT_EM");
+      obj.should.exist;
+      obj.should.be.an.instanceof(FunctionBlockDefinitionComponent);
+      obj = mgr.get("__5D1CF4EF_895FDB62__");
+      obj.should.exist;
+      obj.should.be.an.instanceof(FunctionBlockDefinitionComponent);
+      obj = mgr.get("_E_M_COND");
+      obj.should.exist;
+      obj.should.be.an.instanceof(ModuleClassComponent);
+      obj = mgr.get("_C_M_PID_1AI_M");
+      obj.should.exist;
+      obj.should.be.an.instanceof(ModuleClassComponent);
     });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_C_ML", function () {
-        let obj = mgr.get("_CT_M_C_C_ML");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
-    });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_INPUTSEL", function () {
-        let obj = mgr.get("_CT_M_C_INPUTSEL");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
-    });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_FL50", function () {
-        let obj = mgr.get("_CT_M_FL50");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
-    });
-
-    it("should contain FUNCTION_BLOCK_DEFINITION: _CT_M_C_USM_TM", function () {
-        let obj = mgr.get("_CT_M_C_USM_TM");
-        obj.should.exist;
-        obj.type.should.equal("FUNCTION_BLOCK_DEFINITION");
-    });
+  });
 });
+
+// describe objectmanager as
+// describe();

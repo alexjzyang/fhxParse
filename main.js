@@ -4,12 +4,12 @@ import path from "path";
 import * as fhxProcessor from "./src/v1/_FhxProcessor.js";
 import { createTables, moduleRunner, moduleType } from "./moduleRunner.js";
 import {
-    ModuleParameter,
-    ModuleParameterTable,
+  ModuleParameter,
+  ModuleParameterTable,
 } from "./src/DSSpecific/ModuleParameterTable.js";
 // import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
 import { componentRunner, ModuleClassComponent } from "./src/v3/Components.js";
-import { debugManager, ObjectCreator } from "./src/v3/Managers.js";
+import { debugManager, FhxProcessor } from "./src/v3/Managers.js";
 
 const outputPath = "output";
 
@@ -34,20 +34,20 @@ const outputPath = "output";
 
 const fhxPath = "fhx";
 const ems_fhxdata = fs.readFileSync(
-    path.join(fhxPath, "Mixer Mixer_EM_Classes.fhx"),
-    "utf-16le"
+  path.join(fhxPath, "Mixer Mixer_EM_Classes.fhx"),
+  "utf-16le"
 );
 const cms_fhxdata = fs.readFileSync(
-    path.join(fhxPath, "Mixer Control_Module_Classes.fhx"),
-    "utf-16le"
+  path.join(fhxPath, "Mixer Control_Module_Classes.fhx"),
+  "utf-16le"
 );
 const emname = "_E_M_AGIT";
 const cmname = "_C_M_AI";
 const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
 
 function runner() {
-    // moduleRunner(fhx);
-    console.log(fs.readdirSync("./fhx"));
+  // moduleRunner(fhx);
+  console.log(fs.readdirSync("./fhx"));
 }
 
 // function runner2() {
@@ -67,46 +67,43 @@ function runner() {
 // runner2();
 
 function getModuleParameters(moduleBlock) {
-    let moduleParameters = [];
+  let moduleParameters = [];
 
-    // Find Attribute blocks with CATEGORY=COMMON
-    let attributes = fhxProcessor.findBlocks(moduleBlock, "ATTRIBUTE").filter(
-        (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
-    );
-    // Find Attribute Instance blocks of the Module Parameters
-    let attributeInstances = fhxProcessor.findBlocks(
-        moduleBlock,
-        "ATTRIBUTE_INSTANCE"
-    ); // Find  all attribute instances of the module
+  // Find Attribute blocks with CATEGORY=COMMON
+  let attributes = fhxProcessor.findBlocks(moduleBlock, "ATTRIBUTE").filter(
+    (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
+  );
+  // Find Attribute Instance blocks of the Module Parameters
+  let attributeInstances = fhxProcessor.findBlocks(
+    moduleBlock,
+    "ATTRIBUTE_INSTANCE"
+  ); // Find  all attribute instances of the module
 
-    // for each module parameter defined in attribute instance
-    // find the parameter value described in attribute instances
-    // every module parameter should have a value, if not throw an error
-    for (const attrIndex in attributes) {
-        for (const attrInstanceIndex in attributeInstances) {
-            const attributeInstance = attributeInstances[attrInstanceIndex];
-            const attribute = attributes[attrIndex];
-            if (
-                // find the attribute instance associated with the attribute that are module parameters
-                fhxProcessor.valueOfParameter(attribute, "NAME") ===
-                fhxProcessor.valueOfParameter(attributeInstance, "NAME")
-            ) {
-                moduleParameters.push(
-                    // Create a list of ModuleParameter objects from those parameters
-                    new ModuleParameter(
-                        fhxProcessor.valueOfParameter(
-                            attributeInstance,
-                            "NAME"
-                        ),
-                        fhxProcessor.valueOfParameter(attribute, "TYPE"),
-                        attributeInstance
-                    )
-                );
-            }
-        }
+  // for each module parameter defined in attribute instance
+  // find the parameter value described in attribute instances
+  // every module parameter should have a value, if not throw an error
+  for (const attrIndex in attributes) {
+    for (const attrInstanceIndex in attributeInstances) {
+      const attributeInstance = attributeInstances[attrInstanceIndex];
+      const attribute = attributes[attrIndex];
+      if (
+        // find the attribute instance associated with the attribute that are module parameters
+        fhxProcessor.valueOfParameter(attribute, "NAME") ===
+        fhxProcessor.valueOfParameter(attributeInstance, "NAME")
+      ) {
+        moduleParameters.push(
+          // Create a list of ModuleParameter objects from those parameters
+          new ModuleParameter(
+            fhxProcessor.valueOfParameter(attributeInstance, "NAME"),
+            fhxProcessor.valueOfParameter(attribute, "TYPE"),
+            attributeInstance
+          )
+        );
+      }
     }
+  }
 
-    return new ModuleParameterTable(moduleParameters);
+  return new ModuleParameterTable(moduleParameters);
 }
 
 // ------------------------------------------------------------------------------ //
@@ -119,19 +116,24 @@ function getModuleParameters(moduleBlock) {
 let textFilePath = "./fhx/Mixer Mixer_EM_Classes.fhx";
 let fhx = fs.readFileSync(textFilePath, "utf16le");
 
+// looks for function block definitions
+//
 let runner3 = (() => {
-    let objectCreator = new ObjectCreator(fhx);
-    let mgr = objectCreator.createManager();
-    let moduleClassFhx = mgr.objects._E_M_AGIT.block;
-    let moduleClass = new ModuleClassComponent(moduleClassFhx);
-    // console.log(moduleClass.functionBlocks);
-    let composites = moduleClass.functionBlocks
-        .map((fb) => mgr.get(fb.definition))
-        .filter((fb) => fb.type === "FUNCTION_BLOCK_DEFINITION");
-    composites.forEach((fb) => {
-        fs.writeFileSync("output/" + fb.name + ".txt", fb.block, {
-            encoding: "utf8",
-        });
+  let objectCreator = new FhxProcessor(fhx);
+  let mgr = objectCreator.createManager();
+  let moduleClassFhx = mgr.objects._E_M_AGIT.block;
+  let moduleClass = new ModuleClassComponent(moduleClassFhx);
+  // console.log(moduleClass.functionBlocks);
+  let composites = moduleClass.functionBlocks
+    .map((fb) => mgr.get(fb.definition))
+    .filter((fb) => fb.type === "FUNCTION_BLOCK_DEFINITION");
+  composites.forEach((fb) => {
+    fs.writeFileSync("output/temp/" + fb.name + ".txt", fb.block, {
+      encoding: "utf8",
     });
-    return;
+  });
+  return;
 })();
+
+console.log("I am called");
+debugManager(fhx);

@@ -20,6 +20,8 @@ const testTxtFile = "test.txt";
 const testJsonFile = "test.json";
 const testCsvFile = "test.csv";
 const testFhxFile = "test.fhx";
+
+// this is not ready
 describe.skip("FileIO", function () {
   before(function () {
     if (!fs.existsSync(testDir)) {
@@ -60,7 +62,7 @@ describe.skip("FileIO", function () {
   it("should read a UTF-16LE encoded .fhx file", function () {
     const data = "Hello, world!";
     const buffer = Buffer.from(data, "utf16le");
-    fs.writeFileSync(path.join(testDir, testFhxFile), buffer);
+    fs.writeFileSync(path.join(testDir, testFhxFile), "ut");
     const content = readFhxFile(path.join(testDir, testFhxFile));
     expect(content).to.equal(data);
   });
