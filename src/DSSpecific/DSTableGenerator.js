@@ -281,9 +281,3 @@ function createTables(fhxdata, { fhx, name, type }) {
   }
   return res;
 }
-
-// let fhxfile1 = fs.readFileSync("src/fhx/Mixer Control_Module_Classes.fhx");
-// let fhxfile2 = fs.readFileSync("src/fhx/Mixer Mixer_EM_Classes.fhx");
-
-// moduleRunner(fhxfile1);
-// moduleRunner(fhxfile2);

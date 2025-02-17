@@ -144,3 +144,11 @@ class FileIO {
 }
 
 export { FileIO };
+
+export class NewFileIO {
+  static writeFile(data, filepath, { filetype = "txt", encoding = "utf8" }) {}
+  static readFile(filepath, encoding = "utf8") {}
+
+  // more specifit interfaces such as writeTxtFile, writeCsvFile, readJsonFile,
+  // etc. can be added here, if their usage is frequent.
+}

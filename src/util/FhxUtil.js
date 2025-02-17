@@ -1,5 +1,3 @@
-// import { FileIO } from "./_FileIO.js";
-
 import fs from "fs";
 import path from "path";
 import { createObjectCsvWriter as createCsvWriter } from "csv-writer";
