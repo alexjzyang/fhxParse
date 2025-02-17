@@ -1,5 +1,5 @@
 import { findBlocks, valueOfParameter } from "../v1/_FhxProcessor.js";
-import { ComponentProcessor } from "./ComponentProcessor.js";
+import { ComponentProcessor } from "../junkyard/ComponentProcessor.js";
 import { DesignSpecTables } from "./DSProcessor.js";
 
 export class ComponentCreator {

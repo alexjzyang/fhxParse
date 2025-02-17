@@ -1,6 +1,8 @@
 import { ComponentCreator, FunctionBlockComponent } from "./Components.js";
 
 export class ObjectManager {
+  // in this design ObjectManager is no information on what is being added to it.
+  // It might as well be an regular js object.
   constructor() {
     this.objects = {};
     // this.children = {};
@@ -16,7 +18,7 @@ export class ObjectManager {
 }
 
 /**
- * Object Creator is responsible to create fhx components and add them to the object manager
+ * FhxProcessor is responsible to create fhx components and add them to the object manager
  * It has the added benefit to monitor how much of the fhx file is left to process
  */
 export class FhxProcessor {
@@ -25,6 +27,8 @@ export class FhxProcessor {
     this.remaining = "";
   }
 
+  // this fhx digestion assumes the blocks are digested and remoted one by one,
+  // because the startIndex is always 0
   #findNextComponent() {
     // save start index, current depth is 0
     let startIndex = 0;

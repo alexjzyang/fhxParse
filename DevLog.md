@@ -305,8 +305,17 @@ Generalize the previous processing function to create data ables.
 ## 02/13/2025
 
 EOD:
-Refactored ModuleClass component to call for its own table creation.
+~~Refactored ModuleClass component to call for its own table creation.~~
 Created DSProcessor.js to handle DS specific functions, which includes aseembling necessary information from the components and create table from them.
 Each create table class is targetted for a single table in the design specification, so additional tables can be added in the future should new tables are needed. DeignSpecTables master class simply need to call the additional tables.
 Refactored ObjectCreator to ComponentCreator, which handles switching the type of component to create the correct one. _This code might be redundant, as DSProcessor also does the check of whether the compone is an instance of a specific component class._ the type information already exist with in the component (a parent class field)
+The Component Proessor class (ComponentProcessor.js) is not being used
 This is the end of sprint 02/03-02/13. I should do sprint retrospective
+
+## 02/17/2025
+
+Sprint #2 Start:
+
+- Examine the DS table coverage
+- Examine test coverage
+- Major refactor for agnosticity, and interface design

@@ -19,6 +19,10 @@ import * as fhxProcessor from "./src/v1/_FhxProcessor.js";
 import fs, { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 
+let fhxfile1 = fs.readFileSync("fhx/Mixer Control_Module_Classes.fhx");
+
+let fhxfile2 = fs.readFileSync("fhx/Mixer Mixer_EM_Classes.fhx");
+
 // Process the class and equipment modules given a fhx file
 // The fhx file has to include the definition of the composites
 /**
@@ -283,3 +287,6 @@ export function createTables(fhxdata, { fhx, name, type }) {
   }
   return res;
 }
+
+// moduleRunner(fhxfile1);
+// moduleRunner(fhxfile2);
