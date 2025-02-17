@@ -1,11 +1,11 @@
 import { expect, should } from "chai";
 import fs from "fs";
 import path from "path";
-import { FhxProcessor, ObjectManager } from "../src/v3/Managers.js";
+import { FhxProcessor, ObjectManager } from "../src/Managers.js";
 import {
   FunctionBlockDefinitionComponent,
   ModuleClassComponent,
-} from "../src/v3/Components.js";
+} from "../src/Components.js";
 
 should();
 

@@ -13,7 +13,7 @@
 
 import path from "path";
 import fs from "fs";
-import { findBlockWithName, valueOfParameter } from "../v1/_FhxProcessor.js";
+import { findBlockWithName, valueOfParameter } from "../util/FhxUtil.js";
 import { DSTable } from "./Common.js";
 
 // Module Properties

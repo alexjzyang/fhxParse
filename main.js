@@ -1,125 +1,13 @@
-// import { FhxProcessor, FileIO, namesFromIndex } from "fhxtool";
-import fs, { mkdirSync, writeFileSync } from "fs";
+import fs from "fs";
+import { ModuleClassComponent } from "./src/Components.js";
+import { FhxProcessor } from "./src/Managers.js";
 import path from "path";
-import * as fhxProcessor from "./src/v1/_FhxProcessor.js";
-import { createTables, moduleRunner, moduleType } from "./moduleRunner.js";
-import {
-  ModuleParameter,
-  ModuleParameterTable,
-} from "./src/DSSpecific/ModuleParameterTable.js";
-// import { SimpleModuleClass } from "./src/v2/FhxComponents/SimpleComponent.js";
-import { componentRunner, ModuleClassComponent } from "./src/v3/Components.js";
-import { debugManager, FhxProcessor } from "./src/v3/Managers.js";
-import { FileIO } from "./src/v1/_FileIO.js";
 
-const outputPath = "output";
-
-// const fhxFiles = [
-//     "GEX CompositeTemplates.fhx",
-//     "GEX ModuleTemplates.fhx",
-//     "GEX Named Sets.fhx",
-//     "GEX_Control_Module_Classes.fhx",
-//     "GEX_Mixer_EM_Classes.fhx",
-//     "GEX_Mixer_Phase_Classes.fhx",
-//     "GEX_Unit_Classes.fhx",
-//     "Mixer Alarm Types.fhx",
-//     "Mixer CompositeTemplates.fhx",
-//     "Mixer Control_Module_Classes.fhx",
-//     "Mixer Mixer_EM_Classes.fhx",
-//     "Mixer Mixer_Phase_Classes.fhx",
-//     "Mixer ModuleTemplates.fhx",
-//     "Mixer Named Sets.fhx",
-//     "N-MIXERS Instances.fhx",
-//     "_E_M_AGIT.fhx",
-// ];
-
-const fhxPath = "fhx";
-const ems_fhxdata = fs.readFileSync(
-  path.join(fhxPath, "Mixer Mixer_EM_Classes.fhx"),
-  "utf-16le"
-);
-const cms_fhxdata = fs.readFileSync(
-  path.join(fhxPath, "Mixer Control_Module_Classes.fhx"),
-  "utf-16le"
-);
-const emname = "_E_M_AGIT";
-const cmname = "_C_M_AI";
-const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
-
-function runner() {
-  // moduleRunner(fhx);
-  console.log(fs.readdirSync("./fhx"));
-}
-
-// function runner2() {
-//     // const em_E_M_AGITFhx = fs.readFileSync("./fhx/_E_M_AGIT.fhx", "utf-16le");
-
-//     const fhx = em_E_M_AGITFhx;
-
-//     let _E_M_AGITModuleClass = new SimpleModuleClass(fhx); // create a simple module class object
-//     let paramTable = _E_M_AGITModuleClass.createParameterTable();
-//     fs.writeFileSync(path.join(outputPath, "temp.csv"), paramTable, {
-//         recursive: true,
-//     });
-
-//     return;
-// }
-// runner(fhx);
-// runner2();
-
-function getModuleParameters(moduleBlock) {
-  let moduleParameters = [];
-
-  // Find Attribute blocks with CATEGORY=COMMON
-  let attributes = fhxProcessor.findBlocks(moduleBlock, "ATTRIBUTE").filter(
-    (attribute) => attribute.includes("CATEGORY=COMMON") // Filter attributes with CATEGORY=COMMON, i.e. module parameters
-  );
-  // Find Attribute Instance blocks of the Module Parameters
-  let attributeInstances = fhxProcessor.findBlocks(
-    moduleBlock,
-    "ATTRIBUTE_INSTANCE"
-  ); // Find  all attribute instances of the module
-
-  // for each module parameter defined in attribute instance
-  // find the parameter value described in attribute instances
-  // every module parameter should have a value, if not throw an error
-  for (const attrIndex in attributes) {
-    for (const attrInstanceIndex in attributeInstances) {
-      const attributeInstance = attributeInstances[attrInstanceIndex];
-      const attribute = attributes[attrIndex];
-      if (
-        // find the attribute instance associated with the attribute that are module parameters
-        fhxProcessor.valueOfParameter(attribute, "NAME") ===
-        fhxProcessor.valueOfParameter(attributeInstance, "NAME")
-      ) {
-        moduleParameters.push(
-          // Create a list of ModuleParameter objects from those parameters
-          new ModuleParameter(
-            fhxProcessor.valueOfParameter(attributeInstance, "NAME"),
-            fhxProcessor.valueOfParameter(attribute, "TYPE"),
-            attributeInstance
-          )
-        );
-      }
-    }
-  }
-
-  return new ModuleParameterTable(moduleParameters);
-}
-
-// ------------------------------------------------------------------------------ //
-
-// componentRunner(em_E_M_AGITFhx);
-
-// let textFilePath = "./test/data/_E_M_AGIT.txt";
-// let fhx = fs.readFileSync(textFilePath, "utf8");
-
-let textFilePath = "./fhx/Mixer Mixer_EM_Classes.fhx";
+let textFilePath = "src/fhx/Mixer Mixer_EM_Classes.fhx";
 let fhx = fs.readFileSync(textFilePath, "utf16le");
 
-// looks for function block definitions
-//
-let runner3 = (() => {
+// write the all function_block_definitions to temp output folder in txt format
+(() => {
   let objectCreator = new FhxProcessor(fhx);
   let mgr = objectCreator.createManager();
   let moduleClassFhx = mgr.objects._E_M_AGIT.block;
@@ -128,24 +16,29 @@ let runner3 = (() => {
     .map((fb) => mgr.get(fb.definition))
     .filter((fb) => fb.type === "FUNCTION_BLOCK_DEFINITION");
   composites.forEach((fb) => {
-    fs.writeFileSync("output/temp/" + fb.name + ".txt", fb.block, {
-      encoding: "utf8",
-    });
+    fs.writeFileSync(
+      path.join("test/output/temp", fb.name + ".txt"),
+      fb.block,
+      {
+        encoding: "utf8",
+      }
+    );
   });
   return;
 })();
 
-// debugManager(fhx);
-
+// writes all tables of moduleclasscomponent to csv table
 (() => {
-  let fhx = fs.readFileSync("./fhx/Mixer Mixer_EM_Classes.fhx", "utf16le");
+  let fhx = fs.readFileSync("src/fhx/Mixer Mixer_EM_Classes.fhx", "utf16le");
   let module = "_E_M_AGIT";
   // associating function block definitions with the module class blocks, as precursor
   let objectCreator = new FhxProcessor(fhx);
   let mgr = objectCreator.createManager();
   let moduleClassComponent = mgr.get(module);
   let res = moduleClassComponent.processDSTable();
-  fs.writeFileSync("output/temp/" + module + ".csv", res, { encoding: "utf8" });
+  fs.writeFileSync("test/output/temp" + module + ".csv", res, {
+    encoding: "utf8",
+  });
   return;
 
   // of processing the module class and its associated function blocks
