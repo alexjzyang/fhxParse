@@ -146,8 +146,47 @@ class FileIO {
 export { FileIO };
 
 export class NewFileIO {
-  static writeFile(data, filepath, { filetype = "txt", encoding = "utf8" }) {}
-  static readFile(filepath, encoding = "utf8") {}
+  // if path includes an extension that is fhx, then the encoding should be utf16le
+  // if the subfolders do not exist, they should be created
+  // if any additional actions were taken, there should be a console log output
+  static writeFile(filepath, data, options) {
+    let filetype, encoding, override;
+    filetype = options?.filetype || "txt";
+    encoding = options?.encoding || "utf8";
+    override = options?.override === undefined || true;
+
+    // Additional logic to handle different file types
+    // if function call specifies do not override, then skip the following
+    if (!override) {
+      // if fhx file is to be written, then set encoding to utf16le
+      if (filetype === "fhx" || filepath.endsWith(".fhx")) {
+        encoding = "utf16le";
+        console.log("Encoding set to utf16le for the input fhx file.");
+      }
+      // if the filepath does not exist, create the directory
+      if (!fs.existsSync(filepath)) {
+        const dir = path.dirname(filepath);
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`Directory created at ${dir}`);
+      }
+    }
+
+    // Write data to the file
+    fs.writeFileSync(filepath, data, encoding);
+  }
+
+  // static readFile(
+  //   filepath,
+  //   options = { filetype: "fhx", encoding: "utf8", override: false }
+  // ) {
+  //   if (!override) {
+  //     if (filepath.endsWith(".fhx" || filetype === "fhx")) {
+  //       encoding = "utf16le";
+  //       console.log("Encoding set to utf16le for the input fhx file.");
+  //     }
+  //   }
+  //   return fs.readFileSync(filepath, encoding);
+  // }
 
   // more specifit interfaces such as writeTxtFile, writeCsvFile, readJsonFile,
   // etc. can be added here, if their usage is frequent.
