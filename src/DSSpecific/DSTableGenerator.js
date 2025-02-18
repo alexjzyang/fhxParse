@@ -3,7 +3,7 @@
  */
 
 import * as dscreator from "../DSCreator.js";
-import { FileIO, NewFileIO } from "../util/FileIO.js";
+import { FileIO } from "../util/FileIO.js";
 import { getModuleParameters } from "./ModuleParameterTable.js";
 import { getModuleProperties } from "./ModulePropertyTable.js";
 import { getFunctionBlocks } from "./FunctionBlockTable.js";
@@ -69,48 +69,42 @@ export function tableGenerator(
             commandsCsv = moduleTables.commands.toCsvString();
             childDevicesCsv = moduleTables.childDevices.toCsvString();
         }
-        NewFileIO.writeFile(
+        FileIO.writeFile(
             path.join(outputPath, `${module.name}.txt`),
             module.fhx
         );
-        // FileIO.writeTxtFile(
-        //     module.fhx,
-        //     outputPath,
-        //     `${module.name}.txt`,
-        //     false
-        // );
         // write the csv string to a file
-        NewFileIO.writeFile(
-            propertiesCsv,
-            path.join(outputPath, "properties.csv")
+        FileIO.writeFile(
+            path.join(outputPath, "properties.csv"),
+            propertiesCsv
         );
-        NewFileIO.writeFile(
-            parametersCsv,
-            path.join(outputPath, "parameters.csv")
+        FileIO.writeFile(
+            path.join(outputPath, "parameters.csv"),
+            parametersCsv
         );
-        NewFileIO.writeFile(
-            functionBlocksCsv,
-            path.join(outputPath, "functionBlocks.csv")
+        FileIO.writeFile(
+            path.join(outputPath, "functionBlocks.csv"),
+            functionBlocksCsv
         );
-        NewFileIO.writeFile(
-            embeddedCompositeBlocksCsv,
-            path.join(outputPath, "emBeddedCompositeBlocks.csv")
+        FileIO.writeFile(
+            path.join(outputPath, "emBeddedCompositeBlocks.csv"),
+            embeddedCompositeBlocksCsv
         );
-        NewFileIO.writeFile(
-            linkedCompositeBlocksCsv,
-            path.join(outputPath, "linkedCompositeBlocks.csv")
+        FileIO.writeFile(
+            path.join(outputPath, "linkedCompositeBlocks.csv"),
+            linkedCompositeBlocksCsv
         );
-        NewFileIO.writeFile(path.join(outputPath, "alarms.csv"), alarmsCsv);
-        NewFileIO.writeFile(
+        FileIO.writeFile(path.join(outputPath, "alarms.csv"), alarmsCsv);
+        FileIO.writeFile(
             path.join(outputPath, "getHistoryCollection.csv"),
             historyCollectionCsv
         );
         if (module.type === "Equipment Module Class") {
-            NewFileIO.writeFile(
+            FileIO.writeFile(
                 path.join(outputPath, "commands.csv"),
                 commandsCsv
             );
-            NewFileIO.writeFile(
+            FileIO.writeFile(
                 path.join(outputPath, "childDevices.csv"),
                 childDevicesCsv
             );
@@ -141,7 +135,7 @@ export function tableGenerator(
       }\n${historyCollectionCsv}`;
 
         // Write the combined CSV string to a new file
-        NewFileIO.writeFile(path.join(outputPath, "combined.csv"), combinedCsv);
+        FileIO.writeFile(path.join(outputPath, "combined.csv"), combinedCsv);
     });
     return;
 }

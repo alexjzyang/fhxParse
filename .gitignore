@@ -3,4 +3,4 @@ src/junkyard/*
 node_modules/*
 *.csv
 test/test_output/*
-output/*
+test/output/*

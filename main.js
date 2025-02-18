@@ -4,10 +4,10 @@ import { FhxProcessor } from "./src/Managers.js";
 import path from "path";
 
 import { testTableGenerator } from "./src/DSSpecific/main.js";
-import { NewFileIO } from "./src/util/FileIO.js";
+import { FileIO } from "./src/util/FileIO.js";
 
 let textFilePath = "src/fhx/Mixer Mixer_EM_Classes.fhx";
-let fhx = NewFileIO.readFile(textFilePath);
+let fhx = FileIO.readFile(textFilePath);
 
 // write the all function_block_definitions to temp output folder in txt format
 (() => {
@@ -19,7 +19,7 @@ let fhx = NewFileIO.readFile(textFilePath);
         .map((fb) => mgr.get(fb.definition))
         .filter((fb) => fb.type === "FUNCTION_BLOCK_DEFINITION");
     composites.forEach((fb) => {
-        NewFileIO.writeFile(
+        FileIO.writeFile(
             path.join("test/output/temp", fb.name + ".txt"),
             fb.block,
             {
@@ -32,14 +32,14 @@ let fhx = NewFileIO.readFile(textFilePath);
 
 // writes all tables of moduleclasscomponent to csv table
 (() => {
-    let fhx = NewFileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
+    let fhx = FileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
     let module = "_E_M_AGIT";
     // associating function block definitions with the module class blocks, as precursor
     let objectCreator = new FhxProcessor(fhx);
     let mgr = objectCreator.createManager();
     let moduleClassComponent = mgr.get(module);
     let res = moduleClassComponent.processDSTable();
-    NewFileIO.writeFile("test/output/temp" + module + ".csv", res, {
+    FileIO.writeFile(path.join("test/output/temp", module + ".csv"), res, {
         encoding: "utf8",
     });
     return;

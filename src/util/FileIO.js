@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-class FileIO {
+class _FileIO {
     /**
      * Prepares the directory and file path for writing.
      *
@@ -152,9 +152,9 @@ class FileIO {
     }
 }
 
-export { FileIO };
+// export { FileIO };
 
-export class NewFileIO {
+export class FileIO {
     // if path includes an extension that is fhx, then the encoding should be utf16le
     // if the subfolders do not exist, they should be created
     // if any additional actions were taken, there should be a console log output
