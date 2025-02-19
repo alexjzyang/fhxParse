@@ -176,7 +176,6 @@ export class FileIO {
             if (!fs.existsSync(filepath)) {
                 const dir = path.dirname(filepath);
                 fs.mkdirSync(dir, { recursive: true });
-                console.log(`Directory created at ${dir}`);
             }
         }
 

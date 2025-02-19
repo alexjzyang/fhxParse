@@ -13,7 +13,11 @@ import { getHistoryCollection } from "./HistoryTable.js";
 import { getEMCommands } from "./EMCommands.js";
 import { getEMChildDevices } from "./EMChildDevices.js";
 import { createTestFolder } from "../util/OutputFolderGenerator.js";
-import * as fhxProcessor from "../util/FhxUtil.js";
+import {
+    valueOfParameter,
+    findBlocks,
+    findBlockWithName,
+} from "../util/FhxUtil.js";
 import path from "path";
 
 // Process the class and equipment modules given a fhx file
@@ -30,13 +34,12 @@ export function tableGenerator(
 ) {
     let { outputBaseDir, outputBaseName } = options; // destruct the options object
 
-    let modules = fhxProcessor
-        .findBlocks(fhxdata, "MODULE_CLASS") // find all module blocks
+    let modules = findBlocks(fhxdata, "MODULE_CLASS") // find all module blocks
         .map((block) => {
             // this can be encaptulated in a class containing a block, with name and fhx info
             return {
                 // return the block's name and fhx
-                name: fhxProcessor.valueOfParameter(block, "NAME"),
+                name: valueOfParameter(block, "NAME"),
                 fhx: block,
             };
         });
@@ -151,7 +154,7 @@ export function tableGenerator(
 //  * @returns {Array<{name: string, definition: string}>} - An array of objects containing the command names and their definitions.
 //  */
 // function listEMCommands(emfhx) {
-//   // let emname = fhxProcessor.nameOf(emfhx);
+//   // let emname = nameOf(emfhx);
 
 //   let commandsFhx = dscreator.findAll(emfhx, Function_Block, {
 //     value: "COMMAND_00",
@@ -159,8 +162,8 @@ export function tableGenerator(
 //   });
 
 //   let cmds = commandsFhx.map((block) => {
-//     let commandname = fhxProcessor.valueOfParameter(block, "NAME");
-//     let commanddefinition = fhxProcessor.valueOfParameter(block, "DEFINITION");
+//     let commandname = valueOfParameter(block, "NAME");
+//     let commanddefinition = valueOfParameter(block, "DEFINITION");
 //     return { name: commandname, definition: commanddefinition };
 //   });
 //   return cmds;
@@ -180,7 +183,7 @@ export function tableGenerator(
 
 //   // add fhx data to each command
 //   emCommands.map((command) => {
-//     let definitionBlock = fhxProcessor.findBlockWithName(
+//     let definitionBlock = findBlockWithName(
 //       emFhxData,
 //       Function_Block_Definition,
 //       command.definition
@@ -206,7 +209,7 @@ export function tableGenerator(
 // }
 
 // function cmdRunner(ems_fhxdata) {
-//   let emfhxdata = fhxProcessor.findBlockWithName(
+//   let emfhxdata = findBlockWithName(
 //     ems_fhxdata,
 //     Module_Class,
 //     emname
@@ -218,14 +221,14 @@ export function tableGenerator(
 //     emCommands[0].name
 //   );
 
-//   let sfcdata = fhxProcessor.processSFC(cmdFhx);
+//   let sfcdata = processSFC(cmdFhx);
 //   dscreator.sfcToCsv(outputPath, "sfc.csv", cmdFhx);
 //   return;
 // }
 
 function processComposites(fhx_data, functionBlock) {
-    let definition = fhxProcessor.valueOfParameter(functionBlock, "DEFINITION"); // identify the name of the associated function block definition
-    let block = fhxProcessor.findBlockWithName(
+    let definition = valueOfParameter(functionBlock, "DEFINITION"); // identify the name of the associated function block definition
+    let block = findBlockWithName(
         fhx_data,
         "FUNCTION_BLOCK_DEFINITION",
         definition
@@ -236,7 +239,7 @@ function processComposites(fhx_data, functionBlock) {
 export function moduleType(block) {
     // block is a function block definition
     let type;
-    let category = fhxProcessor.valueOfParameter(block, "CATEGORY");
+    let category = valueOfParameter(block, "CATEGORY");
 
     switch (true) {
         case category.includes("Library/CompositeTemplates"):
@@ -268,7 +271,7 @@ export function moduleType(block) {
  * @returns {object} res, which contains relevant tables for DS creation
  */
 function createTables(fhxdata, { fhx, name, type }) {
-    let moduleBlock = fhxProcessor.findBlockWithName(fhx, "MODULE_CLASS", name);
+    let moduleBlock = findBlockWithName(fhx, "MODULE_CLASS", name);
 
     let res = {
         properties: getModuleProperties(moduleBlock),

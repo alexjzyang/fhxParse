@@ -8,7 +8,7 @@ let ModuleClass = "MODULE_CLASS";
  * @param {string} fhx_data input fhx data
  * @param {string} modulename the module which properties are to be found
  */
-function obtainModuleProperties(fhx_data, modulename) {
+function obtainModuleProperties(fhx_data, modulename) {0
   let blockType = ModuleClass; // The block is a module class block
   let block = fhxProcessor.findBlockWithName(fhx_data, blockType, modulename); // Find the module class block
   let properties = fhxProcessor.classProperties(block); // Extract the properties of the module class block

@@ -1,13 +1,16 @@
-import { tableGenerator } from "./DSTableGenerator.js";
-import fs from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
 
-export function testTableGenerator(fhxFile) {
-    let fhxfile1 = fs.readFileSync("src/fhx/Mixer Control_Module_Classes.fhx");
-    let fhxfile2 = fs.readFileSync("src/fhx/Mixer Mixer_EM_Classes.fhx");
-    if (!fhxFile) {
-        tableGenerator(fhxfile1);
-        tableGenerator(fhxfile2);
-    }
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export { tableGenerator };
+(() => {
+    console.log(__dirname);
+})();
+
+
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);

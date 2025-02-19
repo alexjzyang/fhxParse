@@ -18,6 +18,7 @@ describe("FhxProcessor, with fhx containing a single module block, _E_M_AGIT", f
     fhxProcessor.should.exist.and.be.an.instanceof(FhxProcessor);
   });
   describe("createManager", function () {
+    // testing  createManager coverts the #findNextComponent method
     let fhxProcessor = new FhxProcessor(fhx);
     let mgr = fhxProcessor.createManager();
 

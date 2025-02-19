@@ -13,7 +13,7 @@
 
 import path from "path";
 import fs from "fs";
-import { findBlockWithName, valueOfParameter } from "../util/FhxUtil.js";
+import { valueOfParameter } from "../util/FhxUtil.js";
 import { DSTable } from "./Common.js";
 
 // Module Properties
@@ -28,16 +28,16 @@ import { DSTable } from "./Common.js";
  */
 
 const moduleProperties = [
-  // list of module properties
-  "DESCRIPTION",
-  "PERIOD",
-  "PRIMARY_CONTROL_DISPLAY",
-  "INSTRUMENT_AREA_DISPLAY",
-  "DETAIL_DISPLAY",
-  "TYPE",
-  "SUB_TYPE",
-  "NVM",
-  "PERSIST",
+    // list of module properties
+    "DESCRIPTION",
+    "PERIOD",
+    "PRIMARY_CONTROL_DISPLAY",
+    "INSTRUMENT_AREA_DISPLAY",
+    "DETAIL_DISPLAY",
+    "TYPE",
+    "SUB_TYPE",
+    "NVM",
+    "PERSIST",
 ];
 
 /**
@@ -46,16 +46,16 @@ const moduleProperties = [
  * @returns {PropertyTable} - The table of module properties.
  */
 function getModuleProperties(moduleBlock) {
-  // obtain all module properties
-  let cmProperties = moduleProperties.map((property) => {
-    // find all module properties based on the list of module properties above
-    // instead of mapping, we can possibly use an switch statement like in module property table.js
-    let value = valueOfParameter(moduleBlock, property);
-    return new ModuleProperty(property, value);
-  });
+    // obtain all module properties
+    let cmProperties = moduleProperties.map((property) => {
+        // find all module properties based on the list of module properties above
+        // instead of mapping, we can possibly use an switch statement like in module property table.js
+        let value = valueOfParameter(moduleBlock, property);
+        return new ModuleProperty(property, value);
+    });
 
-  // compiling into table
-  return new PropertyTable(cmProperties); // Create a new PropertyTable object with the list of module properties
+    // compiling into table
+    return new PropertyTable(cmProperties); // Create a new PropertyTable object with the list of module properties
 }
 
 /**
@@ -64,20 +64,20 @@ function getModuleProperties(moduleBlock) {
  */
 
 class ModuleProperty {
-  /**
-   * Creates an instance of moduleProperty.
-   * For example, the property = "DESCRIPTION"; value= "Analogue Input Module"
-   *
-   * @param {string} property - The property name.
-   * @param {string} value - The property value.
-   */
-  constructor(property, value) {
-    this.property = property;
-    this.value = value;
-  }
-  toString() {
-    return `${this.property} | ${this.value}`;
-  }
+    /**
+     * Creates an instance of moduleProperty.
+     * For example, the property = "DESCRIPTION"; value= "Analogue Input Module"
+     *
+     * @param {string} property - The property name.
+     * @param {string} value - The property value.
+     */
+    constructor(property, value) {
+        this.property = property;
+        this.value = value;
+    }
+    toString() {
+        return `${this.property} | ${this.value}`;
+    }
 }
 
 /**
@@ -86,27 +86,27 @@ class ModuleProperty {
  * @extends DSTable
  */
 class PropertyTable extends DSTable {
-  /**
-   * Creates an instance of PropertyTable.
-   * @param {Array<ModuleProperty>} moduleProperties - The list of module properties.
-   */
-  constructor(moduleProperties) {
-    super("Module Properties", null, moduleProperties); // Instantiate a table of properties with Table name, header and data
-  }
-
-  toCsvString() {
-    // Convert the table to a CSV string
-    let csv = "";
-    if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
-
-    for (const { property, value } of this.data.sort((a, b) =>
-      a.property.localeCompare(b.property)
-    )) {
-      let row = [property, value];
-      csv += row.join(",") + "\n";
+    /**
+     * Creates an instance of PropertyTable.
+     * @param {Array<ModuleProperty>} moduleProperties - The list of module properties.
+     */
+    constructor(moduleProperties) {
+        super("Module Properties", null, moduleProperties); // Instantiate a table of properties with Table name, header and data
     }
-    return csv;
-  }
+
+    toCsvString() {
+        // Convert the table to a CSV string
+        let csv = "";
+        if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
+
+        for (const { property, value } of this.data.sort((a, b) =>
+            a.property.localeCompare(b.property)
+        )) {
+            let row = [property, value];
+            csv += row.join(",") + "\n";
+        }
+        return csv;
+    }
 }
 
 export { getModuleProperties };

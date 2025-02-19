@@ -14,7 +14,7 @@ describe("FileIO", function () {
     const testTxtFile = path.join(testDir, "testFile.txt");
     const testContent = "Hello, world!";
     // const utf16Content = "Hello, world! in UTF16";
-    const fhxFilePath = path.join("src/fhx", "_E_M_AGIT.fhx");
+    const fhxFilePath = path.join("test/data", "_E_M_AGIT.fhx");
 
     before(function () {
         if (!fs.existsSync(testDir)) {

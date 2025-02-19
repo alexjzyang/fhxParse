@@ -19,11 +19,7 @@
  *   }
   }
  */
-import {
-  findBlocks,
-  findBlockWithName,
-  valueOfParameter,
-} from "../util/FhxUtil.js";
+import { findBlocks, valueOfParameter } from "../util/FhxUtil.js";
 import { DSTable } from "./Common.js";
 
 /**
@@ -32,18 +28,18 @@ import { DSTable } from "./Common.js";
  * @returns {HistoryCollectionTable} - The table of historised parameters.
  */
 function getHistoryCollection(moduleBlock) {
-  let historizedParameterBlocks = findBlocks(
-    // find all parameters which are historized
-    moduleBlock,
-    "ATTRIBUTE_INSTANCE"
-  ).filter((attribute) => attribute.includes("HISTORY_DATA_POINT"));
+    let historizedParameterBlocks = findBlocks(
+        // find all parameters which are historized
+        moduleBlock,
+        "ATTRIBUTE_INSTANCE"
+    ).filter((attribute) => attribute.includes("HISTORY_DATA_POINT"));
 
-  let historyParameters = historizedParameterBlocks.map((block) => {
-    // create a list of HistorisedParameter objects from those parameters
-    return new HistorisedParameter(block);
-  });
+    let historyParameters = historizedParameterBlocks.map((block) => {
+        // create a list of HistorisedParameter objects from those parameters
+        return new HistorisedParameter(block);
+    });
 
-  return new HistoryCollectionTable(historyParameters);
+    return new HistoryCollectionTable(historyParameters);
 }
 
 /**
@@ -51,35 +47,47 @@ function getHistoryCollection(moduleBlock) {
  * @class
  */
 class HistorisedParameter {
-  /**
-   * Stores DeltaV parameters' history collection data.
-   * @param {Object} block - The attribute instance block of the parameter where historisation is enabled
-   */
-  constructor(block) {
-    this.block = block;
-    // all history collection parameters
-    this.name = valueOfParameter(block, "NAME");
-    this.field = valueOfParameter(block, "FIELD");
-    this.dataCharacteristic = valueOfParameter(block, "DATA_CHARACTERISTIC");
-    this.enabled = valueOfParameter(block, "ENABLED");
-    this.samplePeriodSeconds = valueOfParameter(block, "SAMPLE_PERIOD_SECONDS");
-    this.compressionEnabled = valueOfParameter(block, "COMPRESSION_ENABLED");
-    this.recordAtLeastEveryMinutes = valueOfParameter(
-      block,
-      "RECORD_AT_LEAST_EVERY_MINUTES"
-    );
-    this.deviationLimitForCompression = valueOfParameter(
-      block,
-      "DEVIATION_LIMIT_FOR_COMPRESSION"
-    );
-    this.dataRepresentation = valueOfParameter(block, "DATA_REPRESENTATION");
-    this.exposed = valueOfParameter(block, "EXPOSED");
-    this.enterpriseCollection = valueOfParameter(
-      block,
-      "ENTERPRISE_COLLECTION"
-    );
-  }
-  // toString() {}
+    /**
+     * Stores DeltaV parameters' history collection data.
+     * @param {Object} block - The attribute instance block of the parameter where historisation is enabled
+     */
+    constructor(block) {
+        this.block = block;
+        // all history collection parameters
+        this.name = valueOfParameter(block, "NAME");
+        this.field = valueOfParameter(block, "FIELD");
+        this.dataCharacteristic = valueOfParameter(
+            block,
+            "DATA_CHARACTERISTIC"
+        );
+        this.enabled = valueOfParameter(block, "ENABLED");
+        this.samplePeriodSeconds = valueOfParameter(
+            block,
+            "SAMPLE_PERIOD_SECONDS"
+        );
+        this.compressionEnabled = valueOfParameter(
+            block,
+            "COMPRESSION_ENABLED"
+        );
+        this.recordAtLeastEveryMinutes = valueOfParameter(
+            block,
+            "RECORD_AT_LEAST_EVERY_MINUTES"
+        );
+        this.deviationLimitForCompression = valueOfParameter(
+            block,
+            "DEVIATION_LIMIT_FOR_COMPRESSION"
+        );
+        this.dataRepresentation = valueOfParameter(
+            block,
+            "DATA_REPRESENTATION"
+        );
+        this.exposed = valueOfParameter(block, "EXPOSED");
+        this.enterpriseCollection = valueOfParameter(
+            block,
+            "ENTERPRISE_COLLECTION"
+        );
+    }
+    // toString() {}
 }
 
 /**
@@ -94,59 +102,59 @@ class HistorisedParameter {
  * @extends DSTable
  */
 class HistoryCollectionTable extends DSTable {
-  /**
-   * Creates an instance of HistoryCollectionTable.
-   * @param {Array<HistorisedParameter>} historyParameters - The list of historised parameters.
-   */
-  constructor(historyParameters) {
-    super(
-      // Instantiate the table with, table name, table header, and data
-      "Historised Parameters",
-      [
-        "Value Recorded",
-        "Enabled",
-        "Display Representation",
-        "Data Characteristics",
-        "Sampling Period",
-        "Compression",
-        "Deviation",
-        "At Least",
-      ],
-      historyParameters
-    );
-  }
-
-  toCsvString() {
-    // Convert the table data to a CSV string
-    let csv = "";
-    if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
-
-    for (let {
-      name,
-      field,
-      enabled,
-      dataRepresentation,
-      dataCharacteristic,
-      samplePeriodSeconds,
-      compressionEnabled,
-      deviationLimitForCompression,
-      recordAtLeastEveryMinutes,
-    } of this.data.sort((a, b) => a.name.localeCompare(b.name))) {
-      let row = [
-        `${name}.${field}`,
-        enabled === "T" ? "Yes" : "No",
-        dataRepresentation,
-        dataCharacteristic,
-        samplePeriodSeconds,
-        compressionEnabled === "T" ? "Yes" : "No",
-        deviationLimitForCompression,
-        recordAtLeastEveryMinutes,
-      ];
-
-      csv += row.join(",") + "\n";
+    /**
+     * Creates an instance of HistoryCollectionTable.
+     * @param {Array<HistorisedParameter>} historyParameters - The list of historised parameters.
+     */
+    constructor(historyParameters) {
+        super(
+            // Instantiate the table with, table name, table header, and data
+            "Historised Parameters",
+            [
+                "Value Recorded",
+                "Enabled",
+                "Display Representation",
+                "Data Characteristics",
+                "Sampling Period",
+                "Compression",
+                "Deviation",
+                "At Least",
+            ],
+            historyParameters
+        );
     }
-    return csv;
-  }
+
+    toCsvString() {
+        // Convert the table data to a CSV string
+        let csv = "";
+        if (this.tableHeader) csv += this.tableHeader.join(",") + "\n";
+
+        for (let {
+            name,
+            field,
+            enabled,
+            dataRepresentation,
+            dataCharacteristic,
+            samplePeriodSeconds,
+            compressionEnabled,
+            deviationLimitForCompression,
+            recordAtLeastEveryMinutes,
+        } of this.data.sort((a, b) => a.name.localeCompare(b.name))) {
+            let row = [
+                `${name}.${field}`,
+                enabled === "T" ? "Yes" : "No",
+                dataRepresentation,
+                dataCharacteristic,
+                samplePeriodSeconds,
+                compressionEnabled === "T" ? "Yes" : "No",
+                deviationLimitForCompression,
+                recordAtLeastEveryMinutes,
+            ];
+
+            csv += row.join(",") + "\n";
+        }
+        return csv;
+    }
 }
 
 export { getHistoryCollection };
