@@ -33,7 +33,7 @@ class Component {
         this.block = blockFhx;
         this.name = this.getName();
         this.type = this.getType();
-        this.id = Math.random().toString(36).substring(2, 9);
+        this.componentId = Math.random().toString(36).substring(2, 9);
     }
     process() {
         console.log(`Processing ${this.type} ${this.name}`);
@@ -149,8 +149,25 @@ export class FunctionBlockDefinitionComponent extends Component {
 export class AttributeComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
-        this.type = valueOfParameter(blockFhx, "TYPE");
-        // this.value
+        this.attributeType = valueOfParameter(blockFhx, "TYPE");
+        this.readonly = valueOfParameter(blockFhx, "READONLY");
+        this.editable = valueOfParameter(blockFhx, "EDITABLE");
+        this.rectangle = this.getRectangle();
+        this.helpid = valueOfParameter(blockFhx, "HELP_ID");
+        this.category = valueOfParameter(blockFhx, "CATEGORY");
+        this.configurable = valueOfParameter(blockFhx, "CONFIGURABLE");
+        this.group = valueOfParameter(blockFhx, "GROUP");
+        this.connectiion = valueOfParameter(blockFhx, "CONNECTION");
+    }
+
+    getRectangle() {
+        let rect = findBlocks(this.block, "RECTANGLE")[0];
+        return {
+            x: valueOfParameter(rect, "X"),
+            y: valueOfParameter(rect, "Y"),
+            h: valueOfParameter(rect, "H"),
+            w: valueOfParameter(rect, "W"),
+        };
     }
 
     process() {
@@ -162,6 +179,11 @@ export class AttributeInstanceComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.value = this.getValue();
+        this.expose = valueOfParameter(blockFhx, "EXPOSE");
+        this.exposeIsOverridden = valueOfParameter(
+            blockFhx,
+            "EXPOSE_IS_OVERRIDDEN"
+        );
     }
 
     getValue() {
@@ -177,6 +199,45 @@ export class FunctionBlockComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.definition = valueOfParameter(blockFhx, "DEFINITION");
+        this.description = valueOfParameter(blockFhx, "DESCRIPTION");
+        this.id = valueOfParameter(blockFhx, "ID");
+        this.rectangle = this.getRectangle();
+        this.connectors = this.getConnectors();
+        this.getExtensibleAttributes = this.getExtensibleAttributes();
+        this.algorithmGenerated = valueOfParameter(
+            blockFhx,
+            "ALGORITHM_GENERATED"
+        );
+    }
+    getExtensibleAttributes() {
+        return findBlocks(this.block, "EXTENSIBLE_ATTRIBUTE").map((extAttr) => {
+            return {
+                name: valueOfParameter(extAttr, "NAME"),
+                count: valueOfParameter(extAttr, "COUNT"),
+            };
+        });
+    }
+    getConnectors() {
+        return findBlocks(this.block, "ADDITIONAL_CONNECTOR").map(
+            (connector) => {
+                return {
+                    name: valueOfParameter(connector, "NAME"),
+                    type: valueOfParameter(connector, "TYPE"),
+                    attribute: valueOfParameter(connector, "ATTRIBUTE"),
+                };
+            }
+        );
+    }
+    getRectangle() {
+        let rect = findBlocks(this.block, "RECTANGLE");
+        if (rect.length === 0) throw new Error("More than one rectangle found");
+        rect = rect[0];
+        return {
+            x: valueOfParameter(rect, "X"),
+            y: valueOfParameter(rect, "Y"),
+            h: valueOfParameter(rect, "H"),
+            w: valueOfParameter(rect, "W"),
+        };
     }
     findDefinition(objManager) {
         return objManager.get(this.definition);

@@ -12,14 +12,6 @@
             "args": ["test/**/*.test.js", "./src/**/*.test.js"],
             "internalConsoleOptions": "openOnSessionStart"
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Custom Test",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-            "args": ["test/moduleRunner.test.js"],
-            "internalConsoleOptions": "openOnSessionStart"
-        },
 
         {
             "type": "node",

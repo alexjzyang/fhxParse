@@ -45,34 +45,34 @@ TODO: create logic to extract information of each block. 1. From the definition 
 
 1. **List of Functions:**
 
-   - `classProperties(block)`: Extracts header properties of a control module class block.
-   - `findBlocks(fhxstring, blockType)`: Finds all blocks of a given type in the FHX string.
-   - `identifyBlock(blockType, name, blocks)`: Identifies a block with a specific name from a list of blocks.
-   - `extractValueFrom(block, keyname)`: Extracts the value of a specific key from a block.
+    - `classProperties(block)`: Extracts header properties of a control module class block.
+    - `findBlocks(fhxstring, blockType)`: Finds all blocks of a given type in the FHX string.
+    - `identifyBlock(blockType, name, blocks)`: Identifies a block with a specific name from a list of blocks.
+    - `extractValueFrom(block, keyname)`: Extracts the value of a specific key from a block.
 
 2. **Helper Functions:**
 
-   - `unindentation(blockString, numToUninent)`: Unindents a block string by a specified number of spaces.
-   - `blockIndentation(block)`: Finds the number of leading spaces of a block.
-   - `tempWrite(input, filename, clear)`: Writes a string to a text file for testing and review.
-   - `writeCsv(header, records, filepath, filename)`: Writes a CSV file based on the input header and records.
-   - `findParameterList(data, blockType, keys)`: Finds a list of parameters in a block and extracts their values.
-   - `fhxReplacer(input, replacer)`: Replaces FHX terms with display terms in a string.
-   - `fhxObject(fhxstring, type, name)`: Finds a specific FHX object by type and name.
-   - `valuesOfModuleParameters(module_data)`: Extracts default values of module parameters.
-   - `valueOf(fhxBlock, key)`: Extracts the value of a specific key from a block.
-   - `nameOf(fhxBlock)`: Extracts the name of a block.
+    - `unindentation(blockString, numToUninent)`: Unindents a block string by a specified number of spaces.
+    - `blockIndentation(block)`: Finds the number of leading spaces of a block.
+    - `tempWrite(input, filename, clear)`: Writes a string to a text file for testing and review.
+    - `writeCsv(header, records, filepath, filename)`: Writes a CSV file based on the input header and records.
+    - `findParameterList(data, blockType, keys)`: Finds a list of parameters in a block and extracts their values.
+    - `fhxReplacer(input, replacer)`: Replaces FHX terms with display terms in a string.
+    - `fhxObject(fhxstring, type, name)`: Finds a specific FHX object by type and name.
+    - `valuesOfModuleParameters(module_data)`: Extracts default values of module parameters.
+    - `valueOf(fhxBlock, key)`: Extracts the value of a specific key from a block.
+    - `nameOf(fhxBlock)`: Extracts the name of a block.
 
 3. **Other Edits:**
-   - Updated `runner1(fhx_data)` to use the new functions for extracting module parameters and writing them to a CSV file.
-   - Added comments and documentation for new functions.
+    - Updated `runner1(fhx_data)` to use the new functions for extracting module parameters and writing them to a CSV file.
+    - Added comments and documentation for new functions.
 
 ### Notes:
 
-- The new functions improve the modularity and readability of the code.
-- The `findBlocks` function now supports inner blocks and handles depth changes correctly.
-- The `writeCsv` function simplifies the process of writing CSV files from extracted data.
-- The `fhxReplacer` function can be extended with additional replacer terms as needed.
+-   The new functions improve the modularity and readability of the code.
+-   The `findBlocks` function now supports inner blocks and handles depth changes correctly.
+-   The `writeCsv` function simplifies the process of writing CSV files from extracted data.
+-   The `fhxReplacer` function can be extended with additional replacer terms as needed.
 
 ## 01/10/2025
 
@@ -80,33 +80,33 @@ TODO: create logic to extract information of each block. 1. From the definition 
 
 The `FileIO.js` file contains utility functions for file operations, including:
 
-- `prepareFilePath(filepath, filename, replace)`: Prepares the directory and file path for writing.
-- `writeTxtFile(data, filepath, filename, replace)`: Writes data to a text file at the specified path.
-- `writeTxtFiles(files, filepath, replace)`: Writes multiple text files to the specified directory.
-- `writeTxtFileConcat(data, filepath, filename, replace)`: Writes a single text file with concatenated data.
-- `writeTxtFileWithPrefix(data, filepath, baseFilename)`: Writes multiple text files with an auto-increment prefix.
+-   `prepareFilePath(filepath, filename, replace)`: Prepares the directory and file path for writing.
+-   `writeTxtFile(data, filepath, filename, replace)`: Writes data to a text file at the specified path.
+-   `writeTxtFiles(files, filepath, replace)`: Writes multiple text files to the specified directory.
+-   `writeTxtFileConcat(data, filepath, filename, replace)`: Writes a single text file with concatenated data.
+-   `writeTxtFileWithPrefix(data, filepath, baseFilename)`: Writes multiple text files with an auto-increment prefix.
 
 ### Summary of `obtainModuleParameters`:
 
 The `obtainModuleProperties` function in `main.js`:
 
-- Extracts the properties of a fhx block header.
-- Creates a CSV file with the extracted properties.
+-   Extracts the properties of a fhx block header.
+-   Creates a CSV file with the extracted properties.
 
 ### Tested logic with the `runner` function
 
-- Finds and processes blocks of type "MODULE_CLASS" where the module is within a specific category (Equipment Module Classes).
+-   Finds and processes blocks of type "MODULE_CLASS" where the module is within a specific category (Equipment Module Classes).
 
 ## 01/12/2025
 
 ### Updates:
 
-- `fhxProcessor.js` is now dedicated to FHX processing.
-- `DSCreator.js` uses the processor's functions to compile tables necessary for the Design Specification creation project.
+-   `fhxProcessor.js` is now dedicated to FHX processing.
+-   `DSCreator.js` uses the processor's functions to compile tables necessary for the Design Specification creation project.
 
 ### Functionality:
 
-- `valuesOfModuleParameters(module_data)`: Extracts default values of module parameters from a given module data block. It identifies parameters by checking for attribute blocks with `CATEGORY=COMMON`.
+-   `valuesOfModuleParameters(module_data)`: Extracts default values of module parameters from a given module data block. It identifies parameters by checking for attribute blocks with `CATEGORY=COMMON`.
 
 ### Purpose of `DesignConsideration.md`:
 
@@ -114,70 +114,70 @@ The `DesignConsideration.md` file is used to explore and record the design roadm
 
 ### Future Suggestions:
 
-- Use software to track issues, ideas, and milestones to make each coding session more effective.
-- Start using unit tests for consistency and to avoid spaghetti code.
+-   Use software to track issues, ideas, and milestones to make each coding session more effective.
+-   Start using unit tests for consistency and to avoid spaghetti code.
 
 ## 01/14/2025 (**Copilot autogenerated**)
 
 ### Updates:
 
-- MySQL has been installed locally under `c:\CodeRepo\Coding Env`.
-- MySQL server has been tested and is running successfully.
-- The `mysql2` npm package has been installed in this project and tested to be working.
+-   MySQL has been installed locally under `c:\CodeRepo\Coding Env`.
+-   MySQL server has been tested and is running successfully.
+-   The `mysql2` npm package has been installed in this project and tested to be working.
 
 ### Next Steps:
 
-- Design the database schema for the project.
+-   Design the database schema for the project.
 
 ### Overall Project Structure:
 
 The overall project will consist of the following parts:
 
-- Parsing tool using EBNF and ANTLR
-- SQL database schema design
-- Query design
-- Application interface
+-   Parsing tool using EBNF and ANTLR
+-   SQL database schema design
+-   Query design
+-   Application interface
 
 ### Note:
 
-- At this moment, because of the DS Creation effort, the parsing of the FHX with state machine and regex will still be developed and used for immediate outputs.
+-   At this moment, because of the DS Creation effort, the parsing of the FHX with state machine and regex will still be developed and used for immediate outputs.
 
 ## 01/14/2025 (**Copilot autogenerated**)
 
 ### Updates:
 
-- Added new functions in `DSCreator.js`: `findAll`, `findAllEMClasses`, `findAllCMClasses`.
-- Moved `processModuleClass` to `DSCreator.js`.
-- `findEMCommands(fhx_data, modulename)` in `main.js` is still a work in progress.
+-   Added new functions in `DSCreator.js`: `findAll`, `findAllEMClasses`, `findAllCMClasses`.
+-   Moved `processModuleClass` to `DSCreator.js`.
+-   `findEMCommands(fhx_data, modulename)` in `main.js` is still a work in progress.
 
 ### Current Status of `findEMCommands`:
 
-- The function can currently find all command definitions for a given Equipment Module (EM) in the provided FHX data.
-- It extracts the command names and their definitions.
+-   The function can currently find all command definitions for a given Equipment Module (EM) in the provided FHX data.
+-   It extracts the command names and their definitions.
 
-- Look for and parse the associated SFC blocks.
+-   Look for and parse the associated SFC blocks.
 
 ## 01/15/2025
 
-- renamed fhxObject to findBlockWithName to make it more agnostic
+-   renamed fhxObject to findBlockWithName to make it more agnostic
 
 ### Updates:
 
-- Added `compileEMCommands` function in `main.js`.
-- `compileEMCommands` compiles all command definitions for a given Equipment Module (EM) in the provided FHX data.
-- Extracts the command names, their definitions, and writes them to text files.
-- Note: `compileEMCommands` is a work in progress and is to be refactored.
+-   Added `compileEMCommands` function in `main.js`.
+-   `compileEMCommands` compiles all command definitions for a given Equipment Module (EM) in the provided FHX data.
+-   Extracts the command names, their definitions, and writes them to text files.
+-   Note: `compileEMCommands` is a work in progress and is to be refactored.
 
 ### Updates:
 
-- Added functionality to extract action values from the `fhxProcessor` and write them to a JSON file.
-- Commented out the previous implementation for extracting action values for `action0` to keep the code clean and maintainable.
-- Ensured the new implementation correctly maps the action values and writes them to `actions.json` in the specified output path.
+-   Added functionality to extract action values from the `fhxProcessor` and write them to a JSON file.
+-   Commented out the previous implementation for extracting action values for `action0` to keep the code clean and maintainable.
+-   Ensured the new implementation correctly maps the action values and writes them to `actions.json` in the specified output path.
 
 ### Next Steps:
 
-- Test the new implementation to ensure it correctly writes the expected action values to the JSON file.
-- Remove the commented-out code if it is no longer needed after thorough testing.
+-   Test the new implementation to ensure it correctly writes the expected action values to the JSON file.
+-   Remove the commented-out code if it is no longer needed after thorough testing.
 
 ## 01/20/2025
 
@@ -197,15 +197,15 @@ TODO: need to fix valueOf function to capture the double empty string (two conse
 
 ### Updates:
 
-- Started creating unit tests for the project.
-- Included FHX and TXT files for testing purposes.
-- Configured Git Large File Storage (LFS) to track large files.
+-   Started creating unit tests for the project.
+-   Included FHX and TXT files for testing purposes.
+-   Configured Git Large File Storage (LFS) to track large files.
 
 ### Next Steps:
 
-- Continue developing unit tests.
-- Refine test strategy
-- Use Copilot to quickly generate tests
+-   Continue developing unit tests.
+-   Refine test strategy
+-   Use Copilot to quickly generate tests
 
 ## 01/24/2025
 
@@ -286,8 +286,8 @@ The first approach might be better, even though more data needs to be stored and
 3. Identify which ones are Embedded blocks
 4. Use the block processing code to process embedded blocks. Some tables only apply for module class, not embedded blocks, same goes with EM. Therefore the processing should identify what tables to create based on the type of block passed to its arguments.
 
-- The processing of a block, i.e. creating parameter and other tables should be handled separately. So it can be reused by the nested blocks.
-- Should identify the type of the block in order to return the correct tables.
+-   The processing of a block, i.e. creating parameter and other tables should be handled separately. So it can be reused by the nested blocks.
+-   Should identify the type of the block in order to return the correct tables.
 
 ## 02/07/2025
 
@@ -316,6 +316,12 @@ This is the end of sprint 02/03-02/13. I should do sprint retrospective
 
 Sprint #2 Start:
 
-- Examine the DS table coverage
-- Examine test coverage
-- Major refactor for agnosticity, and interface design
+-   Examine the DS table coverage
+-   Examine test coverage
+-   Major refactor for agnosticity, and interface design
+
+## 02/19/2025
+
+In main.js, working on functions to go through each block to identify all unique parameter keys possible in that type of block.
+Currently working on coding a exhaustive list of all parameters in each elements. All these possible info should be stored in their respective components.
+For example, in the ATTRIBUTE component, all possible parameters: TYPE, READONLY, EDITABLE, RECTANGLE, HELP_ID, CATEGORY, would all be stored in each attribute object. The exercise to find all unique parameters will ensure the full coverage of all elements

@@ -19,7 +19,8 @@ function findBlocks(fhxstring, blockType) {
     let endingWithReturn = blockType + "\r\n";
 
     if (fhxstring.indexOf(endWithSpace) !== -1) search = endWithSpace;
-    else if (fhxstring.indexOf(endWithSpace) !== -1) search = endingWithReturn;
+    else if (fhxstring.indexOf(endingWithReturn) !== -1)
+        search = endingWithReturn;
     else return blocks;
 
     // Repeat the following
