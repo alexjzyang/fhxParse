@@ -2,7 +2,6 @@
  * tableGenerator() function will generate CSV files given a fhx string
  */
 
-import * as dscreator from "../DSCreator.js";
 import { FileIO } from "../util/FileIO.js";
 import { getModuleParameters } from "./ModuleParameterTable.js";
 import { getModuleProperties } from "./ModulePropertyTable.js";

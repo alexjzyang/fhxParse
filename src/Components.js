@@ -32,33 +32,110 @@ class Component {
     constructor(blockFhx) {
         this.block = blockFhx;
         this.name = this.getName();
-        this.type = this.getType();
+        // this.type = this.getType();
         this.componentId = Math.random().toString(36).substring(2, 9);
-    }
-    process() {
-        console.log(`Processing ${this.type} ${this.name}`);
     }
 
     getName() {
         return valueOfParameter(this.block, "NAME");
     }
 
-    getType() {
-        //this version of getType uses getName. This means it assumes that if the name is not found, the type is not handled
-        let name = this.name;
-        if (this.name === undefined) return;
-        // {
-        //   throw new Error(
-        //     "Name not found in block. Fhx block is not currently identified"
-        //   );
-        // }
-        let search = ` NAME="${name}"`;
-        let endIndex = this.block.indexOf(search);
-        let startIndex =
-            this.block.lastIndexOf("\r\n", endIndex) !== -1
-                ? this.block.lastIndexOf("\r\n", endIndex) + 2
-                : 0;
-        return this.block.substring(startIndex, endIndex);
+    getValue() {}
+
+    getRectangle() {
+        let rect = findBlocks(this.block, "RECTANGLE");
+        if (rect.length > 1) throw new Error("More than one rectangle found");
+        else if (rect.length === 0) return;
+        else {
+            rect = rect[0];
+            return {
+                x: valueOfParameter(rect, "X"),
+                y: valueOfParameter(rect, "Y"),
+                h: valueOfParameter(rect, "H"),
+                w: valueOfParameter(rect, "W"),
+            };
+        }
+    }
+
+    // Specifically found in ATTRIBUTE_INSTANCEs
+    getHistoryDataPoint() {
+        /**
+    HISTORY_DATA_POINT FIELD="CV"
+    {
+      DATA_CHARACTERISTIC=CONTINUOUS
+      ENABLED=T
+      SAMPLE_PERIOD_SECONDS=1
+      COMPRESSION_ENABLED=T
+      RECORD_AT_LEAST_EVERY_MINUTES=240
+      DEVIATION_LIMIT_FOR_COMPRESSION=0
+      DATA_REPRESENTATION=AUTOMATIC
+      EXPOSED=F
+      ENTERPRISE_COLLECTION=F
+    }
+         */
+        let hist = findBlocks(this.block, "HISTORY_DATA_POINT");
+        if (hist.length > 1)
+            throw new Error(
+                "More than one parameter historization definition found"
+            );
+        else if (hist.length === 0) return;
+        else {
+            hist = hist[0];
+            return {
+                field: valueOfParameter(hist, "FIELD"),
+                dataCharacteristic: valueOfParameter(
+                    hist,
+                    "DATA_CHARACTERISTIC"
+                ),
+                enabled: valueOfParameter(hist, "ENABLED"),
+                samplePeriodSeconds: valueOfParameter(
+                    hist,
+                    "SAMPLE_PERIOD_SECONDS"
+                ),
+                compressionEnabled: valueOfParameter(
+                    hist,
+                    "COMPRESSION_ENABLED"
+                ),
+                recordAtLeastEveryMinutes: valueOfParameter(
+                    hist,
+                    "RECORD_AT_LEAST_EVERY_MINUTES"
+                ),
+                deviationLimitForCompression: valueOfParameter(
+                    hist,
+                    "DEVIATION_LIMIT_FOR_COMPRESSION"
+                ),
+                dataRepresentation: valueOfParameter(
+                    hist,
+                    "DATA_REPRESENTATION"
+                ),
+                exposed: valueOfParameter(hist, "EXPOSED"),
+                enterpriseCollection: valueOfParameter(
+                    hist,
+                    "ENTERPRISE_COLLECTION"
+                ),
+            };
+        }
+    }
+
+    // Specifically found in FUNCTION_BLOCKs
+    getExtensibleAttributes() {
+        return findBlocks(this.block, "EXTENSIBLE_ATTRIBUTE").map((extAttr) => {
+            return {
+                name: valueOfParameter(extAttr, "NAME"),
+                count: valueOfParameter(extAttr, "COUNT"),
+            };
+        });
+    }
+    getConnectors() {
+        return findBlocks(this.block, "ADDITIONAL_CONNECTOR").map(
+            (connector) => {
+                return {
+                    name: valueOfParameter(connector, "NAME"),
+                    type: valueOfParameter(connector, "TYPE"),
+                    attribute: valueOfParameter(connector, "ATTRIBUTE"),
+                };
+            }
+        );
     }
 }
 
@@ -69,6 +146,7 @@ export class ModuleClassComponent extends Component {
         this.attributeInstances = [];
         this.functionBlocks = [];
         this.initializeBlock();
+        this.typeName = "MODULE_CLASS";
     }
 
     initializeBlock() {
@@ -105,6 +183,7 @@ export class FunctionBlockDefinitionComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.category = valueOfParameter(blockFhx, "CATEGORY");
+        this.typeName = "FUNCTION_BLOCK_DEFINITION";
         this.initializeBlock();
     }
 
@@ -119,20 +198,6 @@ export class FunctionBlockDefinitionComponent extends Component {
         this.functionBlocks = findBlocks(this.block, "FUNCTION_BLOCK").map(
             (block) => new FunctionBlockComponent(block)
         );
-    }
-    // test to match type obtained from getType vs the component's intended type
-    process() {
-        console.log(`Processing Function Block Definition ${this.name}
-            It has ${this.attributeInstances.length} attribute instances
-            This block also has ${this.functionBlocks.length} function blocks
-            `);
-        // this.functionBlocks.forEach((fb) =>
-        //     objManager.get(fb.name)?.process(objManager)
-        // );
-        this.functionBlocks.forEach((fb) => {
-            // fb.process(objManager);
-            fb.findDefinition(objManager)?.process(objManager);
-        });
     }
 }
 
@@ -158,40 +223,40 @@ export class AttributeComponent extends Component {
         this.configurable = valueOfParameter(blockFhx, "CONFIGURABLE");
         this.group = valueOfParameter(blockFhx, "GROUP");
         this.connectiion = valueOfParameter(blockFhx, "CONNECTION");
-    }
-
-    getRectangle() {
-        let rect = findBlocks(this.block, "RECTANGLE")[0];
-        return {
-            x: valueOfParameter(rect, "X"),
-            y: valueOfParameter(rect, "Y"),
-            h: valueOfParameter(rect, "H"),
-            w: valueOfParameter(rect, "W"),
-        };
-    }
-
-    process() {
-        console.log(`Attribute ${this.name} has type ${this.type}`);
+        this.typeName = "ATTRIBUTE";
     }
 }
 
 export class AttributeInstanceComponent extends Component {
+    /**
+ATTRIBUTE_INSTANCE NAME="DFLT_OPMD"
+EXPOSE=T
+EXPOSE_IS_OVERRIDDEN=T
+
+HISTORY_DATA_POINT FIELD="CV" ...
+    DATA_CHARACTERISTIC=CONTINUOUS
+    ENABLED=T
+    SAMPLE_PERIOD_SECONDS=1
+    COMPRESSION_ENABLED=T
+    RECORD_AT_LEAST_EVERY_MINUTES=240
+    DEVIATION_LIMIT_FOR_COMPRESSION=0
+    DATA_REPRESENTATION=AUTOMATIC
+    EXPOSED=F
+    ENTERPRISE_COLLECTION=F
+
+EXPLICIT_OVERRIDE=T
+ */
+
     constructor(blockFhx) {
         super(blockFhx);
-        this.value = this.getValue();
         this.expose = valueOfParameter(blockFhx, "EXPOSE");
         this.exposeIsOverridden = valueOfParameter(
             blockFhx,
             "EXPOSE_IS_OVERRIDDEN"
         );
-    }
-
-    getValue() {
-        return "[Attribute Instance Value]";
-    }
-
-    process() {
-        console.log(`Attribute Instance ${this.name} has value ${this.value}`);
+        this.explicitOverride = valueOfParameter(blockFhx, "EXPLICIT_OVERRIDE");
+        // this.value = this.getValue()
+        // this.valueType = this.getValueType()
     }
 }
 
@@ -202,51 +267,16 @@ export class FunctionBlockComponent extends Component {
         this.description = valueOfParameter(blockFhx, "DESCRIPTION");
         this.id = valueOfParameter(blockFhx, "ID");
         this.rectangle = this.getRectangle();
-        this.connectors = this.getConnectors();
+        this.additionalConnectors = this.getConnectors();
         this.getExtensibleAttributes = this.getExtensibleAttributes();
         this.algorithmGenerated = valueOfParameter(
             blockFhx,
             "ALGORITHM_GENERATED"
         );
     }
-    getExtensibleAttributes() {
-        return findBlocks(this.block, "EXTENSIBLE_ATTRIBUTE").map((extAttr) => {
-            return {
-                name: valueOfParameter(extAttr, "NAME"),
-                count: valueOfParameter(extAttr, "COUNT"),
-            };
-        });
-    }
-    getConnectors() {
-        return findBlocks(this.block, "ADDITIONAL_CONNECTOR").map(
-            (connector) => {
-                return {
-                    name: valueOfParameter(connector, "NAME"),
-                    type: valueOfParameter(connector, "TYPE"),
-                    attribute: valueOfParameter(connector, "ATTRIBUTE"),
-                };
-            }
-        );
-    }
-    getRectangle() {
-        let rect = findBlocks(this.block, "RECTANGLE");
-        if (rect.length === 0) throw new Error("More than one rectangle found");
-        rect = rect[0];
-        return {
-            x: valueOfParameter(rect, "X"),
-            y: valueOfParameter(rect, "Y"),
-            h: valueOfParameter(rect, "H"),
-            w: valueOfParameter(rect, "W"),
-        };
-    }
+
     findDefinition(objManager) {
         return objManager.get(this.definition);
-    }
-
-    process() {
-        console.log(
-            `Function Block ${this.name} has definition ${this.definition}`
-        );
     }
 }
 

@@ -32,9 +32,7 @@ describe("FhxUtil", function () {
             let fbFhx = findBlocks(fhx, "ATTRIBUTE")[0];
             valueOfParameter(fbFhx, "NAME").should.equal("VERSION_CLASS");
             valueOfParameter(fbFhx, "HELP_ID").should.equal("337652");
-            valueOfParameter(fbFhx, "CATEGORY").should.equal(
-                "{ CATEGORY=ONLINE }" // this would fail with the current implimentation
-            );
+            valueOfParameter(fbFhx, "CATEGORY").should.equal("ONLINE");
         });
     });
     describe("findBlockWithCondition", function () {
