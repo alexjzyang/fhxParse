@@ -27,7 +27,7 @@ function identifyFbd(fhx, outputpath = "test/output/temp") {
 
 function allBlocks(fhx, type = "ATTRIBUTE") {
     let blocks = findBlocks(fhx, type);
-    console.log(`there are ${blocks.lenth} blocks found`);
+    // console.log(`there are ${blocks.lenth} blocks found`);
     let res = blocks.join("\n");
     FileIO.writeFile(`test/output/temp/${type.toLowerCase()}.txt`, res, {
         encoding: "utf8",
@@ -143,7 +143,53 @@ function uniqueAttributeInstances(fhx) {
 
 // the design of a crawler that goes through the FHX and identifies the unique characteristics, and filters out repetitive elements
 export function unique(fhx) {
+    fhx = FileIO.readFile("test/data/FhxComponents/FunctionBlocks.txt");
+    // filter out value and history blocks
+
     return {};
+}
+
+function nextBracket() {
+    /**
+     * This functio should identify the next block which opens and close with matching brackets of the same level
+     *
+     * Example results
+     * FUNCTION_BLOCK NAME [...]
+     * {
+     *  [...]
+     * }
+     *
+     * ADDITIONAL_CONNECTOR NAME="REQ_SP" TYPE=INPUT { ATTRIBUTE="REQ_SP" }
+     *
+     * The starting index should be given, and the function should not need to identify the type of block or the key to the enclosed object
+     */
+
+    let fhx = FileIO.readFile("test/data/FhxComponents/FunctionBlocks.txt");
+    let startIndex = 0;
+    let endIndex = 0;
+    let openBracketIndex = fhx.indexOf("{", startIndex);
+    let closeBracketIndex = fhx.indexOf("}", startIndex);
+    let depth = 0;
+    if (openBracketIndex === -1 || closeBracketIndex === -1) {
+        console.log("No nested block found");
+        return null;
+    }
+
+    // look for the next open bracket
+    // if the next open bracket is before the close bracket, then increase the depth
+    // if the next close bracket is before the open bracket, then decrease the depth
+    // if the depth is 0, then the block is found
+    openBracketIndex = fhx.indexOf("{", openBracketIndex + 1);
+    if (openBracketIndex > closeBracketIndex) {
+        console.log("found matching brackets");
+        endIndex = closeBracketIndex;
+        depth -= 1;
+    } else {
+        depth += 1;
+    }
+
+    let nested = fhx.substring(startIndex, endIndex + 1);
+    return nested;
 }
 
 // uniqueParams(emsfhx, "ATTRIBUTE");
@@ -164,4 +210,4 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 }
 
 */
-// unique(fbfhx);
+unique();

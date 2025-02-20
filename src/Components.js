@@ -255,6 +255,7 @@ EXPLICIT_OVERRIDE=T
             "EXPOSE_IS_OVERRIDDEN"
         );
         this.explicitOverride = valueOfParameter(blockFhx, "EXPLICIT_OVERRIDE");
+        this.typeName = "ATTRIBUTE_INSTANCE";
         // this.value = this.getValue()
         // this.valueType = this.getValueType()
     }
@@ -273,6 +274,7 @@ export class FunctionBlockComponent extends Component {
             blockFhx,
             "ALGORITHM_GENERATED"
         );
+        this.typeName = "FUNCTION_BLOCK";
     }
 
     findDefinition(objManager) {
