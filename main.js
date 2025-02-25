@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { write } from "fs";
 import { AttributeComponent, ModuleClassComponent } from "./src/Components.js";
 import { FhxProcessor } from "./src/Managers.js";
 import path from "path";
@@ -210,4 +210,40 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 }
 
 */
-unique();
+// unique();
+
+let emsfhx = FileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
+let moduleName = "_E_M_AGIT";
+
+(function runner(fhx, moduleName) {
+    // Use FhxProcessor to digest fhx and create manager
+    let ObjectManager = new FhxProcessor(fhx).createManager();
+    // Identify the module class
+    let dsTables = new DesignSpecTables(ObjectManager, moduleName);
+
+    let writeToFile = {
+        propertyTable: 1,
+        parameterTable: 1,
+        commandsTable: true,
+    };
+    if (writeToFile.propertyTable) {
+        let table = dsTables.createModulePropertiesTable();
+        FileIO.writeFile("test/output/temp/ModulePropertiesTable.csv", table, {
+            encoding: "utf8",
+        });
+    }
+    if (writeToFile.parameterTable) {
+        let table = dsTables.createModuleParameterTable();
+        FileIO.writeFile("test/output/temp/ModuleParametersTable.csv", table, {
+            encoding: "utf8",
+        });
+    }
+    if (writeToFile.commandsTable) {
+        let table = dsTables.createEmCommandsTable();
+        FileIO.writeFile("test/output/temp/EmCommandsTable.csv", table, {
+            encoding: "utf8",
+        });
+    }
+
+    return;
+})(emsfhx, moduleName);

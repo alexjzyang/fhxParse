@@ -1,99 +1,152 @@
-import { valueOfParameter } from "./util/FhxUtil";
-
 /* These are encapsulated value block information, not all the information is 
 reference for the DSTable generation. For instance, for a complex parameter,
 depending on the designed table, the desired use case might only the name and 
 the type of the parameter.
 */
 
-class ValueBlock {
+import { valueOfParameter } from "./util/FhxUtil.js";
+
+class FhxValue {
     constructor(fhxString) {
         this.fhx = fhxString;
     }
+}
+class AlarmValue extends FhxValue {
+    constructor(fhxString) {
+        super(fhxString);
+        this.elements = {
+            PRIORITY_NAME: valueOfParameter(fhxString, "PRIORITY_NAME"),
+            ENAB: valueOfParameter(fhxString, "ENAB"),
+            INV: valueOfParameter(fhxString, "INV"),
+            ATYP: valueOfParameter(fhxString, "ATYP"),
+            MONATTR: valueOfParameter(fhxString, "MONATTR"),
+            ALMATTR: valueOfParameter(fhxString, "ALMATTR"),
+            LIMATTR: valueOfParameter(fhxString, "LIMATTR"),
+            PARAM1: valueOfParameter(fhxString, "PARAM1"),
+            PARAM2: valueOfParameter(fhxString, "PARAM2"),
+            SUPPTIMEOUT: valueOfParameter(fhxString, "SUPPTIMEOUT"),
+            MASK: valueOfParameter(fhxString, "MASK"),
+            ISDEFAULTMASK: valueOfParameter(fhxString, "ISDEFAULTMASK"),
+            ALARM_FUNCTIONAL_CLASSIFICATION: valueOfParameter(
+                fhxString,
+                "ALARM_FUNCTIONAL_CLASSIFICATION"
+            ),
+        };
+    }
+    get priority() {
+        return this.elements.PRIORITY_NAME;
+    }
+    get enab() {
+        return this.elements.ENAB;
+    }
+    get inv() {
+        return this.elements.INV;
+    }
+    get atyp() {
+        return this.elements.ATYP;
+    }
+    get monattr() {
+        return this.elements.MONATTR;
+    }
+    get almattr() {
+        return this.elements.ALMATTR;
+    }
+    get limattr() {
+        return this.elements.LIMATTR;
+    }
+    get param1() {
+        return this.elements.PARAM1;
+    }
+    get param2() {
+        return this.elements.PARAM2;
+    }
+    get supptimeout() {
+        return this.elements.SUPPTIMEOUT;
+    }
+    get mask() {
+        return this.elements.MASK;
+    }
+    get isdefaultmask() {
+        s;
+        return this.elements.ISDEFAULTMASK;
+    }
+    get alarmFunctionalClassification() {
+        return this.elements.ALARM_FUNCTIONAL_CLASSIFICATION;
+    }
+}
+class NamedSetValue extends FhxValue {
+    constructor(fhxString) {
+        super(fhxString);
+        this.elements = {
+            SET: valueOfParameter(fhxString, "SET"),
+            STRING_VALUE: valueOfParameter(fhxString, "STRING_VALUE"),
+            CHANGEABLE: valueOfParameter(fhxString, "CHANGEABLE"),
+        };
+    }
+    get set() {
+        return this.elements.SET;
+    }
+    get stringValue() {
+        return this.elements.STRING_VALUE;
+    }
+    get changeable() {
+        return this.elements.CHANGEABLE;
+    }
+}
+class NamedSetSet extends FhxValue {
+    constructor(fhxString) {
+        super(fhxString);
+        this.elements = {
+            ENUM_SET: valueOfParameter(fhxString, "ENUM_SET"),
+            OPTIONS: this.getOptions(),
+        };
+    }
 
-    // this is a helper to evaluate fhx coverage
-    missingParameters() {}
-    processingParameters() {}
-}
-class AlarmBlock extends ValueBlock {
-    /*
-VALUE
-{
-    PRIORITY_NAME="ALERT"
-    ENAB=F
-    INV=F
-    ATYP="_A_M_ HM/SM Bypass"
-    MONATTR=""
-    ALMATTR="MONITOR/BYPASS"
-    LIMATTR=""
-    PARAM1=""
-    PARAM2=""
-    SUPPTIMEOUT=480
-    MASK=65535
-    ISDEFAULTMASK=T
-    ALARM_FUNCTIONAL_CLASSIFICATION=0
-}
-*/
-    constructor(fhxString) {
-        super(fhxString);
-        this.priorityName = valueOfParameter(fhxString, "PRIORITY_NAME");
-        this.enab = valueOfParameter(fhxString, "ENAB");
-        this.inv = valueOfParameter(fhxString, "INV");
-        this.atyp = valueOfParameter(fhxString, "ATYP");
-        this.monattr = valueOfParameter(fhxString, "MONATTR");
-        this.almattr = valueOfParameter(fhxString, "ALMATTR");
-        this.limattr = valueOfParameter(fhxString, "LIMATTR");
-        this.param1 = valueOfParameter(fhxString, "PARAM1");
-        this.param2 = valueOfParameter(fhxString, "PARAM2");
-        this.supptimeout = valueOfParameter(fhxString, "SUPPTIMEOUT");
-        this.mask = valueOfParameter(fhxString, "MASK");
-        this.isdefaultmask = valueOfParameter(fhxString, "ISDEFAULTMASK");
-        this.alarmFunctionalClassification = valueOfParameter(
-            fhxString,
-            "ALARM_FUNCTIONAL_CLASSIFICATION"
-        );
+    get enumSet() {
+        return this.elements.ENUM_SET;
     }
-}
-class NamedSetBlock extends ValueBlock {
-    /*
-// NamedSet value
-VALUE
-{
-    SET="_N_M_CANCEL_WAIT"
-    STRING_VALUE="Reset"
-    CHANGEABLE=F
-}
-*/
-    constructor(fhxString) {
-        super(fhxString);
-        this.set = valueOfParameter(fhxString, "SET");
-        this.stringValue = valueOfParameter(fhxString, "STRING_VALUE");
-        this.changeable = valueOfParameter(fhxString, "CHANGEABLE");
+    get options() {
+        return this.elements.OPTION;
+    }
+
+    getOptions() {
+        let options;
+        let indexOfOption = 0;
+        let indexOfEqual = 0;
+        while (indexOfOption !== -1) {
+            indexOfOption = this.fhx.indexOf(search, indexOfEqual);
+            indexOfEqual = this.fhx.indexOf("OPTION", indexOfOption);
+            let optionName = this.fhx.substring(indexOfOption, indexOfEqual);
+            let optionValue = valueOfParameter(this.fhx, optionName);
+            options.push({ optionName, optionValue });
+        }
+        return options;
     }
 }
 
-class IntegerBlock extends ValueBlock {
-    /*
-    // Number
-    VALUE { CV=0 }
-*/
+class NumberValue extends FhxValue {
     constructor(fhxString) {
         super(fhxString);
-        this.cv = valueOfParameter(fhxString, "CV");
+        this.elements = {
+            CV: valueOfParameter(fhxString, "CV"),
+        };
+    }
+    get cv() {
+        return this.elements.CV;
     }
 }
-class StringBlock extends ValueBlock {
-    /*
-    // String
-    VALUE { CV="Agitator 1 Speed Setpoint (%) " }
-
-    */
+class StringValue extends FhxValue {
     constructor(fhxString) {
         super(fhxString);
-        this.cv = valueOfParameter(fhxString, "CV");
+        this.elements = {
+            CV: valueOfParameter(fhxString, "CV"),
+        };
+    }
+    get cv() {
+        return this.elements.CV;
     }
 }
-class ModeBlock extends ValueBlock {
+class ModeValue extends FhxValue {
     /*
 // Modes
 VALUE
@@ -120,51 +173,141 @@ VALUE
     */
     constructor(fhxString) {
         super(fhxString);
-        this.oosP = valueOfParameter(fhxString, "OOS_P");
-        this.imanP = valueOfParameter(fhxString, "IMAN_P");
-        this.lovP = valueOfParameter(fhxString, "LOV_P");
-        this.manP = valueOfParameter(fhxString, "MAN_P");
-        this.autoP = valueOfParameter(fhxString, "AUTO_P");
-        this.casP = valueOfParameter(fhxString, "CAS_P");
-        this.rcasP = valueOfParameter(fhxString, "RCAS_P");
-        this.routP = valueOfParameter(fhxString, "ROUT_P");
-        this.oosA = valueOfParameter(fhxString, "OOS_A");
-        this.imanA = valueOfParameter(fhxString, "IMAN_A");
-        this.lovA = valueOfParameter(fhxString, "LOV_A");
-        this.manA = valueOfParameter;
-        this.autoA = valueOfParameter(fhxString, "AUTO_A");
-        this.casA = valueOfParameter(fhxString, "CAS_A");
-        this.rcasA = valueOfParameter(fhxString, "RCAS_A");
-        this.routA = valueOfParameter(fhxString, "ROUT_A");
-        this.target = valueOfParameter(fhxString, "TARGET");
-        this.normal = valueOfParameter(fhxString, "NORMAL");
+
+        this.elements = {
+            OOS_P: valueOfParameter(fhxString, "OOS_P"),
+            IMAN_P: valueOfParameter(fhxString, "IMAN_P"),
+            LOV_P: valueOfParameter(fhxString, "LOV_P"),
+            MAN_P: valueOfParameter(fhxString, "MAN_P"),
+            AUTO_P: valueOfParameter(fhxString, "AUTO_P"),
+            CAS_P: valueOfParameter(fhxString, "CAS_P"),
+            RCAS_P: valueOfParameter(fhxString, "RCAS_P"),
+            ROUT_P: valueOfParameter(fhxString, "ROUT_P"),
+            OOS_A: valueOfParameter(fhxString, "OOS_A"),
+            IMAN_A: valueOfParameter(fhxString, "IMAN_A"),
+            LOV_A: valueOfParameter(fhxString, "LOV_A"),
+            MAN_A: valueOfParameter(fhxString, "MAN_A"),
+            AUTO_A: valueOfParameter(fhxString, "AUTO_A"),
+            CAS_A: valueOfParameter(fhxString, "CAS_A"),
+            RCAS_A: valueOfParameter(fhxString, "RCAS_A"),
+            ROUT_A: valueOfParameter(fhxString, "ROUT_A"),
+            TARGET: valueOfParameter(fhxString, "TARGET"),
+            NORMAL: valueOfParameter(fhxString, "NORMAL"),
+        };
+    }
+
+    get permitteredModes() {
+        let permittedModes = [
+            "OOS_P",
+            "IMAN_P",
+            "LOV_P",
+            "MAN_P",
+            "AUTO_P",
+            "CAS_P",
+            "RCAS_P",
+            "ROUT_P",
+        ];
+        return permittedModes.filter((mode) => this.elements[mode] === "T");
+    }
+
+    get oosP() {
+        return this.elements.OOS_P;
+    }
+    get imanP() {
+        return this.elements.IMAN_P;
+    }
+    get lovP() {
+        return this.elements.LOV_P;
+    }
+    get manP() {
+        return this.elements.MAN_P;
+    }
+    get autoP() {
+        return this.elements.AUTO_P;
+    }
+    get casP() {
+        return this.elements.CAS_P;
+    }
+    get rcasP() {
+        return this.elements.RCAS_P;
+    }
+    get routP() {
+        return this.elements.ROUT_P;
+    }
+    get oosA() {
+        return this.elements.OOS_A;
+    }
+    get imanA() {
+        return this.elements.IMAN_A;
+    }
+    get lovA() {
+        return this.elements.LOV_A;
+    }
+    get manA() {
+        return this.elements.MAN_A;
+    }
+    get autoA() {
+        return this.elements.AUTO_A;
+    }
+    get casA() {
+        return this.elements.CAS_A;
+    }
+    get rcasA() {
+        return this.elements.RCAS_A;
+    }
+    get routA() {
+        return this.elements.ROUT_A;
+    }
+    get target() {
+        return this.elements.TARGET;
+    }
+    get normal() {
+        return this.elements.NORMAL;
     }
 }
-class ReferenceBlock extends ValueBlock {
-    /*
-    // Reference values
-    VALUE { REF="EM_AGIT2_DIR" }
-    */
+class ReferenceValue extends FhxValue {
     constructor(fhxString) {
         super(fhxString);
-        this.ref = valueOfParameter(fhxString, "REF");
+        this.elements = {
+            REF: valueOfParameter(fhxString, "REF"),
+        };
+    }
+    get ref() {
+        return this.elements.REF;
     }
 }
-class ParamWithStatusBlock extends ValueBlock {
+class ParamWithStatusValue extends FhxValue {
     /*
     // Paramater with status
     VALUE { CV=1 ST= { SQ=GOODNONCASCADE GPSS=NONSPECIFIC LS=NOTLIMITED } }
     */
     constructor(fhxString) {
         super(fhxString);
-        this.cv = valueOfParameter(fhxString, "CV");
-        this.st = valueOfParameter(fhxString, "ST");
-        this.sq = valueOfParameter(fhxString, "SQ");
-        this.gpss = valueOfParameter(fhxString, "GPSS");
-        this.ls = valueOfParameter(fhxString, "LS");
+        this.elements = {
+            CV: valueOfParameter(fhxString, "CV"),
+            ST: valueOfParameter(fhxString, "ST"),
+            SQ: valueOfParameter(fhxString, "SQ"),
+            GPSS: valueOfParameter(fhxString, "GPSS"),
+            LS: valueOfParameter(fhxString, "LS"),
+        };
+    }
+    get cv() {
+        return this.elements.CV;
+    }
+    get st() {
+        return this.elements.ST;
+    }
+    get sq() {
+        return this.elements.SQ;
+    }
+    get gpss() {
+        return this.elements.GPSS;
+    }
+    get ls() {
+        return this.elements.LS;
     }
 }
-class expressionBlock extends ValueBlock {
+class ExpressionValue extends FhxValue {
     /*
     T Expression partial block sample
     // T Expressions
@@ -176,7 +319,28 @@ class expressionBlock extends ValueBlock {
     */
     constructor(fhxString) {
         super(fhxString);
-        this.type = valueOfParameter(fhxString, "TYPE");
-        this.expression = valueOfParameter(fhxString, "EXPRESSION");
+        this.elements = {
+            TYPE: valueOfParameter(fhxString, "TYPE"),
+            EXPRESSION: valueOfParameter(fhxString, "EXPRESSION"),
+        };
+    }
+    get type() {
+        return this.elements.TYPE;
+    }
+    get expression() {
+        return this.elements.EXPRESSION;
     }
 }
+
+export {
+    FhxValue,
+    AlarmValue,
+    NamedSetValue,
+    NamedSetSet,
+    NumberValue,
+    StringValue,
+    ModeValue,
+    ReferenceValue,
+    ParamWithStatusValue,
+    ExpressionValue,
+};

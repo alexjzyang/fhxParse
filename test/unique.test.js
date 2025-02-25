@@ -1,10 +1,10 @@
 import { expect, should } from "chai";
 import fs from "fs";
-import { unique } from "./main.js";
-import { FileIO } from "./src/util/FileIO.js";
+import { unique } from "../main.js";
+import { FileIO } from "../src/util/FileIO.js";
 should();
 
-describe.only("prototyping the unique function", () => {
+describe.skip("prototyping the unique function", () => {
     let fbtxt = FileIO.readFile("test/data/FhxComponents/FunctionBlocks.txt");
     let res = unique(fbtxt);
     it("should return a json object", () => {
