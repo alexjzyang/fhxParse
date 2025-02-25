@@ -7,6 +7,8 @@ import { FileIO } from "./src/util/FileIO.js";
 import { processSFC } from "./src/SFCProessing.js";
 import { findBlocks, findBlockWithName } from "./src/util/FhxUtil.js";
 import { DesignSpecTables } from "./src/DSProcessor.js";
+import { create } from "domain";
+import { table } from "console";
 
 // write the all function_block_definitions to temp output folder in txt format
 function identifyFbd(fhx, outputpath = "test/output/temp") {
@@ -221,29 +223,38 @@ let moduleName = "_E_M_AGIT";
     // Identify the module class
     let dsTables = new DesignSpecTables(ObjectManager, moduleName);
 
-    let writeToFile = {
-        propertyTable: 1,
-        parameterTable: 1,
-        commandsTable: true,
-    };
-    if (writeToFile.propertyTable) {
-        let table = dsTables.createModulePropertiesTable();
-        FileIO.writeFile("test/output/temp/ModulePropertiesTable.csv", table, {
+    // let writeToFile = {
+    //     propertyTable: 1,
+    //     parameterTable: 1,
+    //     commandsTable: true,
+    // };
+    // if (writeToFile.propertyTable) {
+    //     let table = dsTables.createModulePropertiesTable();
+    //     FileIO.writeFile("test/output/temp/ModulePropertiesTable.csv", table, {
+    //         encoding: "utf8",
+    //     });
+    // }
+    // if (writeToFile.parameterTable) {
+    //     let table = dsTables.createModuleParameterTable();
+    //     FileIO.writeFile("test/output/temp/ModuleParametersTable.csv", table, {
+    //         encoding: "utf8",
+    //     });
+    // }
+    // if (writeToFile.commandsTable) {
+    //     let table = dsTables.createEmCommandsTable();
+    //     FileIO.writeFile("test/output/temp/EmCommandsTable.csv", table, {
+    //         encoding: "utf8",
+    //     });
+    // }
+    let tableNames = ["embeddedComposite", "linkedComposite"];
+
+    tableNames.forEach((tableName) => {
+        let table = dsTables.tables[tableName];
+        if (!table) return;
+        FileIO.writeFile(`test/output/temp/${tableName}.csv`, table, {
             encoding: "utf8",
         });
-    }
-    if (writeToFile.parameterTable) {
-        let table = dsTables.createModuleParameterTable();
-        FileIO.writeFile("test/output/temp/ModuleParametersTable.csv", table, {
-            encoding: "utf8",
-        });
-    }
-    if (writeToFile.commandsTable) {
-        let table = dsTables.createEmCommandsTable();
-        FileIO.writeFile("test/output/temp/EmCommandsTable.csv", table, {
-            encoding: "utf8",
-        });
-    }
+    });
 
     return;
 })(emsfhx, moduleName);

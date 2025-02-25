@@ -36,10 +36,10 @@ class AlarmValue extends FhxValue {
     get priority() {
         return this.elements.PRIORITY_NAME;
     }
-    get enab() {
+    get enable() {
         return this.elements.ENAB;
     }
-    get inv() {
+    get inverted() {
         return this.elements.INV;
     }
     get atyp() {

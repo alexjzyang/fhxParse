@@ -25,6 +25,8 @@ export class ComponentCreator {
                 return new FunctionBlockDefinitionComponent(fhxStr);
             case "ENUMERATION_SET":
                 return new NamedSetComponent(fhxStr);
+            case "FUNCTION_BLOCK_TEMPLATE":
+                return new FunctionBlockTemplateComponent(fhxStr);
             default:
                 return new Component(fhxStr);
         }
@@ -119,27 +121,6 @@ class Component {
             };
         }
     }
-
-    // Specifically found in FUNCTION_BLOCKs
-    getExtensibleAttributes() {
-        return findBlocks(this.block, "EXTENSIBLE_ATTRIBUTE").map((extAttr) => {
-            return {
-                name: valueOfParameter(extAttr, "NAME"),
-                count: valueOfParameter(extAttr, "COUNT"),
-            };
-        });
-    }
-    getConnectors() {
-        return findBlocks(this.block, "ADDITIONAL_CONNECTOR").map(
-            (connector) => {
-                return {
-                    name: valueOfParameter(connector, "NAME"),
-                    type: valueOfParameter(connector, "TYPE"),
-                    attribute: valueOfParameter(connector, "ATTRIBUTE"),
-                };
-            }
-        );
-    }
 }
 
 export class ModuleClassComponent extends Component {
@@ -150,7 +131,9 @@ export class ModuleClassComponent extends Component {
         this.functionBlocks;
         this.properties;
         this.componentType = "MODULE_CLASS";
+        this.childDevices;
         this.emCommandSet;
+
         this.initializeBlock();
     }
 
@@ -165,13 +148,10 @@ export class ModuleClassComponent extends Component {
         this.functionBlocks = findBlocks(this.block, "FUNCTION_BLOCK").map(
             (block) => new FunctionBlockComponent(block)
         );
-        // this.attributeInstanceAssociates =
-        //     this.findAttributeInstanceAssociates();
-        // To obtain properties, the module class is supposed to isolate information in
-        // itself and pass it to the module properties class
+        this.childDevices = findBlocks(this.block, "MODULE_BLOCK").map(
+            (block) => new ModuleBlockComponent(block)
+        );
 
-        // for consistency a only string relevant to properties is passed into
-        // the ModuleProperties class, instead of the entire block
         this.properties = new ModuleProperties(
             this.getPropertiesString()
         ).properties; // Module properties are unique to a module
@@ -247,16 +227,46 @@ export class FunctionBlockDefinitionComponent extends Component {
 export class AttributeComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
-        this.type = valueOfParameter(blockFhx, "TYPE");
-        this.readonly = valueOfParameter(blockFhx, "READONLY");
-        this.editable = valueOfParameter(blockFhx, "EDITABLE");
-        this.rectangle = this.getRectangle();
-        this.helpid = valueOfParameter(blockFhx, "HELP_ID");
-        this.category = valueOfParameter(blockFhx, "CATEGORY");
-        this.configurable = valueOfParameter(blockFhx, "CONFIGURABLE");
-        this.group = valueOfParameter(blockFhx, "GROUP");
-        this.connectiion = valueOfParameter(blockFhx, "CONNECTION");
+        this.elements = {
+            TYPE: valueOfParameter(blockFhx, "TYPE"),
+            CONNECTION: valueOfParameter(blockFhx, "CONNECTION"),
+            RECTANGLE: this.getRectangle(),
+            GROUP: valueOfParameter(blockFhx, "GROUP"),
+            CATEGORY: valueOfParameter(blockFhx, "CATEGORY"),
+            EDITABLE: valueOfParameter(blockFhx, "EDITABLE"),
+            HELP_ID: valueOfParameter(blockFhx, "HELP_ID"),
+            READONLY: valueOfParameter(blockFhx, "READONLY"),
+            CONFIGURABLE: valueOfParameter(blockFhx, "CONFIGURABLE"),
+        };
+
         this.componentType = "ATTRIBUTE";
+    }
+    get type() {
+        return this.elements.TYPE;
+    }
+    get connection() {
+        return this.elements.CONNECTION;
+    }
+    get rectangle() {
+        return this.elements.RECTANGLE;
+    }
+    get group() {
+        return this.elements.GROUP;
+    }
+    get category() {
+        return this.elements.CATEGORY;
+    }
+    get editable() {
+        return this.elements.EDITABLE;
+    }
+    get helpId() {
+        return this.elements.HELP_ID;
+    }
+    get readonly() {
+        return this.elements.READONLY;
+    }
+    get configurable() {
+        return this.elements.CONFIGURABLE;
     }
 }
 
@@ -272,6 +282,7 @@ export class AttributeInstanceComponent extends Component {
             HISTORY_DATA_POINT: this.getHistorisationBlock(),
             VALUE: this.getValueBlock(),
         };
+        this.componentType = "ATTRIBUTE_INSTANCE";
         // this.value = new FhxValue(this.valueBlock);
         // this.history = new Value(this.valueBlock);
     }
@@ -316,21 +327,119 @@ export class AttributeInstanceComponent extends Component {
 export class FunctionBlockComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
-        this.definition = valueOfParameter(blockFhx, "DEFINITION");
-        this.description = valueOfParameter(blockFhx, "DESCRIPTION");
-        this.id = valueOfParameter(blockFhx, "ID");
-        this.rectangle = this.getRectangle();
-        this.additionalConnectors = this.getConnectors();
-        this.getExtensibleAttributes = this.getExtensibleAttributes();
-        this.algorithmGenerated = valueOfParameter(
-            blockFhx,
-            "ALGORITHM_GENERATED"
-        );
+        this.elements = {
+            DEFINITION: valueOfParameter(blockFhx, "DEFINITION"),
+            DESCRIPTION: valueOfParameter(blockFhx, "DESCRIPTION"),
+            ID: valueOfParameter(blockFhx, "ID"),
+            ALGORITHM_GENERATED: valueOfParameter(
+                blockFhx,
+                "ALGORITHM_GENERATED"
+            ),
+            RECTANGLE: this.getRectangle(),
+            ADDITIONAL_CONNECTORS: this.getConnectors(),
+            EXTENSIBLE_ATTRIBUTE: this.getExtensibleAttributes(),
+            ALGORITHM_GENERATED: valueOfParameter(
+                blockFhx,
+                "ALGORITHM_GENERATED"
+            ),
+        };
         this.componentType = "FUNCTION_BLOCK";
+        this.getDefinitionBlock = this.findDefinition;
     }
-
     findDefinition(objManager) {
         return objManager.get(this.definition);
+    }
+    getConnectors() {
+        return findBlocks(this.block, "ADDITIONAL_CONNECTOR").map(
+            (connector) => {
+                return {
+                    name: valueOfParameter(connector, "NAME"),
+                    type: valueOfParameter(connector, "TYPE"),
+                    attribute: valueOfParameter(connector, "ATTRIBUTE"),
+                };
+            }
+        );
+    }
+    getExtensibleAttributes() {
+        return findBlocks(this.block, "EXTENSIBLE_ATTRIBUTE").map((extAttr) => {
+            return {
+                name: valueOfParameter(extAttr, "NAME"),
+                count: valueOfParameter(extAttr, "COUNT"),
+            };
+        });
+    }
+    get definition() {
+        return this.elements.DEFINITION;
+    }
+    get description() {
+        return this.elements.DESCRIPTION;
+    }
+    get id() {
+        return this.elements.ID;
+    }
+    get algorithmGenerated() {
+        return this.elements.ALGORITHM_GENERATED;
+    }
+    get rectangle() {
+        return this.elements.RECTANGLE;
+    }
+    get additionalConnectors() {
+        return this.elements.ADDITIONAL_CONNECTORS;
+    }
+    get extensibleAttributes() {
+        return this.elements.EXTENSIBLE_ATTRIBUTE;
+    }
+    get algorithmGenerated() {
+        return this.elements.ALGORITHM_GENERATED;
+    }
+}
+
+export class ModuleBlockComponent extends Component {
+    constructor(blockFhx) {
+        super(blockFhx);
+        /**
+         * DESCRIPTION="CM Class _GEX_AGIT_M Design Specification"
+         * OWNERSHIP=OWNED
+         * ALLOW_VARIANTS=T
+         * RECTANGLE= { X=620 Y=920 H=316 W=140 }
+         */
+        this.elements = {
+            MODULE: valueOfParameter(blockFhx, "MODULE"),
+            DESCRIPTION: valueOfParameter(blockFhx, "DESCRIPTION"),
+            OWNERSHIP: valueOfParameter(blockFhx, "OWNERSHIP"),
+            ALLOW_VARIANTS: valueOfParameter(blockFhx, "ALLOW_VARIANTS"),
+            RECTANGLE: this.getRectangle(),
+        };
+        this.componentType = "MODULE_BLOCK";
+    }
+    get module() {
+        return this.elements.MODULE;
+    }
+    get description() {
+        return this.elements.DESCRIPTION;
+    }
+    get ownership() {
+        return this.elements.OWNERSHIP;
+    }
+    get allowVariants() {
+        return this.elements.ALLOW_VARIANTS;
+    }
+    get rectangle() {
+        return this.elements.RECTANGLE;
+    }
+}
+
+class FunctionBlockTemplateComponent extends Component {
+    constructor(blockFhx) {
+        super(blockFhx);
+        this.elements = {
+            DESCRIPTION: valueOfParameter(blockFhx, "DESCRIPTION"),
+        };
+        this.componentType = "FUNCTION_BLOCK_TEMPLATE";
+    }
+
+    get description() {
+        return this.elements.DESCRIPTION;
     }
 }
 
@@ -354,6 +463,7 @@ export class NamedSetComponent extends Component {
             ENTRIES: this.getEntries(),
             DEFAULT_VALUE: valueOfParameter(blockFhx, "DEFAULT_VALUE"),
         };
+        this.componentType = "NAMED_SET";
     }
     getEntries() {
         let entries = findBlocks(this.block, "ENTRY").map((entry) => {
@@ -409,152 +519,5 @@ export class ModuleProperties {
             NVM: valueOfParameter(this.fhx, "NVM"),
         };
         return properties;
-    }
-}
-/////////////////////////////////////////////////////////////////////////////////////////
-// Prototype
-class Associates {
-    constructor() {
-        this.components = {};
-    }
-}
-
-export class AttributeInstanceAssociates extends Associates {
-    constructor(attributeInstanceComponent, attributeComponent) {
-        super();
-        this.component = { attributeInstanceComponent, attributeComponent };
-        this.valueBlock = this.component.attributeInstanceComponent.valueBlock;
-        this.attributeType = this.getValueTypes();
-        this.value = this.getValues();
-    }
-
-    get block() {
-        return this.valueBlock;
-    }
-    get fhx() {
-        return this.valueBlock;
-    }
-    // Associates should contain the paired attribute and attirbuteInstance of the same name
-    getValueTypes() {
-        return valueOfParameter(this.component.attributeComponent.fhx, "TYPE");
-    }
-
-    /**
-     * Extracts the value from a value block based on its type.
-     * @param {Object} param - The parameter object containing type of the parameter
-     * found in the ATTRIBUTE block; The block parameter contains the associated
-     * ATTRIBUTE_INSTANCE block.
-     * @returns {string} - The extracted value of the parameter
-     */
-
-    getValues() {
-        let value;
-        switch (this.attributeType) {
-            case "ENUMERATION_VALUE":
-                let set = valueOfParameter(this.valueBlock, "SET");
-                let option = valueOfParameter(this.valueBlock, "STRING_VALUE");
-                value = `${set}:${option}`;
-                break;
-            case "FLOAT":
-            case "UINT8":
-            case "UINT16":
-            case "UINT32": // 32 bit unsigned integer
-            case "INT8":
-            case "INT16":
-            case "INT32": // 32 bit signed integer
-            case "BOOLEAN": // Boolean
-            case "UNICODE_STRING": // String
-            case "FLOAT_WITH_STATUS": // Float with Status"
-                value = valueOfParameter(this.valueBlock, "CV");
-                break;
-            case "INTERNAL_REFERENCE": // Internal Reference
-            case "EXTERNAL_REFERENCE": // External Reference
-            case "DYNAMIC_REFERENCE": // Dynamic Reference
-                value = this.valueFromReferences();
-                break;
-            case "MODE": // Mode
-                value = valueFromMode();
-                break;
-            case "EVENT": // Alarm
-                value = "ALARM";
-                break;
-            // Additional cases might be needed for other parameter types
-            default:
-                return;
-        }
-        return value;
-    }
-
-    // a list of elements created from value blocks, the processing and the display of these
-    // should be handled in the "View" of the MVC
-
-    valueFromString() {
-        return valueOfParameter(this.valueBlock, "CV");
-    }
-    valueFromEvent() {
-        //WIP
-    }
-    valueFromNumber() {
-        return valueOfParameter(this.block, "CV");
-    }
-    valueFromEnum() {
-        // WIP
-    }
-    valueFromReferences() {
-        return valueOfParameter(this.block, "REF");
-    }
-    valueFromParameterWithStatus() {
-        return valueOfParameter(this.block, "CV");
-    }
-
-    /**
-     * Extracts the mode value from a block.
-     * Similar to valueFromBlock, but handling the Mode parameter type.
-     * @param {Object} this.valueBlock - The block containing mode information.
-     * @returns {string} - The extracted mode value.
-     */
-    valueFromMode() {
-        let modeOptions = [
-            {
-                fhxKey: "OOS_P",
-                displayName: "Out of Servive",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "IMAN_P",
-                displayName: "Initialization Manual",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "LOV_P",
-                displayName: "Local Override",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "MAN_P",
-                displayName: "Manual",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "AUTO_P",
-                displayName: "Auto",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "CAS_P",
-                displayName: "Cascade",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "RCAS_P",
-                displayName: "Remote Cascade",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-            {
-                fhxKey: "ROUT_P",
-                displayName: "Remote Out",
-                value: valuevalueOfParameter(this.valueBlock, "OOS_P"),
-            },
-        ];
     }
 }

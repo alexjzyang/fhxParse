@@ -4,12 +4,6 @@
  */
 
 import {
-    AttributeComponent,
-    AttributeInstanceComponent,
-    FunctionBlockComponent,
-} from "./Components.js";
-import { valueOfParameter } from "./util/FhxUtil.js";
-import {
     AlarmValue,
     ModeValue,
     NamedSetSet,
@@ -23,8 +17,24 @@ export class DesignSpecTables {
     constructor(componentManager, moduleName) {
         this.componentManager = componentManager;
         this.module = componentManager.get(moduleName);
-        // this.associatedModules = this.getAssociatedModules();
+        this.tables = {
+            moduleProperties: this.createModulePropertiesTable(),
+            emCommands: this.createEmCommandsTable(),
+            emChildDevices: this.createEmChildDevicesTable(),
+            moduleParameters: this.createModuleParameterTable(),
+            instanceConfigurable: this.createInstanceConfigurableTable(),
+            functionBlock: this.createFunctionBlockTable(),
+            linkedComposite: this.createLinkedCompositeTable(),
+            embeddedComposite: this.createEmbeddedCompositeTable(),
+            sfc: this.createSfcTable(),
+            alarm: this.createAlarmTable(),
+            history: this.createHistoryTable(),
+        };
     }
+    get thing() {
+        return this.tables;
+    }
+    6;
 
     // Design spec table, create table functions should isolate all the proper
     // information as the Controller in MVC, which is responsible to create the
@@ -45,7 +55,9 @@ export class DesignSpecTables {
             this.componentManager.objects[this.module.emCommandSet]
         ).createCsvString();
     }
-    createEmChildDevicesTable() {}
+    createEmChildDevicesTable() {
+        return new EmChildTable(this.module.childDevices).createCsvString();
+    }
     createModuleParameterTable() {
         return new ModuleParameterTable(
             this.module.attributes,
@@ -53,13 +65,97 @@ export class DesignSpecTables {
         ).createCsvString();
     }
     createInstanceConfigurableTable() {}
-    createFunctionBlockTable() {}
-    createLinkedCompositeTable() {}
-    createEmbeddedCompositeTable() {}
-    createSfcTable() {}
+    createFunctionBlockTable() {
+        // for the function block table, we only want OOB function blocks
+
+        let { functionBlocks } = this.module;
+        let OOBFunctionBlocks = functionBlocks.filter((fb) => {
+            let definitionBlock = this.componentManager.get(fb.definition);
+            return definitionBlock.componentType === "FUNCTION_BLOCK_TEMPLATE";
+        });
+
+        return new FunctionBlockTable(OOBFunctionBlocks).createCsvString();
+    }
+
+    /**
+     * GRAPHICS ALGORITHM=FBD dictates whether the black is function block diagram based
+     * GRAPHICS ALGORITHM=SFC dictates whether the block is sequential function chart based
+     */
+    createLinkedCompositeTable() {
+        // for the linked composite table, we only want blocks which definintion
+        // has a category "Library/CompositeTemplates"
+        let { functionBlocks } = this.module;
+        let composites = functionBlocks.filter((fb) => {
+            let definitionBlock = this.componentManager.get(fb.definition);
+            return (
+                definitionBlock.category?.includes(
+                    "Library/CompositeTemplates"
+                ) && definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
+                // this should be handled in the function block definition component itself in the future
+            );
+        });
+        return new LinkedCompositeTable(composites).createCsvString();
+    }
+    createEmbeddedCompositeTable() {
+        // for the embbeded composite table, we want the function block definitions has a empty category string
+        let { functionBlocks } = this.module;
+        let composites = functionBlocks.filter((fb) => {
+            let definitionBlock = this.componentManager.get(fb.definition);
+            return (
+                definitionBlock.category === "" &&
+                definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
+            );
+        });
+        return new EmbeddedCompositeTable(composites).createCsvString();
+    }
+
+    createSfcTable() {
+        // for the embbeded composite table, we want the function block definitions has a empty category string
+        let { functionBlocks } = this.module;
+        let composites = functionBlocks.filter((fb) => {
+            let definitionBlock = this.componentManager.get(fb.definition);
+            return (
+                definitionBlock.category === "" &&
+                definitionBlock.fhx.includes("GRAPHICS ALGORITHM=SFC")
+            );
+        });
+        return new SfcTable(composites).createCsvString(); // this is not implemented yet
+    }
+
     //* fail monitor table logic is not designed for now
-    createAlarmTable() {}
+    createAlarmTable() {
+        let alarmAttributeBlocks = this.module.attributes.filter(
+            (attribute) => attribute.type === "EVENT"
+        );
+        let alarmAttributeInstances = alarmAttributeBlocks.map((alarmBlock) => {
+            return this.module.attributeInstances.find(
+                (attributeInstance) =>
+                    attributeInstance.name === alarmBlock.name
+            );
+        });
+        // let alarms = alarmAttributeInstances.map(
+        //     (attributeInstance) => new AlarmValue(attributeInstance.valueBlock)
+        // );
+        return new AlarmTable(alarmAttributeInstances).createCsvString();
+    } // alarms are attribute instances that has a associated attribute with TYPE=EVENT
     createHistoryTable() {}
+}
+
+class DSTable {
+    // constructor() {}
+    assembleHeader() {}
+    assembleRows() {}
+    createCsvString(hasHeader = true) {
+        let csv = "";
+        if (hasHeader) {
+            csv += this.assembleHeader().join(",");
+            csv += "\n";
+        }
+        csv += this.assembleRows()
+            .map((row) => row.join(","))
+            .join("\n");
+        return csv;
+    }
 }
 
 /**
@@ -71,8 +167,9 @@ export class DesignSpecTables {
  * These are contained in the
  */
 
-class ModulePropertiesTable {
+class ModulePropertiesTable extends DSTable {
     constructor(properties) {
+        super();
         this.properties = properties;
     }
 
@@ -107,15 +204,7 @@ class ModulePropertiesTable {
     }
 
     createCsvString() {
-        let csv = "";
-        if (this.assembleHeader) {
-            csv += this.assembleHeader().join(",");
-            csv += "\n";
-        }
-        csv += this.assembleRows()
-            .map((row) => row.join(","))
-            .join("\n");
-        return csv;
+        return super.createCsvString(false);
     }
 }
 
@@ -131,8 +220,9 @@ class ModulePropertiesTable {
  * Parameter Type, obtained from the TYPE attribute of the ATTRIBUTE block
  * Default Value, obtained from the VALUE attribute of the ATTRIBUTE_INSTANCE block of the same name
  */
-class ModuleParameterTable {
+class ModuleParameterTable extends DSTable {
     constructor(attributes, attributeInstances) {
+        super();
         this.attributes = attributes;
         this.attributeInstances = attributeInstances;
     }
@@ -239,22 +329,14 @@ class ModuleParameterTable {
         let value = new ExpressionValue(exp);
         return value.expression;
     }
-
-    createCsvString() {
-        let csv = "";
-        if (this.assembleHeader()) {
-            csv += this.assembleHeader().join(",");
-            csv += "\n";
-        }
-        csv += this.assembleRows()
-            .map((row) => row.join(","))
-            .join("\n");
-        return csv;
-    }
 }
 
-class EmCommandSetTable {
+/**
+ * Table x.2
+ */
+class EmCommandSetTable extends DSTable {
     constructor(enumerationSet) {
+        super();
         this.enumerationSet = enumerationSet;
     }
     assembleHeader() {
@@ -272,16 +354,276 @@ class EmCommandSetTable {
 
         return rows.sort((a, b) => a[0].localeCompare(b[0]));
     }
+}
 
-    createCsvString() {
-        let csv = "";
-        if (this.assembleHeader()) {
-            csv += this.assembleHeader().join(",");
-            csv += "\n";
-        }
-        csv += this.assembleRows()
-            .map((row) => row.join(","))
-            .join("\n");
-        return csv;
+/**
+ * Table x.3
+ * Device IDs | Class Name | Ownership
+ * AGIT1_MTR | _C_M_AGIT_M | Private
+ */
+class EmChildTable extends DSTable {
+    constructor(childDevices) {
+        super();
+        this.childDevices = childDevices;
     }
+
+    assembleHeader() {
+        return ["Device IDs", "Class Name", "Ownership"];
+    }
+    assembleRows() {
+        let rows = [];
+        for (const moduleBlockComponent of this.childDevices) {
+            // Child devices
+            // are essentially module blocks
+            let { name, module, ownership } = moduleBlockComponent;
+            rows.push([name, module, ownership]);
+        }
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+}
+
+/**
+ * Table x.4.2
+ * Table layout
+ * Name	| Default Value
+ * AGIT2_MTR/MODULE_BLOCK_BINDING.MNAME | AGIT2_MTR2
+ * DEV1_ID.CV | <AGIT1_MTR>
+ *
+ * The table should include all the values a DV Bulk edit have. If a param has
+ * multiple element, such as alarms, they should all be captured.
+ */
+class InstanceConfigurableTable extends DSTable {
+    constructor() {
+        super();
+    }
+
+    assembleHeader() {}
+    assembleRows() {}
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+
+/**
+ * Table x.6
+ * Name | Function Block Type | *Functionality
+ * ACT1 | ACT | To Set OWNER_ID
+ * HOLD_REQ_LOGIC | COND | To Set/Reset Hold request status based on devices HOLD_ID and HOLD_REQ
+ */
+class FunctionBlockTable extends DSTable {
+    // FunctionBlock Table only displays OOB function blocks. Ones which definition is a function block template
+
+    constructor(functionBlocks, functionalities) {
+        super();
+        this.functionBlocks = functionBlocks;
+        this.functionalities = functionalities;
+    }
+
+    assembleHeader() {
+        return ["Name", "Function Block Type", "Functionality"];
+    }
+    assembleRows() {
+        let rows = [];
+        this.functionBlocks.forEach((fb, i) => {
+            rows.push([
+                fb.name,
+                fb.definition,
+                this.functionalities && this.functionalities[i]
+                    ? this.functionalities[i]
+                    : "N/A",
+            ]);
+        });
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+
+/**
+ * Table x.7
+ * Name | Definition | Functionality
+ * COMMAND_CTRL | _CT_M_CMD_CTRL | To set EM Command
+ */
+
+class LinkedCompositeTable extends DSTable {
+    constructor(linkedComposites, functionalities) {
+        super();
+        this.linkedComposites = linkedComposites;
+        this.functionalities = functionalities;
+    }
+
+    assembleHeader() {
+        return ["Name", "Definition", "Functionality"];
+    }
+    assembleRows() {
+        let rows = [];
+        this.linkedComposites.forEach((fb, i) => {
+            rows.push([
+                fb.name,
+                fb.definition,
+                this.functionalities && this.functionalities[i]
+                    ? this.functionalities[i]
+                    : "N/A",
+            ]);
+        });
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+
+/**
+ * 4.8 -> Embedded Composites
+ * 4.8.1 EQUIPMENT_LOGIC - FBD Composite  (x.8.? is a list of embedded composites
+ * which fhx should exist in a separate root block, i.e. Function Block Definition)
+ * 4.8.2 MONITOR – FBD Composite
+ *
+ * Embedded Composite should be treated as a separate block, which has their own
+ * nested blocks and therefore their own set of tables
+ *
+ * Table x.8.1
+ * Name | Type
+ * GEX_AGIT_SPD_WT | Embedded Composite
+ */
+class EmbeddedCompositeTable extends DSTable {
+    constructor(embeddedComposite) {
+        super();
+        this.embeddedComposite = embeddedComposite;
+    }
+
+    assembleHeader() {
+        return ["Name"];
+    }
+    assembleRows() {
+        let rows = [];
+        for (const composite of this.embeddedComposite) {
+            rows.push([composite.name]);
+        }
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+/**
+ * Alias: SFC table is also called Commadn Logic. (x.5.x.2)
+ * SFC table code is already implemented elsewhere
+ *
+ * Table x.8.x.x.2
+ * Step and Transition | Action | Expression
+ * S0000 Start | N/A | N/A
+ *
+ * Aside: Table x.8.x.x.1 (Composite Parameters) is just a module parameter
+ * table of the function block definition of that embedded composite
+ */
+class SfcTable extends DSTable {
+    constructor() {
+        super();
+    }
+
+    assembleHeader() {}
+    assembleRows() {}
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+
+// this is current not implemented, due its difficult design
+class FailureMonitorTable extends DSTable {
+    constructor() {
+        super();
+    }
+
+    assembleHeader() {}
+    assembleRows() {}
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+/**
+ * Table x.10
+ * Alarm | Parameters | Parameter Limit | Default Limit | Enabled | Alarm Message | Placeholder Values | Priority
+ * FAIL_ALM | FAILURE | N/A | N/A | No | %P1 %P2 | P1:FAIL P2:MONITOR/FAILURE | Warning
+ *
+ */
+class AlarmTable extends DSTable {
+    constructor(attributeInstances) {
+        super();
+        this.attributeInstances;
+        this.alarms = getAlarms();
+    }
+
+    getAlarms(attributeInstances) {
+        //each attirbute instance contains name and knows the value block of the alarm
+        // and the value block can be used to create AlarmValue object which    contains the necessary information needed to create the able
+
+        let alarms = attributeInstances.map((attributeInstance) => {
+            let { almattr, limattr, enable, param1, param2, priority } =
+                new AlarmValue(attributeInstance.valueBlock);
+
+            let defaultLim; // setting default lim, DV doesn't seem to have an alarm value block element for this
+            if (!defaultlim) defaultLim = "N/A";
+
+            let name = attributeInstance.name;
+            return {
+                name,
+                defaultlim,
+                parameter: almattr,
+                limit: limattr,
+                enable,
+                msgParam1,
+                msgParam2,
+                priority,
+            };
+        });
+        return alarms;
+    }
+
+    assembleHeader() {
+        return [
+            "Alarm",
+            "Parameter",
+            "Parameter Limit",
+            "Default Limit",
+            "Enabled",
+            "Parameter 1",
+            "Parameter 2",
+            "Priority",
+        ];
+    }
+    assembleRows() {
+        let rows = [];
+        for (const alarm of this.alarms) {
+            let {
+                name,
+                parameter,
+                limit,
+                defaultlim,
+                enable,
+                msgParam1,
+                msgParam2,
+                priority,
+            } = alarm;
+            limit = limit || "N/A";
+            rows.push([
+                name,
+                parameter,
+                limit,
+                defaultlim,
+                enable,
+                msgParam1,
+                msgParam2,
+                priority,
+            ]);
+        }
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+    // Override createCsvString method if no header is needed in the table or any other special case
+}
+
+/**
+ * Table x.11
+ * Value Recorded	Enabled	Display Representation	Data Characteristics	Sampling Period	Compression	Deviation	At Least
+ * FP_CMD.CV	Yes	Automatic	Continuous	1	Yes	0	240
+ *
+ *
+ */
+class HistorizationTable extends DSTable {
+    constructor() {
+        super();
+    }
+
+    assembleHeader() {}
+    assembleRows() {}
+    // Override createCsvString method if no header is needed in the table or any other special case
 }
