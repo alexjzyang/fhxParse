@@ -74,6 +74,92 @@ class AlarmValue extends FhxValue {
         return this.elements.ALARM_FUNCTIONAL_CLASSIFICATION;
     }
 }
+
+/*
+    HISTORY_DATA_POINT FIELD="CV"
+    {
+      DATA_CHARACTERISTIC=CONTINUOUS
+      ENABLED=T
+      SAMPLE_PERIOD_SECONDS=1
+      COMPRESSION_ENABLED=T
+      RECORD_AT_LEAST_EVERY_MINUTES=240
+      DEVIATION_LIMIT_FOR_COMPRESSION=0
+      DATA_REPRESENTATION=AUTOMATIC
+      EXPOSED=F
+      ENTERPRISE_COLLECTION=F
+    }
+*/
+class HistoryValue extends FhxValue {
+    constructor(fhxString) {
+        super(fhxString);
+        this.elements = {
+            FIELD: valueOfParameter(fhxString, "FIELD"),
+            DATA_CHARACTERISTIC: valueOfParameter(
+                fhxString,
+                "DATA_CHARACTERISTIC"
+            ),
+            ENABLED: valueOfParameter(fhxString, "ENABLED"),
+            SAMPLE_PERIOD_SECONDS: valueOfParameter(
+                fhxString,
+                "SAMPLE_PERIOD_SECONDS"
+            ),
+            COMPRESSION_ENABLED: valueOfParameter(
+                fhxString,
+                "COMPRESSION_ENABLED"
+            ),
+            RECORD_AT_LEAST_EVERY_MINUTES: valueOfParameter(
+                fhxString,
+                "RECORD_AT_LEAST_EVERY_MINUTES"
+            ),
+            DEVIATION_LIMIT_FOR_COMPRESSION: valueOfParameter(
+                fhxString,
+                "DEVIATION_LIMIT_FOR_COMPRESSION"
+            ),
+            DATA_REPRESENTATION: valueOfParameter(
+                fhxString,
+                "DATA_REPRESENTATION"
+            ),
+            EXPOSED: valueOfParameter(fhxString, "EXPOSED"),
+            ENTERPRISE_COLLECTION: valueOfParameter(
+                fhxString,
+                "ENTERPRISE_COLLECTION"
+            ),
+        };
+    }
+
+    get field() {
+        return this.elements.FIELD;
+    }
+    get dataCharacteristics() {
+        return this.elements.DATA_CHARACTERISTIC;
+    }
+    get enabled() {
+        return this.elements.ENABLED;
+    }
+
+    get samplePeriod() {
+        return this.elements.SAMPLE_PERIOD_SECONDS;
+    }
+    get compressionEnabled() {
+        return this.elements.COMPRESSION_ENABLED;
+    }
+    get atLeast() {
+        return this.elements.RECORD_AT_LEAST_EVERY_MINUTES;
+    }
+    get deviationLimit() {
+        return this.elements.DEVIATION_LIMIT_FOR_COMPRESSION;
+    }
+    get dataRepresentation() {
+        return this.elements.DATA_REPRESENTATION;
+    }
+    get exposed() {
+        return this.elements.EXPOSED;
+    }
+    get enterpriseCollection() {
+        return this.elements.ENTERPRISE_COLLECTION;
+    }
+}
+
 class NamedSetValue extends FhxValue {
     constructor(fhxString) {
         super(fhxString);
@@ -335,6 +421,7 @@ class ExpressionValue extends FhxValue {
 export {
     FhxValue,
     AlarmValue,
+    HistoryValue,
     NamedSetValue,
     NamedSetSet,
     NumberValue,

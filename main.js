@@ -9,6 +9,7 @@ import { findBlocks, findBlockWithName } from "./src/util/FhxUtil.js";
 import { DesignSpecTables } from "./src/DSProcessor.js";
 import { create } from "domain";
 import { table } from "console";
+import { createTestFolder } from "./src/util/OutputFolderGenerator.js";
 
 // write the all function_block_definitions to temp output folder in txt format
 function identifyFbd(fhx, outputpath = "test/output/temp") {
@@ -246,15 +247,24 @@ let moduleName = "_E_M_AGIT";
     //         encoding: "utf8",
     //     });
     // }
-    let tableNames = ["embeddedComposite", "linkedComposite"];
+    let tableNames = ["history"];
 
-    tableNames.forEach((tableName) => {
-        let table = dsTables.tables[tableName];
+    for (let table in dsTables.tables) {
         if (!table) return;
-        FileIO.writeFile(`test/output/temp/${tableName}.csv`, table, {
+        let create = dsTables.tables[table];
+        let folder = createTestFolder("test/output/temp", "_E_M_AGIT");
+        FileIO.writeFile(path.join(`${folder}`, `${table}.csv`), create, {
             encoding: "utf8",
         });
-    });
+    }
+
+    // tableNames.forEach((tableName) => {
+    //     let table = dsTables.tables[tableName];
+    //     if (!table) return;
+    //     FileIO.writeFile(`test/output/temp/${tableName}.csv`, table, {
+    //         encoding: "utf8",
+    //     });
+    // });
 
     return;
 })(emsfhx, moduleName);

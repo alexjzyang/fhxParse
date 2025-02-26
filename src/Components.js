@@ -2,7 +2,7 @@ import { findBlocks, valueOfParameter } from "./util/FhxUtil.js";
 import { DesignSpecTables } from "./DSProcessor.js";
 import { FhxValue } from "./ValueBlocks.js";
 
-export class ComponentCreator {
+class ComponentCreator {
     #getType(block) {
         let name = valueOfParameter(block, "NAME");
         if (name === undefined) return;
@@ -123,7 +123,7 @@ class Component {
     }
 }
 
-export class ModuleClassComponent extends Component {
+class ModuleClassComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx); // initializing with block, name, type, id properties
         this.attributes;
@@ -188,7 +188,7 @@ export class ModuleClassComponent extends Component {
 }
 
 // FHX Objects
-export class FunctionBlockDefinitionComponent extends Component {
+class FunctionBlockDefinitionComponent extends Component {
     attributes;
     attributeInstances;
     functionBlocks;
@@ -224,7 +224,7 @@ export class FunctionBlockDefinitionComponent extends Component {
 // For example function block component's process function will identify the
 // definition block and adding it to the object manager's process list
 
-export class AttributeComponent extends Component {
+class AttributeComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.elements = {
@@ -270,7 +270,7 @@ export class AttributeComponent extends Component {
     }
 }
 
-export class AttributeInstanceComponent extends Component {
+class AttributeInstanceComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.elements = {
@@ -309,22 +309,22 @@ export class AttributeInstanceComponent extends Component {
     }
 
     getEmbeddedBlocks(blockName) {
-        let valueBlock = findBlocks(this.block, blockName);
-        if (valueBlock.length > 1) {
-            console.log("More than one value block found");
+        let block = findBlocks(this.block, blockName);
+        if (block.length > 1) {
+            // console.log("More than one value block found");
             if (this.name.includes("SGCR") || this.name.includes("SPLTR")) {
-                console.log(`${this.name}'s value case not currently handled
-                        The attribute is a SGCR or SPLTR function block`);
+                // console.log(`${this.name}'s value case not currently handled
+                //         The attribute is a SGCR or SPLTR function block`);
             }
             return "Value block handling exception";
         }
         // throw new Error("More than one value block found");
-        else if (valueBlock.length === 0) return;
-        else return valueBlock[0];
+        else if (block.length === 0) return;
+        else return block[0];
     }
 }
 
-export class FunctionBlockComponent extends Component {
+class FunctionBlockComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.elements = {
@@ -394,7 +394,7 @@ export class FunctionBlockComponent extends Component {
     }
 }
 
-export class ModuleBlockComponent extends Component {
+class ModuleBlockComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         /**
@@ -453,7 +453,7 @@ class FunctionBlockTemplateComponent extends Component {
   ENTRY VALUE=255 NAME="Undefined" { SELECTABLE=F VISIBLE=F }
   DEFAULT_VALUE=0
 */
-export class NamedSetComponent extends Component {
+class NamedSetComponent extends Component {
     constructor(blockFhx) {
         super(blockFhx);
         this.elements = {
@@ -492,8 +492,9 @@ export class NamedSetComponent extends Component {
         return this.elements.DEFAULT_VALUE;
     }
 }
+``;
 
-export class ModuleProperties {
+class ModuleProperties {
     constructor(propertyString) {
         this.fhx = propertyString;
     }
@@ -521,3 +522,46 @@ export class ModuleProperties {
         return properties;
     }
 }
+
+class EquipmentModuleComponent extends ModuleClassComponent {
+    // equipment module is a module class with an element
+    // IS_EQUIPMENT_MODULE=T
+}
+
+class ControlModuleComponent extends ModuleClassComponent {
+    // control module is a module class without
+    // IS_CONTROL_MODULE=T
+}
+
+class EmbeddedFunctionBlockComponent {
+    // Embedded function block is a function that has
+    // ALGORITHM_GENERATED=T in the function block (embedded), and
+    // GRAPHICS ALGORITHM=FBD in its definition block
+}
+
+class EmbeddedSequentialFunctionChartComponent {
+    // Embedded sequential function chart is a function block that has
+    // ALGORITHM_GENERATED=T in the function block (embedded), and
+    // GRAPHICS ALGORITHM=SFC in its definition block
+}
+
+class LinkedFunctionBlockComponent {
+    // Linked function block is a function block that does NOT have
+    // ALGORITHM_GENERATED=T
+    // Being a function block diagram, they should still have
+    // GRAPHICS ALGORITHM=FBD in their definition block
+}
+
+export {
+    ComponentCreator,
+    Component,
+    ModuleClassComponent,
+    FunctionBlockDefinitionComponent,
+    AttributeComponent,
+    AttributeInstanceComponent,
+    FunctionBlockComponent,
+    ModuleBlockComponent,
+    FunctionBlockTemplateComponent,
+    NamedSetComponent,
+    ModuleProperties,
+};

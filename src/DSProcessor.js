@@ -5,6 +5,7 @@
 
 import {
     AlarmValue,
+    HistoryValue,
     ModeValue,
     NamedSetSet,
     NamedSetValue,
@@ -22,11 +23,11 @@ export class DesignSpecTables {
             emCommands: this.createEmCommandsTable(),
             emChildDevices: this.createEmChildDevicesTable(),
             moduleParameters: this.createModuleParameterTable(),
-            instanceConfigurable: this.createInstanceConfigurableTable(),
+            // instanceConfigurable: this.createInstanceConfigurableTable(),
             functionBlock: this.createFunctionBlockTable(),
             linkedComposite: this.createLinkedCompositeTable(),
             embeddedComposite: this.createEmbeddedCompositeTable(),
-            sfc: this.createSfcTable(),
+            // sfc: this.createSfcTable(),
             alarm: this.createAlarmTable(),
             history: this.createHistoryTable(),
         };
@@ -88,9 +89,8 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                definitionBlock.category?.includes(
-                    "Library/CompositeTemplates"
-                ) && definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
+                !definitionBlock.fhx?.includes("ALGORITHM_GENERATED=T") &&
+                definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
                 // this should be handled in the function block definition component itself in the future
             );
         });
@@ -102,7 +102,7 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                definitionBlock.category === "" &&
+                definitionBlock.fhx === "ALGORITHM_GENERATED=T" &&
                 definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
             );
         });
@@ -115,7 +115,7 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                definitionBlock.category === "" &&
+                definitionBlock.fhx === "ALGORITHM_GENERATED=T" &&
                 definitionBlock.fhx.includes("GRAPHICS ALGORITHM=SFC")
             );
         });
@@ -138,7 +138,15 @@ export class DesignSpecTables {
         // );
         return new AlarmTable(alarmAttributeInstances).createCsvString();
     } // alarms are attribute instances that has a associated attribute with TYPE=EVENT
-    createHistoryTable() {}
+    createHistoryTable() {
+        let historyAttributeInstances = this.module.attributeInstances.filter(
+            (attributeInstance) =>
+                attributeInstance.hisotryDataPointBlock !== undefined
+        );
+        return new HistorizationTable(
+            historyAttributeInstances
+        ).createCsvString();
+    }
 }
 
 class DSTable {
@@ -539,30 +547,34 @@ class FailureMonitorTable extends DSTable {
 class AlarmTable extends DSTable {
     constructor(attributeInstances) {
         super();
-        this.attributeInstances;
-        this.alarms = getAlarms();
+        this.attributeInstances = attributeInstances;
+        this.alarms = this.getAlarms();
     }
 
-    getAlarms(attributeInstances) {
+    getAlarms() {
         //each attirbute instance contains name and knows the value block of the alarm
         // and the value block can be used to create AlarmValue object which    contains the necessary information needed to create the able
 
-        let alarms = attributeInstances.map((attributeInstance) => {
-            let { almattr, limattr, enable, param1, param2, priority } =
-                new AlarmValue(attributeInstance.valueBlock);
-
-            let defaultLim; // setting default lim, DV doesn't seem to have an alarm value block element for this
-            if (!defaultlim) defaultLim = "N/A";
+        let alarms = this.attributeInstances.map((attributeInstance) => {
+            let {
+                almattr,
+                limattr,
+                enable,
+                param1,
+                param2,
+                supptimeout,
+                priority,
+            } = new AlarmValue(attributeInstance.valueBlock);
 
             let name = attributeInstance.name;
             return {
                 name,
-                defaultlim,
                 parameter: almattr,
                 limit: limattr,
                 enable,
-                msgParam1,
-                msgParam2,
+                param1,
+                param2,
+                supptimeout,
                 priority,
             };
         });
@@ -574,7 +586,7 @@ class AlarmTable extends DSTable {
             "Alarm",
             "Parameter",
             "Parameter Limit",
-            "Default Limit",
+            "Timeout",
             "Enabled",
             "Parameter 1",
             "Parameter 2",
@@ -588,22 +600,21 @@ class AlarmTable extends DSTable {
                 name,
                 parameter,
                 limit,
-                defaultlim,
+                supptimeout,
                 enable,
-                msgParam1,
-                msgParam2,
+                param1,
+                paramm2,
                 priority,
             } = alarm;
-            limit = limit || "N/A";
             rows.push([
-                name,
-                parameter,
-                limit,
-                defaultlim,
-                enable,
-                msgParam1,
-                msgParam2,
-                priority,
+                name || "N/A",
+                parameter || "N/A",
+                limit || "N/A",
+                supptimeout || "N/A",
+                enable || "N/A",
+                param1 || "N/A",
+                paramm2 || "N/A",
+                priority || "N/A",
             ]);
         }
         return rows.sort((a, b) => a[0].localeCompare(b[0]));
@@ -613,17 +624,86 @@ class AlarmTable extends DSTable {
 
 /**
  * Table x.11
- * Value Recorded	Enabled	Display Representation	Data Characteristics	Sampling Period	Compression	Deviation	At Least
- * FP_CMD.CV	Yes	Automatic	Continuous	1	Yes	0	240
+ * Value Recorded | Enabled | Display Representation | Data Characteristics | Sampling Period | Compression | Deviation | At Least
+ * FP_CMD.CV | Yes | Automatic | Continuous | 1 | Yes | 0 | 240
  *
  *
  */
 class HistorizationTable extends DSTable {
-    constructor() {
+    constructor(attributeInstances) {
         super();
+        this.attributeInstances = attributeInstances;
+        this.historyPoints = this.getHistoryPoints();
     }
 
-    assembleHeader() {}
-    assembleRows() {}
+    getHistoryPoints() {
+        let historyPoints = this.attributeInstances.map((attributeInstance) => {
+            let {
+                field,
+                enabled,
+                dataRepresentation,
+                dataCharacteristics,
+                samplePeriod,
+                compressionEnabled,
+                deviationLimit,
+                atLeast,
+            } = new HistoryValue(attributeInstance.hisotryDataPointBlock);
+
+            let valueRecorded = `${attributeInstance.name}.${field}`;
+            enabled = enabled === "T" ? "Yes" : "No";
+
+            compressionEnabled = compressionEnabled === "T" ? "Yes" : "No";
+            return {
+                valueRecorded,
+                enabled,
+                dataRepresentation,
+                dataCharacteristics,
+                samplePeriod,
+                compressionEnabled,
+                deviationLimit,
+                atLeast,
+            };
+        });
+        return historyPoints;
+    }
+
+    assembleHeader() {
+        return [
+            "Value Recorded",
+            "Enabled",
+            "Display Representation",
+            "Data Characteristics",
+            "Sampling Period",
+            "Compression",
+            "Deviation",
+            "At Least",
+        ];
+    }
+    assembleRows() {
+        let rows = [];
+        for (const historyPoint of this.historyPoints) {
+            let {
+                valueRecorded,
+                enabled,
+                dataRepresentation,
+                dataCharacteristics,
+                samplePeriod,
+                compressionEnabled,
+                deviationLimit,
+                atLeast,
+            } = historyPoint;
+            rows.push([
+                valueRecorded || "N/A",
+                enabled || "N/A",
+                dataRepresentation || "N/A",
+                dataCharacteristics || "N/A",
+                samplePeriod || "N/A",
+                compressionEnabled || "N/A",
+                deviationLimit || "N/A",
+                atLeast || "N/A",
+            ]);
+        }
+        return rows.sort((a, b) => a[0].localeCompare(b[0]));
+    }
     // Override createCsvString method if no header is needed in the table or any other special case
 }
