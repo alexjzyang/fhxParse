@@ -15,6 +15,9 @@ export class ObjectManager {
     get(name) {
         return this.objects[name];
     }
+
+    findAllEms() {}
+    findAllEnums() {}
 }
 
 /**
@@ -85,6 +88,7 @@ export class FhxProcessor {
         let mgr = new ObjectManager();
         let obj;
         while ((obj = this.#findNextComponent())) {
+            // the object being added is an object created by the ComponentCreator.create function
             mgr.add(obj);
             continue; // repeatedly run findNextComponent until the entire fhx is consumed
         }

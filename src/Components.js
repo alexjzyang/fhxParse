@@ -1,6 +1,4 @@
 import { findBlocks, valueOfParameter } from "./util/FhxUtil.js";
-import { DesignSpecTables } from "./DSProcessor.js";
-import { FhxValue } from "./ValueBlocks.js";
 
 class ComponentCreator {
     #getType(block) {

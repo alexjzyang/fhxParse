@@ -150,7 +150,6 @@ export class DesignSpecTables {
 }
 
 class DSTable {
-    // constructor() {}
     assembleHeader() {}
     assembleRows() {}
     createCsvString(hasHeader = true) {
@@ -523,7 +522,9 @@ class SfcTable extends DSTable {
         super();
     }
 
-    assembleHeader() {}
+    assembleHeader() {
+        return ["Steps and Transitions", "Acions", "Expressions"];
+    }
     assembleRows() {}
     // Override createCsvString method if no header is needed in the table or any other special case
 }

@@ -215,56 +215,119 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 */
 // unique();
 
-let emsfhx = FileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
-let moduleName = "_E_M_AGIT";
+(function runner() {
+    let emsfhx = FileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
+    // let moduleName = "_E_M_AGIT";
 
-(function runner(fhx, moduleName) {
     // Use FhxProcessor to digest fhx and create manager
-    let ObjectManager = new FhxProcessor(fhx).createManager();
-    // Identify the module class
-    let dsTables = new DesignSpecTables(ObjectManager, moduleName);
+    let ObjectManager = new FhxProcessor(emsfhx).createManager();
 
-    // let writeToFile = {
-    //     propertyTable: 1,
-    //     parameterTable: 1,
-    //     commandsTable: true,
-    // };
-    // if (writeToFile.propertyTable) {
-    //     let table = dsTables.createModulePropertiesTable();
-    //     FileIO.writeFile("test/output/temp/ModulePropertiesTable.csv", table, {
-    //         encoding: "utf8",
-    //     });
-    // }
-    // if (writeToFile.parameterTable) {
-    //     let table = dsTables.createModuleParameterTable();
-    //     FileIO.writeFile("test/output/temp/ModuleParametersTable.csv", table, {
-    //         encoding: "utf8",
-    //     });
-    // }
-    // if (writeToFile.commandsTable) {
-    //     let table = dsTables.createEmCommandsTable();
-    //     FileIO.writeFile("test/output/temp/EmCommandsTable.csv", table, {
-    //         encoding: "utf8",
-    //     });
-    // }
-    let tableNames = ["history"];
+    // let emNames = ObjectManager.findAllEms();
+    let emNames = ["_E_M_AGIT", "_E_M_COND", "_E_M_PH", "_E_M_TEMP"];
 
-    for (let table in dsTables.tables) {
-        if (!table) return;
-        let create = dsTables.tables[table];
-        let folder = createTestFolder("test/output/temp", "_E_M_AGIT");
-        FileIO.writeFile(path.join(`${folder}`, `${table}.csv`), create, {
-            encoding: "utf8",
-        });
-    }
+    emNames.forEach((moduleName) => {
+        // Identify the module class
+        let dsTables = new DesignSpecTables(ObjectManager, moduleName);
 
-    // tableNames.forEach((tableName) => {
-    //     let table = dsTables.tables[tableName];
-    //     if (!table) return;
-    //     FileIO.writeFile(`test/output/temp/${tableName}.csv`, table, {
-    //         encoding: "utf8",
-    //     });
-    // });
+        for (let table in dsTables.tables) {
+            if (!table) return;
+            let create = dsTables.tables[table];
 
+            let folder = createTestFolder("test/output", "RUN");
+            FileIO.writeFile(
+                path.join(`${folder}`, moduleName, `${table}.csv`),
+                create,
+                {
+                    encoding: "utf8",
+                }
+            );
+        }
+    });
     return;
-})(emsfhx, moduleName);
+})();
+
+/**
+ * Converts SFC data to CSV format and writes it to a file.
+ *
+ * @param {string} filepath - The path where the CSV file will be saved.
+ * @param {string} filename - The name of the CSV file.
+ * @param {string} sfcBlockFhx - The FHX of a Function Block Definition containing SFC block.
+ */
+function sfcToCsv(filepath, filename, sfcBlockFhx) {
+    let sfcDataObj = fhxProcessor.processSFC(sfcBlockFhx);
+
+    let header = ["Steps and Transitions", "Acions", "Expressions"];
+    let rows;
+
+    for (let stepIndex = 0; stepIndex < sfcDataObj.steps.length; stepIndex++) {
+        let step = sfcDataObj.steps[stepIndex];
+        let stepText = `${step.name}\n${step.description}`;
+        if (step.actions.length === 0) {
+            rows.push({
+                steps: stepText,
+                actions: "N/A",
+                expressions: "N/A",
+            });
+        }
+        for (
+            let actionIndex = 0;
+            actionIndex < step.actions.length;
+            actionIndex++
+        ) {
+            let action = step.actions[actionIndex];
+            let actionText = `${action.name}\n${action.description}`;
+            for (let expIndex = 0; expIndex < 3; expIndex++) {
+                let delay, act, confirm;
+                delay = act = confirm = "";
+                if (action.delayedExpression) {
+                    delay += `Delay Expression: \n${action.delayedExpression}\n`;
+                }
+                if (action.delayTime) {
+                    delay += `Delay Time: \n${action.delayTime}\n`;
+                }
+
+                act = `Action: \n${action.expression}\n`;
+
+                if (action.confirmExpression) {
+                    confirm += `Confirm Expression: \n${action.confirmExpression}\n`;
+                }
+                if (action.confirmTimeOut) {
+                    confirm += `Confirm TimeOut: \n${action.confirmTimeOut}\n`;
+                }
+
+                delay = delay === "" ? `Delay Time: \n0` : delay;
+                confirm =
+                    confirm === ""
+                        ? `Confirm Expression: True;\nConfirm TimeOut: \n0`
+                        : confirm;
+                let exps = { delay, act, confirm };
+                let record = {};
+
+                record.steps =
+                    actionIndex === 0 && expIndex === 0 ? stepText : "";
+                record.actions = expIndex === 0 ? actionText : "";
+                switch (expIndex) {
+                    case 0:
+                        record.expressions = exps.delay;
+                        break;
+                    case 1:
+                        record.expressions = exps.act;
+                        break;
+                    case 2:
+                        record.expressions = exps.confirm;
+                        break;
+                }
+
+                rows.push(record);
+            }
+        }
+    }
+    sfcDataObj.transitions.forEach((transition) => {
+        let record = {
+            steps: `${transition.name}\n${transition.description}`, // In the transition section, csv header id is still "steps"
+            expressions: transition.expression,
+        };
+        rows.push(record);
+    });
+    return rows;
+}
