@@ -34,10 +34,14 @@ export class DesignSpecTables {
     }
 
     getAssociatedTables() {
+        // temp function
         let { functionBlocks } = this.module;
-        return functionBlocks
-            ?.filter((fb) => fb.algorithmGenerated === "T")
-            .map((name) => name);
+        return functionBlocks.filter((fb) => {
+            let definitionBlock = this.componentManager.get(fb.definition);
+            return definitionBlock.category?.includes("");
+            // &&
+            // definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
+        });
     }
 
     // Design spec table, create table functions should isolate all the proper
