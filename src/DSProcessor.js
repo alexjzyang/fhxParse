@@ -92,9 +92,9 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                !definitionBlock.fhx?.includes("ALGORITHM_GENERATED=T") &&
-                definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
-                // this should be handled in the function block definition component itself in the future
+                definitionBlock.category?.includes(
+                    "Library/CompositeTemplates"
+                ) && definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
             );
         });
         return new LinkedCompositeTable(composites).createCsvString();
@@ -105,7 +105,7 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                definitionBlock.fhx === "ALGORITHM_GENERATED=T" &&
+                definitionBlock.category?.includes("") &&
                 definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
             );
         });
@@ -118,7 +118,7 @@ export class DesignSpecTables {
         let composites = functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
             return (
-                definitionBlock.fhx === "ALGORITHM_GENERATED=T" &&
+                definitionBlock.category?.includes("") &&
                 definitionBlock.fhx.includes("GRAPHICS ALGORITHM=SFC")
             );
         });
