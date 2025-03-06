@@ -1,4 +1,3 @@
-import fs, { write } from "fs";
 import { AttributeComponent, ModuleClassComponent } from "./src/Components.js";
 import { FhxProcessor } from "./src/Managers.js";
 import path from "path";
@@ -7,8 +6,6 @@ import { FileIO } from "./src/util/FileIO.js";
 import { processSFC } from "./src/SFCProessing.js";
 import { findBlocks, findBlockWithName } from "./src/util/FhxUtil.js";
 import { DesignSpecTables } from "./src/DSProcessor.js";
-import { create } from "domain";
-import { table } from "console";
 import { createTestFolder } from "./src/util/OutputFolderGenerator.js";
 
 // write the all function_block_definitions to temp output folder in txt format
@@ -216,7 +213,7 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 // unique();
 
 (function runner() {
-    let emsfhx = FileIO.readFile("src/fhx/Mixer Mixer_EM_Classes.fhx");
+    let emsfhx = FileIO.readFile("./src/fhx/Mixer Mixer_EM_Classes.fhx");
     // let moduleName = "_E_M_AGIT";
 
     // Use FhxProcessor to digest fhx and create manager
@@ -227,6 +224,7 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 
     emNames.forEach((moduleName) => {
         // Identify the module class
+
         let dsTables = new DesignSpecTables(ObjectManager, moduleName);
 
         for (let table in dsTables.tables) {
@@ -242,21 +240,19 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
                 }
             );
         }
+        console.log(dsTables.getAssociatedTables().map((table) => table.name));
     });
     return;
 })();
 
 /**
- * Converts SFC data to CSV format and writes it to a file.
  *
- * @param {string} filepath - The path where the CSV file will be saved.
- * @param {string} filename - The name of the CSV file.
- * @param {string} sfcBlockFhx - The FHX of a Function Block Definition containing SFC block.
+ * @param {string} sfcBlockFhx fhx of the sfc functin block
+ * @returns array of rows for the sfc csv table
  */
-function sfcToCsv(filepath, filename, sfcBlockFhx) {
+export function sfcTable(sfcBlockFhx) {
     let sfcDataObj = fhxProcessor.processSFC(sfcBlockFhx);
 
-    let header = ["Steps and Transitions", "Acions", "Expressions"];
     let rows;
 
     for (let stepIndex = 0; stepIndex < sfcDataObj.steps.length; stepIndex++) {

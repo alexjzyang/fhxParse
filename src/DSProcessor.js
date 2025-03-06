@@ -32,10 +32,13 @@ export class DesignSpecTables {
             history: this.createHistoryTable(),
         };
     }
-    get thing() {
-        return this.tables;
+
+    getAssociatedTables() {
+        let { functionBlocks } = this.module;
+        return functionBlocks
+            ?.filter((fb) => fb.algorithmGenerated === "T")
+            .map((name) => name);
     }
-    6;
 
     // Design spec table, create table functions should isolate all the proper
     // information as the Controller in MVC, which is responsible to create the
@@ -519,7 +522,7 @@ class EmbeddedCompositeTable extends DSTable {
  */
 class SfcTable extends DSTable {
     constructor() {
-        super();
+        // super();
     }
 
     assembleHeader() {

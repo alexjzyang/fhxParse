@@ -541,6 +541,12 @@ class EmbeddedSequentialFunctionChartComponent {
     // Embedded sequential function chart is a function block that has
     // ALGORITHM_GENERATED=T in the function block (embedded), and
     // GRAPHICS ALGORITHM=SFC in its definition block
+    // steps;
+    // transitions;
+    // constructor(fhx) {
+    //     super(fhx);
+    //     this.componentType = "SFC";
+    // }
 }
 
 class LinkedFunctionBlockComponent {
