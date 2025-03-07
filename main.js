@@ -7,6 +7,7 @@ import { processSFC } from "./src/SFCProessing.js";
 import { findBlocks, findBlockWithName } from "./src/util/FhxUtil.js";
 import { DesignSpecTables } from "./src/DSProcessor.js";
 import { createTestFolder } from "./src/util/OutputFolderGenerator.js";
+import { json } from "stream/consumers";
 
 // write the all function_block_definitions to temp output folder in txt format
 function identifyFbd(fhx, outputpath = "test/output/temp") {
@@ -221,29 +222,69 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
 
     // let emNames = ObjectManager.findAllEms();
     let emNames = ["_E_M_AGIT", "_E_M_COND", "_E_M_PH", "_E_M_TEMP"];
+    let modulenames = [
+        "EQUIPMENT_LOGIC",
+        "COMMAND_00000",
+        "COMMAND_00001",
+        "COMMAND_00002",
+        "MONITOR",
+    ];
 
-    emNames.forEach((moduleName) => {
+    let modulename = ["__5D419B06_1888B1ED__"];
+
+    let pathname = "test/output/RUNxx_20250306/_E_M_AGIT/EQUIPMENT_LOGIC";
+    modulename.forEach((moduleName) => {
+        FileIO.writeFile(
+            path.join(pathname, moduleName, `${moduleName}.txt`),
+            ObjectManager.get(moduleName).block,
+            {
+                encoding: "utf8",
+            }
+        );
         // Identify the module class
-
         let dsTables = new DesignSpecTables(ObjectManager, moduleName);
+        // let folder = createTestFolder("test/output", "RUN");
 
         for (let table in dsTables.tables) {
             if (!table) return;
             let create = dsTables.tables[table];
 
-            let folder = createTestFolder("test/output", "RUN");
             FileIO.writeFile(
-                path.join(`${folder}`, moduleName, `${table}.csv`),
+                path.join(pathname, moduleName, `${table}.csv`),
                 create,
                 {
                     encoding: "utf8",
                 }
             );
         }
-        console.log(dsTables.getAssociatedTables().map((table) => table.name));
+
+        let associatedTables = dsTables
+            .getAssociatedTables()
+            .map((table) => table.name);
+        console.log(associatedTables);
+        FileIO.writeFile(
+            path.join(pathname, moduleName, `AssociatedTables.json`),
+            JSON.stringify(associatedTables),
+            {
+                encoding: "utf8",
+            }
+        );
     });
     return;
-})();
+}); //();
+
+function processNestedBlocks(fhx) {
+    let inputPath = "test/output/RUNxx_20250306/_E_M_AGIT";
+    let associated = FileIO.readFile(
+        path.join(inputPath, "AssociatedTables.json"),
+        { encoding: "utf8" }
+    );
+    nestedModuleNames = JSON.parse(nestedModules);
+    let emsfhx = FileIO.readFile("./src/fhx/Mixer Mixer_EM_Classes.fhx");
+
+    let fhxblocks = 
+
+}
 
 /**
  *

@@ -38,7 +38,7 @@ export class DesignSpecTables {
         let { functionBlocks } = this.module;
         return functionBlocks.filter((fb) => {
             let definitionBlock = this.componentManager.get(fb.definition);
-            return definitionBlock.category?.includes("");
+            return definitionBlock.category === "";
             // &&
             // definitionBlock.fhx.includes("GRAPHICS ALGORITHM=FBD")
         });
