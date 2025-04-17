@@ -5,3 +5,7 @@ node_modules/*
 test/test_output/*
 test/output/*
 RetiredCode_FhxUtil.js
+Applications/fhxblocks/*
+Applications/**/output/*
+*.fhx
+*.txt

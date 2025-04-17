@@ -157,7 +157,14 @@ function processValueBlocks(block) {
     // Modes
 }
 
-export {
+// export {
+//     findBlocks,
+//     valueOfParameter,
+//     findBlockWithName,
+//     findBlockWithCondition,
+//     processValueBlocks,
+// };
+export default {
     findBlocks,
     valueOfParameter,
     findBlockWithName,

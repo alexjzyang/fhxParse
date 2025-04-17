@@ -26,6 +26,13 @@
             "name": "Debug Main",
             "skipFiles": ["<node_internals>/**"],
             "program": "${workspaceFolder}/main.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Application",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/Applications/app.js"
         }
     ]
 }

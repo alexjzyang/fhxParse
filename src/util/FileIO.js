@@ -179,6 +179,10 @@ export class FileIO {
             }
         }
 
+        // Check if file extension exists, if not add the specified filetype as the extension
+        if (!path.extname(filepath)) {
+            filepath = `${filepath}.${filetype}`;
+        }
         // Write data to the file
         fs.writeFileSync(filepath, data, encoding);
     }
