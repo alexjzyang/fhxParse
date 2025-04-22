@@ -1,0 +1,22 @@
+
+fhx_file           ::= { fhx_block }
+fhx_block          ::= (header_block | module_block | phase_block | class_block | action_block | parameter_block | comment_block)
+
+header_block       ::= identifier string_literal ";"
+module_block       ::= "MODULE" string_literal "{" { fhx_block } "}"
+phase_block        ::= "PHASE" string_literal "{" { fhx_block } "}"
+class_block        ::= "CLASS" string_literal "{" { fhx_block } "}"
+action_block       ::= "ACTION" string_literal "{" { fhx_block } "}"
+parameter_block    ::= "PARAMETER" string_literal "{" { parameter_property } "}"
+
+parameter_property ::= identifier "=" value ";"
+value              ::= string_literal | number_literal | boolean_literal
+
+comment_block      ::= "(*" { ANY_CHARACTER_EXCEPT_CLOSING_PARENS } "*)"
+
+identifier         ::= letter { letter | digit | "_" }
+string_literal     ::= '"' { any_character_except_quote } '"'
+number_literal     ::= [ "-" ] digit { digit } [ "." digit { digit } ]
+boolean_literal    ::= "TRUE" | "FALSE"
+letter             ::= "A".."Z" | "a".."z"
+digit              ::= "0".."9"

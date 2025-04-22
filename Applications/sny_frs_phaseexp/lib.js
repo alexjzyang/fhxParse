@@ -52,22 +52,6 @@ export function trimComments(fhxblock) {
     return fhxblock.replace(/\/\*[\s\S]*?\*\//g, "").trim();
 }
 
-function getBlockid(fhxblock) {
-    // const match = fhxblock.match(/^(\s*\w+ ")[^"]+"/);
-
-    const regex = /^\s*(\w+)(?:\s+(\w+)="([^"]+)")?/;
-    const result = fhxblock.match(regex);
-    if (result) {
-        let blocktype = result[1];
-        let idType = result[2] || "";
-        let id = result[3] || "";
-        return {
-            blocktype,
-            idType,
-            id,
-        };
-    }
-}
 export function getBlockName(fhxblock) {
     let line = fhxblock.split("\n")[0];
     const name = line.match(/.*?NAME="([^"]+)"/);
@@ -80,3 +64,10 @@ export function getBlockType(fhxblock) {
     const match = fhxblock.match(/^\s*(\w+)/);
     return match ? match[1] : null;
 }
+
+/**
+ * Identify the BLOCK_KEY, BLOCK_IDENTIFIER, BLOCK_IDENTIFIER_VALUE with the format:
+ * BLOCK_KEY BLOCK_IDENTIFIER="BLOCK_IDENTIFIER_VALUE"
+ * @param {*} fhx
+ */
+export function getBlockInfo(fhx) {}

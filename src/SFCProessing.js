@@ -2,7 +2,7 @@
 SFCProecssor.js handles the processing of the SFC data from the FHX file.
 
 */
-import * as fhxutil from "./util/FhxUtil.js";
+import fhxutil from "./util/FhxUtil.js";
 
 function SFCSteps(emFhxData) {
     let steps = fhxutil.findBlocks(emFhxData, "STEP");

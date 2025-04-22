@@ -1,0 +1,253 @@
+[
+    {
+        "name": "S0000",
+        "description": "Start",
+        "actions": []
+    },
+    {
+        "name": "S0010",
+        "description": "Initialise Phase",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Reset Post Inoculation Timer, Set Post Inoculation Timer Complete Time and Description"
+            },
+            {
+                "name": "EXIT",
+                "description": "Continue Next Task"
+            }
+        ]
+    },
+    {
+        "name": "S0020",
+        "description": "Disable Alarms",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Enable Required Hold Monitors"
+            }
+        ]
+    },
+    {
+        "name": "S0030",
+        "description": "Acquire Equipment",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Acquire Devices"
+            },
+            {
+                "name": "A020",
+                "description": "Enable Hold Monitor for Loss of Module Ownership"
+            }
+        ]
+    },
+    {
+        "name": "S0040",
+        "description": "Acquire Failure",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Prompt Operator: Acquire Failed"
+            },
+            {
+                "name": "EXIT",
+                "description": "Clear Message After A010 is Complete"
+            }
+        ]
+    },
+    {
+        "name": "S0050",
+        "description": "Enable HM & SM",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Enable Hold and Sentinel Monitors"
+            },
+            {
+                "name": "A020",
+                "description": "Reset Hold Request"
+            },
+            {
+                "name": "A030",
+                "description": "Initialize process alarms"
+            },
+            {
+                "name": "EXIT",
+                "description": "Continue Next Task"
+            }
+        ]
+    },
+    {
+        "name": "S0100",
+        "description": "Task1 - Inoculation",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Reset OAR and Set devices to correct states for the current step"
+            },
+            {
+                "name": "A020",
+                "description": "Set RPT_STEP_NUM (Step Number); Set RPT_STEP_DESC (Step Description)"
+            },
+            {
+                "name": "A030",
+                "description": "Report the Step Number (RPT_STEP_NUM) and Step Description (RPT_STEP_DESC)"
+            },
+            {
+                "name": "A040",
+                "description": "Display Message, prompt operator to setup for inoculation"
+            },
+            {
+                "name": "A050",
+                "description": "Waiting for OAR Reset"
+            },
+            {
+                "name": "A060",
+                "description": "Display Message, prompt operator to enter Inoculum amount"
+            },
+            {
+                "name": "A070",
+                "description": "Set Inoculum CP to Operator Input"
+            },
+            {
+                "name": "A080",
+                "description": "Set Transfer Pump Control for Inoculum transfer"
+            },
+            {
+                "name": "A090",
+                "description": "the transfer pump totalizer ≥ Inoculum CP "
+            },
+            {
+                "name": "A100",
+                "description": "Display System weight to operator. Enable process LO alarms"
+            },
+            {
+                "name": "A110",
+                "description": "Set Transfer Pump Control to Idle State."
+            },
+            {
+                "name": "A120",
+                "description": "Restart Rocking and Rocking Angle"
+            },
+            {
+                "name": "A130",
+                "description": "Waiting for OAR Reset and re-enable rocker angle lo alarm"
+            },
+            {
+                "name": "A140",
+                "description": "Display Message, prompt operator to acknowledge when ready toto proceed to Incubation (Post-Inoculation)."
+            },
+            {
+                "name": "EXIT",
+                "description": "Continue Next Task"
+            }
+        ]
+    },
+    {
+        "name": "S0200",
+        "description": "Task2 - Incubation (Post-Inoculation)",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Set devices to correct states for the current step"
+            },
+            {
+                "name": "A020",
+                "description": "Set RPT_STEP_NUM (Step Number); Set RPT_STEP_DESC (Step Description)"
+            },
+            {
+                "name": "A030",
+                "description": "Report the Step Number (RPT_STEP_NUM) and Step Description (RPT_STEP_DESC)"
+            },
+            {
+                "name": "A040",
+                "description": "Start Post Inoculation Timer and wait for Post Inoculation Timer ≥ 12 hours"
+            },
+            {
+                "name": "A041",
+                "description": "Enable Alarms"
+            },
+            {
+                "name": "A050",
+                "description": "Waiting for OAR Reset"
+            },
+            {
+                "name": "A060",
+                "description": "Display Message, Prompt operator acknowledge when ready to proceed to Transfer Out."
+            },
+            {
+                "name": "NS065",
+                "description": "Continually populate CULTR_INC_TM with Post Inactivation Timer"
+            },
+            {
+                "name": "EXIT",
+                "description": "Continue Next Task"
+            }
+        ]
+    },
+    {
+        "name": "S9900",
+        "description": "Task99 - Complete Task",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Display Message"
+            },
+            {
+                "name": "A020",
+                "description": "Set RPT_STEP_NUM (Step Number); Set RPT_STEP_DESC (Step Description)"
+            },
+            {
+                "name": "A030",
+                "description": "Report the Step Number (RPT_STEP_NUM) and Step Description (RPT_STEP_DESC)"
+            }
+        ]
+    },
+    {
+        "name": "S9910",
+        "description": "Release Equipment",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Disable Hold Monitors and Sentinel Monitors"
+            },
+            {
+                "name": "A020",
+                "description": "Release Shared Devices"
+            },
+            {
+                "name": "EXIT",
+                "description": "Continue Next Task"
+            }
+        ]
+    },
+    {
+        "name": "S9920",
+        "description": "OAR",
+        "actions": [
+            {
+                "name": "A010",
+                "description": "Waiting for OAR Reset"
+            },
+            {
+                "name": "A020",
+                "description": "Display Message, Prompt Operator"
+            },
+            {
+                "name": "EXIT",
+                "description": "Exit"
+            }
+        ]
+    },
+    {
+        "name": "S9930",
+        "description": "Complete",
+        "actions": [
+            {
+                "name": "EXIT",
+                "description": "Clear Phase Alarm, Complete"
+            }
+        ]
+    }
+]

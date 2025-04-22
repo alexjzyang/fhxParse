@@ -1,6 +1,6 @@
 // import
 
-import { FileIO } from "../src/util/FileIO.js";
+import { FileIO } from "../../src/util/FileIO.js";
 import fs from "fs";
 import path from "path";
 import { getBlockName, getBlockType, listRootBlocks } from "./lib.js";
@@ -132,19 +132,4 @@ export function setup(
             }
         }
     });
-}
-
-function miscCode({ fhxblocks, blocksFolderPath }) {
-    // let fhxblocks = fhxinput;
-    if (fhxblocks.length > 110) {
-        const blockContent = fhxblocks[110];
-        const blockFilePath = path.join(blocksFolderPath, `Block_111.txt`);
-        console.log(`Writing block 111 to: ${blockFilePath}`);
-        FileIO.writeFile(blockFilePath, blockContent, {
-            filetype: "txt",
-            encoding: "utf8",
-        });
-    } else {
-        console.log("The fhxblocks array does not have 111 elements.");
-    }
 }

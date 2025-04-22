@@ -71,7 +71,7 @@ function findBlocks(fhxstring, blockType) {
       These are the default values of the module parameters
     3. value blocks: The actual values of the parameters are store in CV=, and 
       REF=
-  */
+*/
 
 /**
  * valueOf finds the value of a particular parameter in a single fhx block
@@ -98,7 +98,8 @@ function valueOfParameter(fhxBlock, key) {
     ) {
         endIndex = startIndex++;
         do {
-            endIndex = fhxBlock.indexOf('"', endIndex + 1); // find the next closing double quote
+            endIndex += 2;
+            endIndex = fhxBlock.indexOf('"', endIndex); // find the next closing double quote
         } while (fhxBlock[endIndex + 1] === '"');
         // } else if (fhxBlock[startIndex] === '"' && fhxBlock[startIndex + 1] === '"') {
         //   // this code is to be refactored and decoupled
