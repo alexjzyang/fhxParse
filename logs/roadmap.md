@@ -10,9 +10,9 @@ Create plugins and tools to extend DeltaV functionalities
 
 ## Milestones
 
--   [ ] FHX into SQL
+-   [ ] FHX into DB
     -   [ ] FHX Digestion Code
-    -   [ ] SQL Schema Design
+    -   [ ] DB Schema Design
 -   [ ] Process on screen graphics
 
     -   [ ] Display elements based on the rectangle elements in the FHX
@@ -20,5 +20,9 @@ Create plugins and tools to extend DeltaV functionalities
 -   ### Applications
 
     -   [ ] [Sanofi Morpheus Project](./milestones/morpheus.md)
+    -   [ ] Parameter search app
 
-## Future Ideas
+## Design Iterations
+
+-   Using SQL
+-   Using MongoDB

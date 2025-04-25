@@ -32,7 +32,10 @@ setup(
 const phasename = "50L-CELL-EXP-PH";
 const fhx_phasekey = "BATCH_EQUIPMENT_PHASE_CLASS";
 const phaseRunlogicDefinitionName = "__6749548E_27E591EA__";
-const fhxblocksPath = "./fhxblocks/A-PROTEIN_PROD/FUNCTION_BLOCK_DEFINITION";
+const fhxblocksPath = path.join(
+    fhxFolder,
+    "./fhxblocks/A-PROTEIN_PROD/FUNCTION_BLOCK_DEFINITION"
+);
 const currentDirectory = path.dirname(new URL(import.meta.url).pathname);
 const phaseRunlogicPath = path.join(
     currentDirectory,
