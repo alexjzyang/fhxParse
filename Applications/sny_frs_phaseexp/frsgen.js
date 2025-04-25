@@ -1,4 +1,5 @@
-import { processSFC } from "../../src/SFCProessing.js";
+import { processSFC } from "../../src/ComponentObjects/SFCProcessing.js";
+// src\ComponentObjects\SFCProessing.js
 import FhxUtil from "../../src/util/FhxUtil.js";
 
 /**

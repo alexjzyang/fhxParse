@@ -9,6 +9,9 @@
 import path from "path";
 import { FileIO } from "../../src/util/FileIO.js";
 import fhxutil from "../../src/util/FhxUtil.js";
+import { config } from "dotenv";
+config();
+
 /**
  * fhx inputs
  * foler: "/Users/alexyang/Library/CloudStorage/GoogleDrive-alex.yang@awesomepresent.com/Shared drives/Awesome Present Technologies/FHX/Sanofi_Swift_Water_B55"
@@ -16,8 +19,8 @@ import fhxutil from "../../src/util/FhxUtil.js";
  */
 
 // input constants //
-const fhxFolder =
-    "/Users/alexyang/Library/CloudStorage/GoogleDrive-alex.yang@awesomepresent.com/Shared drives/Awesome Present Technologies/FHX/Sanofi_Swift_Water_B55";
+// const fhxFolder =
+// "/Users/alexyang/Library/CloudStorage/GoogleDrive-alex.yang@awesomepresent.com/Shared drives/Awesome Present Technologies/FHX/Sanofi_Swift_Water_B55";
 const fhxFiles = ["055MSS3700.fhx", "A-PROTEIN_PROD.fhx"];
 
 // initial setup //

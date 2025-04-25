@@ -9,3 +9,4 @@ Applications/fhxblocks/*
 Applications/**/output/*
 *.fhx
 *.txt
+.env
