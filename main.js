@@ -1,13 +1,10 @@
-import { AttributeComponent, ModuleClassComponent } from "./src/Components.js";
-import { FhxProcessor } from "./src/Managers.js";
+import { ModuleClassComponent } from "./src/ComponentObjects/Components.js";
+import { FhxProcessor } from "./src/ComponentObjects/Managers.js";
 import path from "path";
 
 import { FileIO } from "./src/util/FileIO.js";
-import { processSFC } from "./src/SFCProessing.js";
-import { findBlocks, findBlockWithName } from "./src/util/FhxUtil.js";
-import { DesignSpecTables } from "./src/DSProcessor.js";
-import { createTestFolder } from "./src/util/OutputFolderGenerator.js";
-import { json } from "stream/consumers";
+import fhxutil, { findBlocks } from "./src/util/FhxUtil.js";
+import { DesignSpecTables } from "./src/ComponentObjects/DSProcessor.js";
 
 // write the all function_block_definitions to temp output folder in txt format
 function identifyFbd(fhx, outputpath = "test/output/temp") {

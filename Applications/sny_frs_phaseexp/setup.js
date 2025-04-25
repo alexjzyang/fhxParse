@@ -13,9 +13,8 @@ export function setup(
     let { files, folder } = input;
 
     let rootFoldername = "fhxblocks";
-    let currentDir = path.resolve();
-    let currentDir2 = path.dirname(new URL(import.meta.url).pathname);
-
+    let currentDir = path.dirname(new URL(import.meta.url).pathname);
+    currentDir = path.resolve(currentDir);
     rootFoldername = path.join(currentDir, rootFoldername);
 
     // if operation is clear then delete the folder
