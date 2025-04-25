@@ -2,7 +2,8 @@
 
 ## Requirements
 
--   [ ] Isolate phase blocks reusing existing parser code as much as possible
+-   [X] Isolate phase blocks reusing existing parser code as much as possible
+-   [X] Display phase fhx into md
 -   [ ] Display phase fhx into csv
 
 ## Phases

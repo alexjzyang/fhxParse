@@ -4,7 +4,7 @@ depending on the designed table, the desired use case might only the name and
 the type of the parameter.
 */
 
-import { valueOfParameter } from "./util/FhxUtil.js";
+import { valueOfParameter } from "../util/FhxUtil.js";
 
 class FhxValue {
     constructor(fhxString) {

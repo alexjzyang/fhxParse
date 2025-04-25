@@ -273,18 +273,18 @@ FUNCTION_BLOCK:{NAME:ACT1, DEFINITION:ACT}
     return;
 }); //();
 
-function processNestedBlocks(fhx) {
-    let inputPath = "test/output/RUNxx_20250306/_E_M_AGIT";
-    let associated = FileIO.readFile(
-        path.join(inputPath, "AssociatedTables.json"),
-        { encoding: "utf8" }
-    );
-    nestedModuleNames = JSON.parse(nestedModules);
-    let emsfhx = FileIO.readFile("./src/fhx/Mixer Mixer_EM_Classes.fhx");
+// function processNestedBlocks(fhx) {
+//     let inputPath = "test/output/RUNxx_20250306/_E_M_AGIT";
+//     let associated = FileIO.readFile(
+//         path.join(inputPath, "AssociatedTables.json"),
+//         { encoding: "utf8" }
+//     );
+//     nestedModuleNames = JSON.parse(nestedModules);
+//     let emsfhx = FileIO.readFile("./src/fhx/Mixer Mixer_EM_Classes.fhx");
 
-    let fhxblocks = 
+//     let fhxblocks =
 
-}
+// }
 
 /**
  *

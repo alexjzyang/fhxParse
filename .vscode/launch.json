@@ -7,6 +7,13 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Debug db",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/src/mongodb/db.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Mocha Tests",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": ["test/**/*.test.js", "./src/**/*.test.js"],

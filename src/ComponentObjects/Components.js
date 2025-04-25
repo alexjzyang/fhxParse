@@ -1,4 +1,4 @@
-import { findBlocks, valueOfParameter } from "./util/FhxUtil.js";
+import { findBlocks, valueOfParameter } from "../util/FhxUtil.js";
 
 class ComponentCreator {
     #getType(block) {
