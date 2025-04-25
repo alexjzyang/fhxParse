@@ -11,6 +11,8 @@ import { FileIO } from "../../src/util/FileIO.js";
 import fhxutil from "../../src/util/FhxUtil.js";
 import { config } from "dotenv";
 config();
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 let fhxFolder = process.env.FHX_FOLDER_PATH;
 const projectFhxFolder = "Sanofi_Swift_Water_B55";
 fhxFolder = path.join(fhxFolder, projectFhxFolder);
@@ -42,9 +44,12 @@ const fhxblocksPath = path.join(
     fhxFolder,
     "./fhxblocks/A-PROTEIN_PROD/FUNCTION_BLOCK_DEFINITION"
 );
-const currentDirectory = path.dirname(new URL(import.meta.url).pathname);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const currentDirectory = __dirname;
+
 const phaseRunlogicPath = path.join(
-    currentDirectory,
     fhxblocksPath,
     phaseRunlogicDefinitionName + ".txt"
 );
@@ -90,3 +95,5 @@ const FHX_50L_CELL_EXP_PH_Runlogic = FileIO.readFile(phaseRunlogicPath);
 
 const resobj = sfc_steps_to_md(FHX_50L_CELL_EXP_PH_Runlogic);
 FileIO.writeFile("test.md", resobj, "utf8");
+
+console.log("Code Executed Successfully!");
