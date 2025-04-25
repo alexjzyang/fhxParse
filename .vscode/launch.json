@@ -30,9 +30,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug Application",
+            "name": "Debug SNY-FRS Application",
             "skipFiles": ["<node_internals>/**"],
-            "program": "${workspaceFolder}/Applications/app.js"
+            "program": "${workspaceFolder}/Applications/sny_frs_phaseexp/app.js"
         }
     ]
 }

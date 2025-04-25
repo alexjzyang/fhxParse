@@ -23,7 +23,10 @@ const fhxFiles = ["055MSS3700.fhx", "A-PROTEIN_PROD.fhx"];
 // initial setup //
 import { setup } from "./setup.js";
 import { sfc_steps_to_md, sfcToMd } from "./frsgen.js";
-setup({ files: fhxFiles, folder: fhxFolder }, { override: false });
+setup(
+    { files: fhxFiles, folder: fhxFolder },
+    { override: false, clear: true, create: true }
+);
 
 // frsgen app input //
 const phasename = "50L-CELL-EXP-PH";

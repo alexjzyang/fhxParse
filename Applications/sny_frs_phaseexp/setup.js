@@ -4,17 +4,18 @@ import { FileIO } from "../../src/util/FileIO.js";
 import fs from "fs";
 import path from "path";
 import { getBlockName, getBlockType, listRootBlocks } from "./lib.js";
-import { create } from "domain";
 
 export function setup(
     input = { files: [], folder: "" },
     operation = { override: false, clear: false, create: true }
 ) {
-    let { override, clear } = operation;
+    let { override, clear, create } = operation;
     let { files, folder } = input;
 
     let rootFoldername = "fhxblocks";
-    let currentDir = path.dirname(new URL(import.meta.url).pathname);
+    let currentDir = path.resolve();
+    let currentDir2 = path.dirname(new URL(import.meta.url).pathname);
+
     rootFoldername = path.join(currentDir, rootFoldername);
 
     // if operation is clear then delete the folder
