@@ -1,0 +1,3 @@
+[submodule "FHX-Files"]
+	path = FHX-Files
+	url = https://github.com/yourname/shared-assets.git
