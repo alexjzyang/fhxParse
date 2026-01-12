@@ -13,6 +13,8 @@ import { config } from "dotenv";
 config();
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+console.log("test, file running");
+
 let fhxFolder = process.env.FHX_FOLDER_PATH;
 const projectFhxFolder = "Sanofi_Swift_Water_B55";
 fhxFolder = path.join(fhxFolder, projectFhxFolder);

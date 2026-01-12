@@ -1,7 +1,10 @@
 {
+    "files": [
+        "./src/util"
+    ],
     "name": "fhxparse",
     "version": "1.0.0",
-    "main": "main.js",
+    "main": "./src/main.js",
     "scripts": {
         "test": "mocha ./test/**/*.test.js ./test/*.test.js ./src/**/*.test.js",
         "testonly": "mocha test/**/*.test.js"
