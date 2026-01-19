@@ -1,11 +1,13 @@
 /*
-SFCProecssor.js handles the processing of the SFC data from the FHX file.
+    SFCProecssor.js handles the processing of the SFC data from the FHX file.
+    The logic in this file is duplicated into Phase Logic Processing to enlarge the 
+scope in order to process an entire phase.
 
 */
 import fhxutil from "../util/FhxUtil.js";
 
-function SFCSteps(emFhxData) {
-    let steps = fhxutil.findBlocks(emFhxData, "STEP");
+function SFCSteps(sfcFhx) {
+    let steps = fhxutil.findBlocks(sfcFhx, "STEP");
     /*
       Structure of Steps:
       Description
@@ -23,8 +25,8 @@ function SFCSteps(emFhxData) {
     return stepValues;
 }
 
-function SFCTransitions(cmdFhxData) {
-    let transitionBlocks = fhxutil.findBlocks(cmdFhxData, "TRANSITION");
+function SFCTransitions(sfcFhx) {
+    let transitionBlocks = fhxutil.findBlocks(sfcFhx, "TRANSITION");
     /*
       Structure of Transitions:
       Transition Header
@@ -50,8 +52,8 @@ function SFCTransitions(cmdFhxData) {
     return transitionValues;
 }
 
-function SFCActions(stepFhxData) {
-    let actionBlocks = fhxutil.findBlocks(stepFhxData, "ACTION");
+function SFCActions(stepFhx) {
+    let actionBlocks = fhxutil.findBlocks(stepFhx, "ACTION");
     /*
         Structure of Actions:
         Action Header
@@ -86,10 +88,15 @@ function SFCActions(stepFhxData) {
     return actionValues;
 }
 
-function processSFC(cmdfhx) {
-    let steps = SFCSteps(cmdfhx);
-    let transitions = SFCTransitions(cmdfhx);
+function processSFC(sfcFhx) {
+    let steps = SFCSteps(sfcFhx);
+    let transitions = SFCTransitions(sfcFhx);
     return { steps, transitions };
 }
 
-export { processSFC, SFCActions, SFCTransitions, SFCSteps };
+export {
+    processSFC,
+    //  SFCActions,
+    //  SFCTransitions,
+    //  SFCSteps
+};

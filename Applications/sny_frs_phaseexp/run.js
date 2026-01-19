@@ -8,6 +8,7 @@
 // module imports //
 import path from "path";
 import { FileIO } from "../../src/util/FileIO.js";
+import fhxutil from "../../src/util/FhxUtil.js";
 import { config } from "dotenv";
 config();
 import { fileURLToPath } from "url";

@@ -39,9 +39,9 @@ For EM Commands (\_E_M_AGIT)
    example: `FUNCTION_BLOCK NAME="COMMAND_00002" DEFINITION="__5D419A19_188513E5__"`
    However the Named Set (`ENUMERATION_SET NAME="_N_M_GEXE_M_AGIT"`) and the SFC definition (`__5D419A19_188513E5__`) are not with the EM block. Cross search within an entire FHX export is required.
 
-   ### fhxProcessor features:
+    ### fhxProcessor features:
 
-   - Add a function to search for any block. The function signature would be `findBlock(fhx_data, blockType, keyToFind, criteria):[results]` where fhx_data is one `single root block`; keyToFind is the key to search for. This can be a key with a single value, an experssion or a block`(for example: NAME, ATTRIBUTE)`; criterion: how the item will be identified amount other items with the name key. Using the example above `(findBlock(em_data, 'FUNCTION_BLOCK', 'NAME="COMMAND_0'))` The criteria can be further generalised to take an object or an array {"DEFINITION": "ACT"; "DESCRIPTION": "Something"}
+    - Add a function to search for any block. The function signature would be `findBlock(fhx_data, blockType, keyToFind, criteria):[results]` where fhx_data is one `single root block`; keyToFind is the key to search for. This can be a key with a single value, an experssion or a block`(for example: NAME, ATTRIBUTE)`; criterion: how the item will be identified amount other items with the name key. Using the example above `(findBlock(em_data, 'FUNCTION_BLOCK', 'NAME="COMMAND_0'))` The criteria can be further generalised to take an object or an array {"DEFINITION": "ACT"; "DESCRIPTION": "Something"}
 
 ## 01/15/2025
 
@@ -55,12 +55,12 @@ For SFC codes
    Currently the collection of functions are able to parse out all steps, actions and trnasitions values.
    `Need to verify if all parameters are captured`: write a fhxcrawler code which filters out all the components that the existing code can extract, and figure out what portion of the fhx is not covered. OR, if necessary, go through it manually
 
-- There are two ways to present the SFC data in tables
-  1.  Create separate tables for Steps and Transitions, and include a screenshot of the SFC diagram.
-  2.  Create a single table with Steps and Transitions in order of execution as much as possible.
-      In this case a manual addition of the order of the CSV records is required.
-      Alternatively, analysis of where the Step and Transition Rectangle is created graphically can be used.
-      This requires additional code
+-   There are two ways to present the SFC data in tables
+    1.  Create separate tables for Steps and Transitions, and include a screenshot of the SFC diagram.
+    2.  Create a single table with Steps and Transitions in order of execution as much as possible.
+        In this case a manual addition of the order of the CSV records is required.
+        Alternatively, analysis of where the Step and Transition Rectangle is created graphically can be used.
+        This requires additional code
 
 ```
 The word file output
@@ -101,14 +101,14 @@ S0002 | A000 | Delay: Time or Delayed Expression
 
 ### Control Modules
 
-- Control Module Class Properties
-- Module Parameters
-- Instance Configurable Parameters (Currently using Bulk Edit EXport)
-- Function Blocks
-- Linked Composites
-- Embedded Composites
-- Alarms
-- History Collection
+-   Control Module Class Properties
+-   Module Parameters
+-   Instance Configurable Parameters (Currently using Bulk Edit EXport)
+-   Function Blocks
+-   Linked Composites
+-   Embedded Composites
+-   Alarms
+-   History Collection
 
 ## 02/17/2025
 
@@ -122,11 +122,22 @@ v2's components are partially copied
 This iteration is based on the Object Manager Pattern (Centralized Registry) suggested in the Chat conversation.
 There will be
 
-- a supervisory ObjectManager,
-- a possible, parent class called Component
-- Components, which represent each (root level) block
-- each component will have an id to reference each other
-- each component is registered in Object manager
+-   a supervisory ObjectManager,
+-   a possible, parent class called Component
+-   Components, which represent each (root level) block
+-   each component will have an id to reference each other
+-   each component is registered in Object manager
 
-- For component classes, the input should always be the fhx of its own block
-- The overall fhx is not stored anywhere at this moment. Becasue it is assumed that the entire fhx is consumed and components added to object manager
+-   For component classes, the input should always be the fhx of its own block
+-   The overall fhx is not stored anywhere at this moment. Becasue it is assumed that the entire fhx is consumed and components added to object manager
+
+# 01/18/2026
+
+## FHX Structure:
+
+### Equipment Modules
+
+-   Phase Module => BATCH_EQUIPMENT_PHASE_CLASS;
+-   Each Phase, by default, should contain one single => PHASE_CLASS_ALGORITHM;
+-   Each Phase, by default, has Run, Hold, Restart, Stop logics etc. These are represented in the fhx of the phase block by a series of FUNCTION_BLOCK (FUNCTION\*BLOCK NAME="RUN_LOGIC" DEFINITION="\_\_67900BF3_3C20C53F\_\_")
+-   Currently, the processSFC() within SFCProcessing.js file only correctly parses and correctly outputs one phase logic, i.e. one Function Block Definition.

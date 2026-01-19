@@ -50,7 +50,9 @@ export function sfcDefinitionFromPhase(phaseFhx, sfcName = "RUN_LOGIC") {
 }
 
 /**
- *
+ * Find the SFC block corresponding to the provided phase name and logic name
+ * Any phase logic exports (fhx) will contain the module within BATCH_EQUIPMENT_PHASE_CLASS
+ * as well as the definitions of different SFC logics within FUNCTION_BLOCK_DEFINITION
  * @param {string} fhx which contains the phase class and the phase logic definition
  * @param {string} phaseName the name of the phase class to be extracted
  * @param {string} sfcName the phase logic to be extracted, e.g. RUN_LOGIC, HOLD_LOGIC etc

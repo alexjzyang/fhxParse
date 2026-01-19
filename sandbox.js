@@ -8,8 +8,17 @@
 // console.log(currentDir);
 
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import path, { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 console.log(__dirname);
+
+const fhxFolderPath = path.join("FHX-Files", "Sanofi_Swift_Water_B55");
+const inputFhxPath = path.join(__dirname, fhxFolderPath, "A-PROTEIN_PROD.fhx");
+
+import { processSFC } from "./src/ComponentObjects/SFCProcessing.js";
+import FhxUtil from "./src/util/FhxUtil.js";
+import { FileIO } from "./src/util/FileIO.js";
+
+const inputFhx = FileIO.readFile(inputFhxPath);

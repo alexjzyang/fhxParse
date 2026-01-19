@@ -202,6 +202,6 @@ export class FileIO {
         return fs.readFileSync(filepath, encoding);
     }
 
-    // more specifit interfaces such as writeTxtFile, writeCsvFile, readJsonFile,
+    // more specific interfaces such as writeTxtFile, writeCsvFile, readJsonFile,
     // etc. can be added here, if their usage is frequent.
 }

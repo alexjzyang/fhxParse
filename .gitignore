@@ -10,3 +10,4 @@ Applications/**/output/*
 *.fhx
 *.txt
 .env
+FHX-Files/*
