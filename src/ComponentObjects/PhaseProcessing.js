@@ -6,6 +6,7 @@
     relevant to one single Phase.
 */
 import FhxUtil from "../util/FhxUtil.js";
+import { processSFC } from "./SFCProcessing.js";
 
 // function SFCSteps(sfcFhx) {
 //     let steps = fhxutil.findBlocks(sfcFhx, "STEP");
@@ -97,13 +98,27 @@ import FhxUtil from "../util/FhxUtil.js";
 
 export class PhaseLogic {
     constructor(inputFhx, phaseName) {
+        // Each phase object should contain the fhx of the phase for reference
         this.inputFhx = inputFhx;
         this.phaseFhx = FhxUtil.findBlockWithName(
             inputFhx,
             "BATCH_EQUIPMENT_PHASE_CLASS",
             phaseName,
         );
+
+        // It should contain the identity of the phase (name of the phase, description, and
+        // any other information to be implemented later)
         this.phaseName = phaseName;
+        this.description = FhxUtil.valueOfParameter(
+            this.phaseFhx,
+            "DESCRIPTION",
+        );
+    }
+    get name() {
+        return this.phaseName;
+    }
+    get fhx() {
+        return this.phaseFhx;
     }
 
     sfcFunctionBlocks(phaseFhx, sfcName) {
@@ -120,48 +135,51 @@ export class PhaseLogic {
             sfcDefinition,
         );
     }
+
+    // Each phase should contain SFC objects for each of its logics (run, hold, abort, restart, stop)
+
     get run_logic() {
-        const runLogicFunctionBlock = this.sfcFunctionBlocks(
-            this.phaseFhx,
-            "RUN_LOGIC",
-        );
-        const runLogicDefinition = this.sfcDefinitions(runLogicFunctionBlock);
-        return this.sfcFhx(this.inputFhx, runLogicDefinition);
+        return new SfcLogic(this.phaseFhx, "RUN_LOGIC");
     }
     get abort_logic() {
-        const abortLogicFunctionBlock = this.sfcFunctionBlocks(
-            this.phaseFhx,
-            "ABORT_LOGIC",
-        );
-        const abortLogicDefinition = this.sfcDefinitions(
-            abortLogicFunctionBlock,
-        );
-        return this.sfcFhx(this.inputFhx, abortLogicDefinition);
+        return new SfcLogic(this.phaseFhx, "ABORT_LOGIC");
     }
     get hold_logic() {
-        const holdLogicFunctionBlock = this.sfcFunctionBlocks(
-            this.phaseFhx,
-            "HOLD_LOGIC",
-        );
-        const holdLogicDefinition = this.sfcDefinitions(holdLogicFunctionBlock);
-        return this.sfcFhx(this.inputFhx, holdLogicDefinition);
+        return new SfcLogic(this.phaseFhx, "HOLD_LOGIC");
     }
     get restart_logic() {
-        const restartLogicFunctionBlock = this.sfcFunctionBlocks(
-            this.phaseFhx,
-            "RESTART_LOGIC",
-        );
-        const restartLogicDefinition = this.sfcDefinitions(
-            restartLogicFunctionBlock,
-        );
-        return this.sfcFhx(this.inputFhx, restartLogicDefinition);
+        return new SfcLogic(this.phaseFhx, "RESTART_LOGIC");
     }
     get stop_logic() {
-        const stopLogicFunctionBlock = this.sfcFunctionBlocks(
-            this.phaseFhx,
-            "STOP_LOGIC",
-        );
-        const stopLogicDefinition = this.sfcDefinitions(stopLogicFunctionBlock);
-        return this.sfcFhx(this.inputFhx, stopLogicDefinition);
+        return new SfcLogic(this.phaseFhx, "STOP_LOGIC");
+    }
+}
+
+class SfcLogic {
+    constructor(phaseFhx, sfcName) {
+        // It should contain the fhx of the SFC for reference
+        this.fhx = phaseFhx;
+        // It should contain the name of the SFC
+        this.name = sfcName;
+    }
+
+    // It should be able to output the SFCs in json and in txt format
+    get json() {
+        return processSFC(this.fhx);
+    }
+    toString() {
+        return this.fhx;
+    }
+
+    // Each SFC object should contain json representation of the steps and transitions
+    get steps() {
+        return this.json.steps;
+    }
+    get transitions() {
+        return this.json.transitions;
+    }
+    // It should contain the connections between steps and transitions
+    get connections() {
+        return this.json.connections;
     }
 }
