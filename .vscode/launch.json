@@ -6,10 +6,19 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "Debug db",
+            "name": "Debug Sandbox",
+            "request": "attach",
             "skipFiles": ["<node_internals>/**"],
-            "program": "${workspaceFolder}/src/mongodb/db.js"
+            "program": "${workspaceFolder}\\sandbox.js"
+        },
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug SFC-Extraction",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/Applications/SFC-Extraction/app.js",
+            "cwd": "${workspaceFolder}/Applications/SFC-Extraction"
         },
         {
             "type": "node",

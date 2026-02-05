@@ -11,3 +11,5 @@ Applications/**/output/*
 *.txt
 .env
 FHX-Files/*
+
+Applications/SFC-Extraction/outputs/*

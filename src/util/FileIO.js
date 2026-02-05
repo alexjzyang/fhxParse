@@ -98,7 +98,7 @@ class _FileIO {
             data.join("\r\n"),
             filepath,
             filename,
-            replace
+            replace,
         );
     }
 
@@ -118,12 +118,12 @@ class _FileIO {
             const prefix = files.length + 1;
             const outputFilePath = path.join(
                 filepath,
-                `${prefix}_${this.addExtension(baseFilename)}`
+                `${prefix}_${this.addExtension(baseFilename)}`,
             );
             return this.writeTxtFile(
                 data,
                 filepath,
-                baseFilename + (index + 1)
+                baseFilename + (index + 1),
             );
         });
     }
@@ -133,7 +133,7 @@ class _FileIO {
             filepath,
             filename,
             "json",
-            replace
+            replace,
         );
         // Write data to the file
         this.addExtension(outputFilePath, "json");
@@ -154,7 +154,7 @@ class _FileIO {
 
 // export { FileIO };
 
-export class FileIO {
+export default class FileIO {
     // if path includes an extension that is fhx, then the encoding should be utf16le
     // if the subfolders do not exist, they should be created
     // if any additional actions were taken, there should be a console log output
