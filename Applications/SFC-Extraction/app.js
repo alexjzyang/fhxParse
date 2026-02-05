@@ -10,24 +10,25 @@
  * Load, process SFC, and optionally save into json files
  */
 
-import { PhaseLogic } from "../../src/ComponentObjects/PhaseProcessing.js";
-import { processSFC } from "../../src/ComponentObjects/SFCProcessing.js";
-import FhxUtil from "../../src/util/FhxUtil.js";
-import { FileIO } from "../../src/util/FileIO.js";
+import fhxlib from "../../src/main.js";
+let { PhaseLogic, processSFC, FileIO, FhxUtil } = fhxlib;
 
-const inputPath = "./inputs/A-PROTEIN_PROD.fhx";
+const filename = "A-PROTEIN_PROD";
+const inputPath = "./inputs/" + filename + ".fhx";
+const outputPath = "./outputs/" + filename + ".json";
+
 const inputFhx = FileIO.readFile(inputPath);
 
-const phase = new PhaseLogic(inputFhx, "SUM-ADDWFI-PH");
-const runLogicFhx = phase.run_logic;
+const phase = new PhaseLogic(inputFhx, filename);
+const runLogicFhx = phase.run_logic.fhx;
 const runLogicJson = processSFC(runLogicFhx);
-const holdLogicFhx = phase.hold_logic;
+const holdLogicFhx = phase.hold_logic.fhx;
 const holdLogicJson = processSFC(holdLogicFhx);
-const abortLogicFhx = phase.abort_logic;
+const abortLogicFhx = phase.abort_logic.fhx;
 const abortLogicJson = processSFC(abortLogicFhx);
-const restartLogicFhx = phase.restart_logic;
+const restartLogicFhx = phase.restart_logic.fhx;
 const restartLogicJson = processSFC(restartLogicFhx);
-const stopLogicFhx = phase.stop_logic;
+const stopLogicFhx = phase.stop_logic.fhx;
 const stopLogicJson = processSFC(stopLogicFhx);
 
 const phaseSfcJson = {
@@ -40,7 +41,4 @@ const phaseSfcJson = {
 };
 
 // console.log(res);
-FileIO.writeFile(
-    "./outputs/SUM-ADDWFI-PH.json",
-    JSON.stringify(phaseSfcJson, null, 2),
-);
+FileIO.writeFile(outputPath, JSON.stringify(phaseSfcJson, null, 2));
