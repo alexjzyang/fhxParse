@@ -6,95 +6,7 @@
     relevant to one single Phase.
 */
 import FhxUtil from "../util/FhxUtil.js";
-import { processSFC } from "./SFCProcessing.js";
-
-// function SFCSteps(sfcFhx) {
-//     let steps = fhxutil.findBlocks(sfcFhx, "STEP");
-//     /*
-//       Structure of Steps:
-//       Description
-//       List of ACTIONS
-//     */
-//     let stepValues = steps.map((step) => {
-//         let getValue = (key) => fhxutil.valueOfParameter(step, key);
-//         let values = {
-//             name: getValue("NAME"),
-//             description: getValue("DESCRIPTION"),
-//             actions: SFCActions(step),
-//         };
-//         return values;
-//     });
-//     return stepValues;
-// }
-
-// function SFCTransitions(sfcFhx) {
-//     let transitionBlocks = fhxutil.findBlocks(sfcFhx, "TRANSITION");
-//     /*
-//       Structure of Transitions:
-//       Transition Header
-//       transition: [
-//       { id: "name", title: "NAME" },
-//       { id: "description", title: "DESCRIPTION" },
-//       { id: "position", title: "POSITION" },
-//       { id: "termination", title: "TERMINATION" },
-//       { id: "expression", title: "EXPRESSION" },
-//       ],
-//      */
-//     let transitionValues = transitionBlocks.map((block) => {
-//         let transitionValue = (key) => fhxutil.valueOfParameter(block, key);
-//         let values = {
-//             name: transitionValue("NAME"),
-//             description: transitionValue("DESCRIPTION"),
-//             position: transitionValue("POSITION"),
-//             termination: transitionValue("TERMINATION"),
-//             expression: transitionValue("EXPRESSION"),
-//         };
-//         return values;
-//     });
-//     return transitionValues;
-// }
-
-// function SFCActions(stepFhx) {
-//     let actionBlocks = fhxutil.findBlocks(stepFhx, "ACTION");
-//     /*
-//         Structure of Actions:
-//         Action Header
-//         action: [
-//         { id: "name", title: "NAME" },
-//         { id: "description", title: "DESCRIPTION" },
-//         { id: "actionType", title: "ACTION_TYPE" },
-//         { id: "qualifier", title: "QUALIFIER" },
-//         { id: "expression", title: "EXPRESSION" },
-//         { id: "confirmExpression", title: "CONFIRM_EXPRESSION" },
-//         { id: "confirmTimeOut", title: "CONFIRM_TIME_OUT" },
-//         { id: "delayedExpression", title: "DELAY_EXPRESSION" },
-//         { id: "delayTime", title: "DELAY_TIME" },
-//         ]
-//     */
-//     let actionValues = actionBlocks.map((block) => {
-//         let getValue = (key) => fhxutil.valueOfParameter(block, key);
-//         let values = {
-//             name: getValue("NAME"),
-//             description: getValue("DESCRIPTION"),
-//             actionType: getValue("ACTION_TYPE"),
-//             qualifier: getValue("QUALIFIER"),
-//             expression: getValue("EXPRESSION"),
-//             confirmExpression: getValue("CONFIRM_EXPRESSION"),
-//             confirmTimeOut: getValue("CONFIRM_TIME_OUT"),
-//             delayedExpression: getValue("DELAY_EXPRESSION"),
-//             delayTime: getValue("DELAY_TIME"),
-//         };
-//         return values;
-//     });
-
-//     return actionValues;
-// }
-
-// function processSFC(sfcFhx) {
-//     let steps = SFCSteps(sfcFhx);
-//     let transitions = SFCTransitions(sfcFhx);
-//     return { steps, transitions };
-// }
+import { SfcLogic } from "./SFCProcessing.js";
 
 export class PhaseLogic {
     constructor(inputFhx, phaseName) {
@@ -120,7 +32,7 @@ export class PhaseLogic {
     get fhx() {
         return this.phaseFhx;
     }
-
+    // convenient helper that returns the SFC logic that finds the definition of a specific SFC in a phase
     sfcFhx(sfcName) {
         // returns the functionblock which the name of the definition block of the sfc with sfcName (ex.RUN_LOGIC)
         const sfcFunctionBlock = FhxUtil.findBlockWithName(
@@ -140,20 +52,8 @@ export class PhaseLogic {
         );
         return sfcFunctionBlockDefinition;
     }
-    // sfcDefinitions(sfcFunctionBlock) {
-    //     return FhxUtil.valueOfParameter(sfcFunctionBlock, "DEFINITION");
-    // }
 
-    // sfcFhx(inputFhx, sfcDefinition) {
-    //     return FhxUtil.findBlockWithName(
-    //         inputFhx,
-    //         "FUNCTION_BLOCK_DEFINITION",
-    //         sfcDefinition,
-    //     );
-    // }
-
-    // Each phase should contain SFC objects for each of its logics (run, hold, abort, restart, stop)
-
+    // convenient helper that returns the SFC logic object given the name of the requested SFC logic (e.g. RUN_LOGIC, ABORT_LOGIC, etc.)
     sfcLogic(sfcName) {
         const fhx = this.sfcFhx(sfcName);
         return new SfcLogic(fhx, sfcName);
@@ -173,34 +73,5 @@ export class PhaseLogic {
     }
     get stop_logic() {
         return this.sfcLogic("STOP_LOGIC");
-    }
-}
-
-class SfcLogic {
-    constructor(phaseFhx, sfcName) {
-        // It should contain the fhx of the SFC for reference
-        this.fhx = phaseFhx;
-        // It should contain the name of the SFC
-        this.name = sfcName;
-    }
-
-    // It should be able to output the SFCs in json and in txt format
-    get json() {
-        return processSFC(this.fhx);
-    }
-    toString() {
-        return this.fhx;
-    }
-
-    // Each SFC object should contain json representation of the steps and transitions
-    get steps() {
-        return this.json.steps;
-    }
-    get transitions() {
-        return this.json.transitions;
-    }
-    // It should contain the connections between steps and transitions
-    get connections() {
-        return this.json.connections;
     }
 }

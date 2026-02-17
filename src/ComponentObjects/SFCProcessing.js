@@ -6,6 +6,8 @@ scope in order to process an entire phase.
 */
 import fhxutil from "../util/FhxUtil.js";
 
+// Given a sequencial function chart, finds all the steps and their relevant
+// values in json format
 function SFCSteps(sfcFhx) {
     let steps = fhxutil.findBlocks(sfcFhx, "STEP");
     /*
@@ -19,6 +21,7 @@ function SFCSteps(sfcFhx) {
             name: getValue("NAME"),
             description: getValue("DESCRIPTION"),
             actions: SFCActions(step),
+            rectangle: getValue("RECTANGLE"),
         };
         return values;
     });
@@ -87,27 +90,6 @@ function SFCActions(stepFhx) {
 
     return actionValues;
 }
-
-function processSFC(sfcFhx) {
-    let steps = SFCSteps(sfcFhx);
-    let transitions = SFCTransitions(sfcFhx);
-    let connections = SFCConnections(sfcFhx);
-    return { steps, transitions, connections };
-}
-
-/**
-    INITIAL_STEP="H0000"
-    -----------------
-    STEP_TRANSITION_CONNECTION STEP="H0000" TRANSITION="T0010" { }
-    STEP_TRANSITION_CONNECTION STEP="H0010" TRANSITION="T0020" { }
-    STEP_TRANSITION_CONNECTION STEP="H0020" TRANSITION="T0030" { }
-    STEP_TRANSITION_CONNECTION STEP="H0030" TRANSITION="T9900" { }
-    STEP_TRANSITION_CONNECTION STEP="H9900" TRANSITION="HOLD_END" { }
-    TRANSITION_STEP_CONNECTION TRANSITION="T0010" STEP="H0010" { }
-    TRANSITION_STEP_CONNECTION TRANSITION="T0020" STEP="H0020" { }
-    TRANSITION_STEP_CONNECTION TRANSITION="T0030" STEP="H0030" { }
-    TRANSITION_STEP_CONNECTION TRANSITION="T9900" STEP="H9900" { }
- */
 
 /**
  * SFC Connections should create connectors between steps and transitions
@@ -192,9 +174,40 @@ function SFCConnections(sfcFhx) {
     return connectors;
 }
 
-export {
-    processSFC,
-    //  SFCActions,
-    //  SFCTransitions,
-    //  SFCSteps
-};
+function processSFC(sfcFhx) {
+    let steps = SFCSteps(sfcFhx);
+    let transitions = SFCTransitions(sfcFhx);
+    let connections = SFCConnections(sfcFhx);
+    return { steps, transitions, connections };
+}
+
+class SfcLogic {
+    constructor(phaseFhx, sfcName) {
+        // It should contain the fhx of the SFC for reference
+        this.fhx = phaseFhx;
+        // It should contain the name of the SFC
+        this.name = sfcName;
+    }
+
+    // It should be able to output the SFCs in json and in txt format
+    get json() {
+        return processSFC(this.fhx);
+    }
+    toString() {
+        return this.fhx;
+    }
+
+    // Each SFC object should contain json representation of the steps and transitions
+    get steps() {
+        return this.json.steps;
+    }
+    get transitions() {
+        return this.json.transitions;
+    }
+    // It should contain the connections between steps and transitions
+    get connections() {
+        return this.json.connections;
+    }
+}
+
+export { processSFC, SfcLogic };
