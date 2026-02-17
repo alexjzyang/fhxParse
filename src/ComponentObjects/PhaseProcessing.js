@@ -121,37 +121,58 @@ export class PhaseLogic {
         return this.phaseFhx;
     }
 
-    sfcFunctionBlocks(phaseFhx, sfcName) {
-        return FhxUtil.findBlockWithName(phaseFhx, "FUNCTION_BLOCK", sfcName);
-    }
-    sfcDefinitions(sfcFunctionBlock) {
-        return FhxUtil.valueOfParameter(sfcFunctionBlock, "DEFINITION");
-    }
+    sfcFhx(sfcName) {
+        // returns the functionblock which the name of the definition block of the sfc with sfcName (ex.RUN_LOGIC)
+        const sfcFunctionBlock = FhxUtil.findBlockWithName(
+            this.phaseFhx,
+            "FUNCTION_BLOCK",
+            sfcName,
+        );
+        const sfcDefinition = FhxUtil.valueOfParameter(
+            sfcFunctionBlock,
+            "DEFINITION",
+        );
 
-    sfcFhx(inputFhx, sfcDefinition) {
-        return FhxUtil.findBlockWithName(
-            inputFhx,
+        const sfcFunctionBlockDefinition = FhxUtil.findBlockWithName(
+            this.inputFhx,
             "FUNCTION_BLOCK_DEFINITION",
             sfcDefinition,
         );
+        return sfcFunctionBlockDefinition;
     }
+    // sfcDefinitions(sfcFunctionBlock) {
+    //     return FhxUtil.valueOfParameter(sfcFunctionBlock, "DEFINITION");
+    // }
+
+    // sfcFhx(inputFhx, sfcDefinition) {
+    //     return FhxUtil.findBlockWithName(
+    //         inputFhx,
+    //         "FUNCTION_BLOCK_DEFINITION",
+    //         sfcDefinition,
+    //     );
+    // }
 
     // Each phase should contain SFC objects for each of its logics (run, hold, abort, restart, stop)
 
+    sfcLogic(sfcName) {
+        const fhx = this.sfcFhx(sfcName);
+        return new SfcLogic(fhx, sfcName);
+    }
+
     get run_logic() {
-        return new SfcLogic(this.phaseFhx, "RUN_LOGIC");
+        return this.sfcLogic("RUN_LOGIC");
     }
     get abort_logic() {
-        return new SfcLogic(this.phaseFhx, "ABORT_LOGIC");
+        return this.sfcLogic("ABORT_LOGIC");
     }
     get hold_logic() {
-        return new SfcLogic(this.phaseFhx, "HOLD_LOGIC");
+        return this.sfcLogic("HOLD_LOGIC");
     }
     get restart_logic() {
-        return new SfcLogic(this.phaseFhx, "RESTART_LOGIC");
+        return this.sfcLogic("RESTART_LOGIC");
     }
     get stop_logic() {
-        return new SfcLogic(this.phaseFhx, "STOP_LOGIC");
+        return this.sfcLogic("STOP_LOGIC");
     }
 }
 

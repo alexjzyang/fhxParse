@@ -142,9 +142,9 @@ function SFCConnections(sfcFhx) {
             transitions.set(transitionName, {
                 targetSteps: [targetStep],
                 sourceSteps: [],
+                // isFinalTransition: false,
             });
         }
-        transitions.set(transitionName, { isFinalTransition: false });
     });
 
     // Go through each STEP_TRANSITION_CONNECTION block to identify source steps for each transition
@@ -162,7 +162,7 @@ function SFCConnections(sfcFhx) {
             transitions.set(transitionName, {
                 targetSteps: [],
                 sourceSteps: [sourceStep],
-                isFinalTransition: true,
+                // isFinalTransition: true,
             });
         }
     });

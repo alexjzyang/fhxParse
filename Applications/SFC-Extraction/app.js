@@ -14,12 +14,13 @@ import fhxlib from "../../src/main.js";
 let { PhaseLogic, processSFC, FileIO, FhxUtil } = fhxlib;
 
 const filename = "A-PROTEIN_PROD";
+const phasename = "SUM-ADDWFI-PH";
 const inputPath = "./inputs/" + filename + ".fhx";
-const outputPath = "./outputs/" + filename + ".json";
+const outputPath = "./outputs/" + "SUM-ADDWFI-PH" + ".json";
 
 const inputFhx = FileIO.readFile(inputPath);
 
-const phase = new PhaseLogic(inputFhx, filename);
+const phase = new PhaseLogic(inputFhx, phasename);
 const runLogicFhx = phase.run_logic.fhx;
 const runLogicJson = processSFC(runLogicFhx);
 const holdLogicFhx = phase.hold_logic.fhx;
