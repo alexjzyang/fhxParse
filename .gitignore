@@ -7,9 +7,9 @@ test/output/*
 RetiredCode_FhxUtil.js
 Applications/fhxblocks/*
 Applications/**/output/*
-*.fhx
-*.txt
+# *.fhx
+# *.txt
 .env
-FHX-Files/*
+# FHX-Files/*
 
 Applications/SFC-Extraction/outputs/*
