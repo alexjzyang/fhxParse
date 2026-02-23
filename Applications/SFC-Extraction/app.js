@@ -42,4 +42,4 @@ const phaseSfcJson = {
 };
 
 // console.log(res);
-// FileIO.writeFile(outputPath, JSON.stringify(phaseSfcJson, null, 2));
+FileIO.writeFile(outputPath, JSON.stringify(phaseSfcJson, null, 2));

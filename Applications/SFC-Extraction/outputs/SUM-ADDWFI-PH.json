@@ -13,10 +13,11 @@
             "qualifier": "P",
             "expression": "IF\t('//#THISUNIT#/THISUNIT' = \"\"055MSS1500\"\" OR '//#THISUNIT#/THISUNIT' = \"\"055MSS2200\"\" OR\r\n\t '//#THISUNIT#/THISUNIT' = \"\"055MSS2300\"\" OR '//#THISUNIT#/THISUNIT' = \"\"055MSS2500\"\")\r\nTHEN\r\n\tIF\t'^/R_WGT.CV' = 0\r\n\tTHEN\r\n\t\t'^/R_WGT.CV' := '//#THISUNIT#/U_PRMPT_FTP.CV'\r\n\tENDIF;\r\nELSE\r\n\t'//#THISUNIT#/U_PRMPT_FTP.CV' := 0\r\nENDIF;",
             "confirmExpression": "'S0000/TIME.CV' > 3",
-            "confirmTimeOut": "0",
+            "confirmTimeOut": "0", 
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0010",
@@ -62,7 +63,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "'S0010/A020/STATE.CV' = '$sfc_action_states:Complete' AND\r\n'S0010/A030/STATE.CV' = '$sfc_action_states:Complete'"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0020",
@@ -120,7 +122,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0020/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0020/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0020/A030/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0020/A040/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0020/A050/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0030",
@@ -144,7 +147,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0030/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0040",
@@ -208,7 +212,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0050",
@@ -290,7 +295,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0050/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A030/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A040/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A050/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A050/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0050/A060/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0060",
@@ -316,7 +322,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0060/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0100",
@@ -372,7 +379,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0100/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0100/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0100/A030/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0100/A040/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0120",
@@ -408,7 +416,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0120/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0120/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0210A",
@@ -444,7 +453,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0210A/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0210B",
@@ -470,7 +480,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0210B/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0220A",
@@ -506,7 +517,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "'S0220A/A020/STATE.CV' = '$sfc_action_states:Complete'"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0220B",
@@ -542,7 +554,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0220B/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0230",
@@ -604,7 +617,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0230/A050/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0240",
@@ -628,7 +642,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0300",
@@ -662,7 +677,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0300/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0310",
@@ -706,7 +722,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0310/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0310/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0310/A030/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0315",
@@ -760,7 +777,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0315/A030/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0320",
@@ -802,7 +820,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0320/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0320/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S0320/A030/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0330",
@@ -834,7 +853,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0330/A010/STATE.CV' = '$sfc_action_states:Complete') AND \r\n('S0330/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0340",
@@ -860,7 +880,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0340/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0350",
@@ -873,7 +894,8 @@
             "qualifier": "N",
             "expression": "'^/P_MSG1.CV' := \"\"Adding WFI to Mix Station\"\";\r\n\r\nTARGET := ('^/R_WGT.CV' * '^/R_WGT_FACTOR.CV');\r\nACTUAL := '//#SUM_WGT_PATH#';\r\nDECIMAL := 2.0;\r\nPOWER := EXPT(10,DECIMAL);\r\nCURRENT :=((ROUND(ACTUAL * POWER))/(POWER)); \r\n\r\n\r\n'^/P_MSG2.CV' := \"\"WFI Addition in progress. Batch size: \"\" + '^/R_WGT.CV' + \"\" kg. Target: \"\" + TARGET + \"\" kg. Actual: \"\" + CURRENT + \"\" kg.\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0360",
@@ -905,7 +927,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0360/A010/STATE.CV' = '$sfc_action_states:Complete') AND \r\n('S0360/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0370",
@@ -935,7 +958,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0370/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0380",
@@ -957,7 +981,8 @@
             "expression": "IF\t('^/RPT_WFI_ADDED.CV' < (('^/R_WGT.CV' * '^/R_WGT_FACTOR.CV' - '^/P_WT_INIT.CV') - '^/R_WGT_LO_LIM.CV')) OR\r\n \t('^/RPT_WFI_ADDED.CV' > (('^/R_WGT.CV' * '^/R_WGT_FACTOR.CV' - '^/P_WT_INIT.CV') + '^/R_WGT_HI_LIM.CV'))\r\nTHEN\r\n  '^/P_TASK_PTR.CV' := 9;\r\nELSE\r\n  '^/P_TASK_PTR.CV' := 8;\r\nENDIF;",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0400",
@@ -981,7 +1006,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S0400/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0410",
@@ -1045,7 +1071,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S0410/A050/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9900",
@@ -1071,7 +1098,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S9900/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9910",
@@ -1107,7 +1135,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S9910/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9910/A020/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9920",
@@ -1179,7 +1208,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('S9920/A010/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9920/A020/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9920/A030/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9920/A040/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9920/A050/STATE.CV' = '$sfc_action_states:Complete') AND\r\n('S9920/A060/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9930",
@@ -1203,7 +1233,8 @@
             "expression": "'^/P_MSG1.CV' := \"\"\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';",
             "delayedExpression": "('S9930/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9940",
@@ -1229,7 +1260,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       }
     ],
     "transitions": [
@@ -1717,7 +1749,8 @@
       {
         "name": "H0010",
         "description": "Common Hold Start",
-        "actions": []
+        "actions": [],
+        "rectangle": " {"
       },
       {
         "name": "H0020",
@@ -1773,7 +1806,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('H0020/A040/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "H9800",
@@ -1819,7 +1853,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "H9900",
@@ -1845,7 +1880,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "('H9900/A010/STATE.CV' = '$sfc_action_states:Complete')"
           }
-        ]
+        ],
+        "rectangle": " {"
       }
     ],
     "transitions": [
@@ -1901,7 +1937,8 @@
       {
         "name": "A0000",
         "description": "Common Abort",
-        "actions": []
+        "actions": [],
+        "rectangle": " {"
       },
       {
         "name": "A0010",
@@ -1915,7 +1952,8 @@
             "expression": "(*\r\n=====================================================================================\r\nDisplay Messages\r\n=====================================================================================\r\n*)\r\n'^/P_MSG1.CV' := \"\"Aborting phase logic\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';\r\n(*\r\n-------------------------------------------------------------------------------------\r\nClear Task Pointer and First Pass Flag\r\n-------------------------------------------------------------------------------------\r\n*)\r\n'^/P_TASK_PTR.CV' := 0;\r\n'^/P_FIRST_PASS.CV' := FALSE;\r\n(*\r\n=====================================================================================\r\nEnd of Code\r\n=====================================================================================\r\n*)",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A0020",
@@ -1961,7 +1999,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A0030",
@@ -1987,7 +2026,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A0040",
@@ -2003,7 +2043,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A0050",
@@ -2029,7 +2070,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A9800",
@@ -2045,7 +2087,8 @@
             "confirmTimeOut": "0",
             "delayedExpression": "REM REQUEST Parameter is Clear \r\n'^/REQUEST.CV' = 0;"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "A9900",
@@ -2077,7 +2120,8 @@
             "expression": "(*\r\n=====================================================================================\r\nClear Failure if under External Control\r\n=====================================================================================\r\n*)\r\nIF\r\n    ('/+/OWNER.CV' = '$phase_owner_id:External') \r\nTHEN\r\n    '/+/XCOMMAND.CV' := '$phase_command:Clear Failures';\r\nENDIF;\r\n(*\r\n-------------------------------------------------------------------------------------\r\nClear Phase Alarm\r\n-------------------------------------------------------------------------------------\r\n*)\r\n'/ALARMS.MACK' := 1;\r\n(*\r\n=====================================================================================\r\nEnd of Code\r\n=====================================================================================\r\n*)",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S0100",
@@ -2119,7 +2163,8 @@
             "confirmExpression": "('//#DRN_VLV#/OWNER_ID.CV' != '//#THISUNIT#/THISUNIT.CV')OR\r\n('/DRN_VLV.IGN' = TRUE)",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       }
     ],
     "transitions": [
@@ -2256,7 +2301,8 @@
             "confirmTimeOut": "0",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       }
     ],
     "transitions": [
@@ -2284,7 +2330,8 @@
             "expression": "(*\r\n=====================================================================================\r\nDisplay Messages\r\n=====================================================================================\r\n*)\r\n'^/P_MSG1.CV' := \"\"Aborting phase logic\"\";\r\n'^/P_MSG2.CV' := \"\"\"\";\r\n'^/P_MSG_TYPE1.CV' := '_MSG_TYPE:INFO';\r\n(*\r\n-------------------------------------------------------------------------------------\r\nClear Task Pointer and First Pass Flag\r\n-------------------------------------------------------------------------------------\r\n*)\r\n'^/P_TASK_PTR.CV' := 0;\r\n'^/P_FIRST_PASS.CV' := FALSE;\r\n(*\r\n=====================================================================================\r\nEnd of Code\r\n=====================================================================================\r\n*)",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       },
       {
         "name": "S9900",
@@ -2306,7 +2353,8 @@
             "expression": "(*\r\n=====================================================================================\r\nClear Failure if under External Control\r\n=====================================================================================\r\n*)\r\nIF\r\n    ('/+/OWNER.CV' = '$phase_owner_id:External') \r\nTHEN\r\n    '/+/XCOMMAND.CV' := '$phase_command:Clear Failures';\r\nENDIF;\r\n(*\r\n-------------------------------------------------------------------------------------\r\nClear Phase Alarm\r\n-------------------------------------------------------------------------------------\r\n*)\r\n'/ALARMS.MACK' := 1;\r\n(*\r\n=====================================================================================\r\nEnd of Code\r\n=====================================================================================\r\n*)",
             "delayTime": "0"
           }
-        ]
+        ],
+        "rectangle": " {"
       }
     ],
     "transitions": [
