@@ -52,8 +52,8 @@ class FhxObject {
             this.remainer = this.remainer.replace(block, "");
         });
         this.recurringBlocks.forEach((blockType) => {
-            blockType.forEach(())
-            
+            blockType.forEach(() => {});
+
             let blockInstances = this.obtainBlocks(blockType);
             blocks.push(...blockInstances);
             blockInstances.forEach((block) => {
