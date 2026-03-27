@@ -27,6 +27,7 @@ function findBlocks(fhxstring, blockType) {
     // finds the first key using indexOf this is the start index of the substring to cut later
     while ((currIndex = fhxstring.indexOf(search, currIndex)) !== -1) {
         blockStartIndex = currIndex;
+
         let depth = 0;
         do {
             // finds the next open bracket and the next close bracket
@@ -58,6 +59,17 @@ function findBlocks(fhxstring, blockType) {
         // this index will be the end index of the block string.
         // isolate the block string
         blockEndIndex = currIndex + 1;
+
+        // =================================================================
+        // March 24, 2026, Adding code to find the return character before the block start index
+        // The block found will thus have the same indentation of the original block
+        blockStartIndex = fhxstring.lastIndexOf("\r\n", blockStartIndex) + 2;
+
+        // Adding code to include the return character at the end of the block
+        // The block found can be used to completely remove from the original fhx string
+        blockEndIndex = fhxstring.indexOf("\r\n", blockEndIndex) + 2;
+        // ==================================================================
+
         blocks.push(fhxstring.substring(blockStartIndex, blockEndIndex));
     }
 
