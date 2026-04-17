@@ -13,10 +13,17 @@
 import fhxlib from "../../src/main.js";
 let { PhaseLogic, FileIO, FhxUtil } = fhxlib;
 
-const filename = "A-PROTEIN_PROD";
-const phasename = "SUM-ADDWFI-PH";
-const inputPath = "./inputs/" + filename + ".fhx";
-const outputPath = "./outputs/" + "SUM-ADDWFI-PH" + ".json";
+// const filename = "A-PROTEIN_PROD";
+// const phasename = "SUM-ADDWFI-PH";
+// const inputPath = "./inputs/" + filename + ".fhx";
+// const outputPath = "./outputs/" + "SUM-ADDWFI-PH" + ".json";
+
+// _PH_BP_XFER_OUT
+
+const filename = "_PH_BP_XFER_OUT";
+const phasename = "_PH_BP_XFER_OUT";
+const inputPath = "./inputs/" + filename + ".txt";
+const outputPath = "./outputs/" + "_PH_BP_XFER_OUT" + ".json";
 
 const inputFhx = FileIO.readFile(inputPath);
 
