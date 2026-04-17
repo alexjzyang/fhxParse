@@ -9,5 +9,4 @@ export default {
     FhxUtil,
     processSFC,
     PhaseLogic,
-    alex,
 };
