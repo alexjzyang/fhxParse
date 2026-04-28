@@ -1,26 +1,25 @@
-// import path from "path";
-// let url = import.meta.url;
+import fs from "fs";
+import yaml from "js-yaml";
 
-// let pathname = new URL(import.meta.url).pathname;
-// let currentDir = path.dirname(new URL(import.meta.url).pathname);
-// currentDir = path.resolve(currentDir);
+// const blockNames = fs.readFileSync(
+//     "src/moo-lexer/fixtures/batch-phase-parameters/block-names.json",
+//     "utf-8",
+// );
 
-// console.log(currentDir);
+// import blocks from "./src/moo-lexer/fixtures/batch-phase-parameters/blocks.js";
+// console.log(JSON.parse(blockNames));
+// console.log(typeof blocks);
+// const yamlInput = fs.readFileSync(
+//     "src/moo-lexer/fixtures/batch-phase-parameters/definition-lines.yaml",
+//     "utf-8",
+// );
+// const parsedYaml = yaml.load(yamlInput);
+// console.log(typeof parsedYaml[0]);
+// console.log(parsedYaml[0]);
 
-import { fileURLToPath } from "url";
-import path, { dirname } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-console.log(__dirname);
-
-const fhxFolderPath = path.join("FHX-Files", "Sanofi_Swift_Water_B55");
-const inputFhxPath = path.join(__dirname, fhxFolderPath, "A-PROTEIN_PROD.fhx");
-
-import { processSFC } from "./src/ComponentObjects/SFCProcessing.js";
-import FhxUtil from "./src/util/FhxUtil.js";
-import { FileIO } from "./src/util/FileIO.js";
-
-const inputFhx = FileIO.readFile(inputFhxPath);
-
-
+const batchPhaseParametersExpectedOutput = fs.readFileSync(
+    "src/moo-lexer/fixtures/batch-phase-parameters/expected.yaml",
+    "utf-8",
+);
+const parsedExpectedOutput = yaml.load(batchPhaseParametersExpectedOutput);
+console.log(parsedExpectedOutput.blocks[0]);

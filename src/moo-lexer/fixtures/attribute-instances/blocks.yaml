@@ -1,0 +1,38 @@
+# These attribute instance blocks are by nature nested blocks
+# They should be handled in the nested-blocks case.
+
+# - |
+#     ATTRIBUTE_INSTANCE NAME="R_MESSAGE_1"
+#     {
+#         VALUE { CV="" }
+#     }
+# - |
+#     ATTRIBUTE_INSTANCE NAME="R_MESSAGE_2"
+#     {
+#         VALUE { CV="" }
+#     }
+# - |
+#     ATTRIBUTE_INSTANCE NAME="R_ALLOW_NEG_RESP"
+#     {
+#         VALUE
+#         {
+#         SET="S_VDL_TRUE_FALSE"
+#         STRING_VALUE="False"
+#         CHANGEABLE=F
+#         }
+#     }
+# - |
+#     ATTRIBUTE_INSTANCE NAME="L_REPORT"
+#     {
+#         VALUE { CV="" }
+#     }
+# - |
+#     ATTRIBUTE_INSTANCE NAME="R_OAR_VERIFY"
+#     {
+#         VALUE
+#         {
+#         SET="_OAR_VERIFY"
+#         STRING_VALUE="None"
+#         CHANGEABLE=F
+#         }
+#     }

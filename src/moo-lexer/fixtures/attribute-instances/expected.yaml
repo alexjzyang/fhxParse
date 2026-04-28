@@ -1,0 +1,60 @@
+nested_blocks:
+    - |
+        ATTRIBUTE_INSTANCE NAME="R_MESSAGE_1"
+        {
+            VALUE { CV="" }
+        }
+    - |
+        ATTRIBUTE_INSTANCE NAME="R_MESSAGE_2"
+        {
+            VALUE { CV="" }
+        }
+    - |
+        ATTRIBUTE_INSTANCE NAME="R_ALLOW_NEG_RESP"
+        {
+            VALUE
+            {
+            SET="S_VDL_TRUE_FALSE"
+            STRING_VALUE="False"
+            CHANGEABLE=F
+            }
+        }
+    - |
+        ATTRIBUTE_INSTANCE NAME="L_REPORT"
+        {
+            VALUE { CV="" }
+        }
+    - |
+        ATTRIBUTE_INSTANCE NAME="R_OAR_VERIFY"
+        {
+            VALUE
+            {
+            SET="_OAR_VERIFY"
+            STRING_VALUE="None"
+            CHANGEABLE=F
+            }
+        }
+attribute_instance_names:
+    - R_MESSAGE_1
+    - R_MESSAGE_2
+    - R_ALLOW_NEG_RESP
+    - L_REPORT
+    - R_OAR_VERIFY
+value_blocks:
+    - VALUE { CV="" }
+    - VALUE { CV="" }
+    - |
+        VALUE
+        {
+        SET="S_VDL_TRUE_FALSE"
+        STRING_VALUE="False"
+        CHANGEABLE=F
+        }
+    - VALUE { CV="" }
+    - |
+        VALUE
+        {
+        SET="_OAR_VERIFY"
+        STRING_VALUE="None"
+        CHANGEABLE=F
+        }

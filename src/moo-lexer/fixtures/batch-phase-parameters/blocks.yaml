@@ -1,0 +1,27 @@
+- |
+    BATCH_PHASE_PARAMETER NAME="R_MESSAGE_1" TYPE=UNICODE_STRING DIRECTION=INPUT
+    {
+        ID=5
+        GROUP="Batch"
+        DESCRIPTION="Text Value Representing the First Part of the Prompt the Operator is to See"
+    }
+- |
+    BATCH_PHASE_PARAMETER NAME="R_MESSAGE_2" TYPE=UNICODE_STRING DIRECTION=INPUT
+    {
+        ID=7
+        GROUP="Batch"
+        DESCRIPTION="Text Value if Required Representing the Second Part of the Prompt the Operator is to See"
+    }
+- |
+    BATCH_PHASE_PARAMETER NAME="R_ALLOW_NEG_RESP" TYPE=ENUMERATION_VALUE DIRECTION=INPUT
+    {
+        ID=6
+        GROUP="Batch"
+        DESCRIPTION="TRUE allows a Negative Response from Operator"
+    }
+- |
+    BATCH_PHASE_PARAMETER NAME="L_REPORT" TYPE=UNICODE_STRING DIRECTION=OUTPUT
+    {
+        ID=1
+        GROUP="Operating"
+    }
