@@ -23,3 +23,4 @@ const batchPhaseParametersExpectedOutput = fs.readFileSync(
 );
 const parsedExpectedOutput = yaml.load(batchPhaseParametersExpectedOutput);
 console.log(parsedExpectedOutput.blocks[0]);
+//testbranch
