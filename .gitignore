@@ -13,4 +13,4 @@ Applications/**/output/*
 # FHX-Files/*
 
 Applications/SFC-Extraction/outputs/*
-*/*.DS_Store
+**/*.DS_Store
