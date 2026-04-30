@@ -41,7 +41,7 @@ describe("MooLexer", () => {
     });
 
     describe("#tokenize()", () => {
-        it("should find fhx block definition lines", () => {
+        it.only("should find fhx block definition lines", () => {
             expect(/**/).to.deep.equal(
                 batchPhaseParametersExpectedOutput.definition_lines,
             );
