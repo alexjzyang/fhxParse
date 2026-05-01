@@ -1,7 +1,7 @@
 import fs from "fs";
 import moo from "moo";
 import yaml from "js-yaml";
-import { MooLexer } from "./moo.js";
+import { fhxBlockTokens, MooLexer } from "./moo.js";
 import { log } from "console";
 // loading fhx files
 const inputPath = "./fixtures/batch-phase-parameters/input.txt";
@@ -27,62 +27,15 @@ class Block {
         this.tokens.push(token);
     }
 }
-let blocks = [];
-let blockLevel = 0;
-let inblock = false;
-let indefinition = false;
-let block;
 
-for (let token of fhxLexer.lexer) {
-    // console.log(token.text);
-
-    if (token.type === "blockkey" && !inblock && blockLevel === 0) {
-        block = new Block();
-
-        inblock = true;
-        indefinition = true;
-        block.key = token.value;
-    }
-
-    if (token.type === "block_name" && inblock && indefinition) {
-        block.name = token.value;
-    }
-    if (token.type === "lbrace") {
-        blockLevel++;
-        indefinition = false;
-    }
-    if (token.type === "rbrace") {
-        blockLevel--;
-        if (blockLevel === 0 && indefinition == false) {
-            blocks.push(block);
-            inblock = false;
-        }
-    }
-    if (inblock) {
-        block.construct(token);
-        block.fhx += token.text;
-    } else {
-        // console.log(token);
-    }
-}
-
-// Code below uses the MooLexer class written in moo.js
 let mooLexer = new MooLexer();
-let fhxLexer = mooLexer.feed(fhx4);
-// let alltokens = fhxLexer.tokenize().filter((token) => token.type !== "_WS");
-// console.log(alltokens);
-// console.log(alltokens.length);
-// let errorTokens = alltokens.filter((token) => token.type === "_error");
-// console.log(errorTokens);
-// console.log(errorTokens.length);
-// element definitions
-let definitions = alltokens
-    .filter((token) => token.type === "comment")
-    .forEach((element) => {
-        console.log(element.text);
-    });
+let fhxLexer = mooLexer.feed(fhx);
 
-console.log(blocks.length);
-blocks[0].tokens
-    .filter((t) => t.type === "_error")
-    .forEach((t) => console.log(t));
+let allTokens = [...fhxLexer].filter((token) => token.type !== "_WS"); // filter out whitespace tokens
+// console.log(allTokens);
+
+let definitionTokens = allTokens.filter((token) => token.type === "definition");
+console.log(definitionTokens.map((token) => token.value));
+
+let errorTokens = allTokens.filter((token) => token.type === "_errors");
+console.log(errorTokens.length == 0 ? "No error tokens" : errorTokens.length);

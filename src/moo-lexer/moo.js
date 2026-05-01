@@ -93,7 +93,7 @@ ENDIF;""
     // method to feed text into the lexer and return tokens
     feed(text) {
         this.lexer.reset(text);
-        return this;
+        return this.lexer;
     }
     // *tokenize method to return an array of tokens from the lexer
     // todo get rid of the whitespace tokens in the output
@@ -102,11 +102,27 @@ ENDIF;""
     }
 }
 
+// Below is a quick and dirty way to identify blocks
+// This is still work in progress and will be refactored later. The main purpose
+// is to test the lexer and see if it can correctly identify blocks and their
+// contents.
+class Block {
+    constructor(blockkey = "", blockname = "") {
+        this.key = blockkey;
+        this.name = blockname;
+        this.fhx = "";
+        this.tokens = [];
+    }
+    construct(token) {
+        this.tokens.push(token);
+    }
+}
 function fhxBlockTokens(fhxLexer) {
     let blocks = [];
     let blockLevel = 0;
     let inblock = false;
     let indefinition = false;
+    let block;
 
     for (let token of fhxLexer) {
         if (token.type === "blockkey" && !inblock && blockLevel === 0) {
@@ -138,6 +154,7 @@ function fhxBlockTokens(fhxLexer) {
             // console.log(token);
         }
     }
+    return blocks;
 }
 
-export { MooLexer };
+export { MooLexer, fhxBlockTokens };
