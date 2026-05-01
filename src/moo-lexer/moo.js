@@ -17,44 +17,44 @@ class MooLexer {
      */
     constructor(text = "") {
         this.lexer = moo.compile({
-            definition: /[A-Z_a-z_]+ NAME="(?:[^"]*)"/,
-            blockkey: [
-                "SCHEMA",
-                "LOCAL",
-                "BATCH_PHASE_PARAMETER",
-                "BATCH_RECIPE",
-                "BATCH_RECIPE_FORMULA",
-                "ATTRIBUTE_INSTANCE",
-                "FUNCTION_BLOCK_DEFINITION",
-            ],
-            // catches NAME="STRING" and extracts STRING
-            block_name: {
-                match: /NAME="(?:[^"]*)"/,
-                value: (s) => s.slice(5, -1),
-            },
+            // definition: /[A-Z_a-z_]+ NAME="(?:[^"]*)"/,
+            // blockkey: [
+            //     "SCHEMA",
+            //     "LOCAL",
+            //     "BATCH_PHASE_PARAMETER",
+            //     "BATCH_RECIPE",
+            //     "BATCH_RECIPE_FORMULA",
+            //     "ATTRIBUTE_INSTANCE",
+            //     "FUNCTION_BLOCK_DEFINITION",
+            // ],
+            // // catches NAME="STRING" and extracts STRING
+            // block_name: {
+            //     match: /NAME="(?:[^"]*)"/,
+            //     value: (s) => s.slice(5, -1),
+            // },
 
-            // catches PROPERTY=VALUE, e.g., TYPE=UNICODE_STRING
-            property: {
-                match: /[0-9_A-Z_a-z_]+=[A-Z_a-z_0-9]+/,
-                value: (s) => {
-                    let [property, value] = s.split("=");
-                    return { property, value };
-                },
-            },
-            parameter_string: {
-                match: /[A-Z_a-z_]+="(?:[^"]*)"/,
-                value: (s) => {
-                    let [parameter, value] = s.split("=");
-                    return { parameter, value: value.slice(1, -1) };
-                },
-            },
-            parameter_numeric: {
-                match: /[A-Z_a-z_]+=-?[0-9]+\.?[0-9]*/,
-                value: (s) => {
-                    let [parameter, value] = s.split("=");
-                    return { parameter, value: Number(value) };
-                },
-            },
+            // // catches PROPERTY=VALUE, e.g., TYPE=UNICODE_STRING
+            // property: {
+            //     match: /[0-9_A-Z_a-z_]+=[A-Z_a-z_0-9]+/,
+            //     value: (s) => {
+            //         let [property, value] = s.split("=");
+            //         return { property, value };
+            //     },
+            // },
+            // parameter_string: {
+            //     match: /[A-Z_a-z_]+="(?:[^"]*)"/,
+            //     value: (s) => {
+            //         let [parameter, value] = s.split("=");
+            //         return { parameter, value: value.slice(1, -1) };
+            //     },
+            // },
+            // parameter_numeric: {
+            //     match: /[A-Z_a-z_]+=-?[0-9]+\.?[0-9]*/,
+            //     value: (s) => {
+            //         let [parameter, value] = s.split("=");
+            //         return { parameter, value: Number(value) };
+            //     },
+            // },
             expression:
                 // if starts with EXPRESSION then handle the expression as a
                 // string until the string ends with a sole double quote (one
