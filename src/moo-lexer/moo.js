@@ -3,8 +3,21 @@ import moo from "moo";
 
 class MooLexer {
     // create an instance of the lexer with fhx keywords and patterns
+    /**
+     * Constructs a lexer instance using the moo library to tokenize input text based on predefined rules.
+     * The lexer is configured with various token types including definitions, block keys, names, properties,
+     * parameters (string and numeric), expressions, comments, keywords, and punctuation.
+     *
+     * The expression regex (/EXPRESSION="(?:[^"]|"")*"/) correctly handles EXPRESSION="..." strings by allowing
+     * any characters except a single double quote, but permitting two consecutive double quotes as part of the expression,
+     * ensuring it ends with a single double quote as described in the comment. This matches the example provided,
+     * where nested quotes and doubled quotes are preserved within the expression.
+     *
+     * @param {string} [text=""] - The input text to be lexed. If provided, the lexer is immediately reset with this text.
+     */
     constructor(text = "") {
         this.lexer = moo.compile({
+            definition: /[A-Z_a-z_]+ NAME="(?:[^"]*)"/,
             blockkey: [
                 "SCHEMA",
                 "LOCAL",
@@ -12,8 +25,8 @@ class MooLexer {
                 "BATCH_RECIPE",
                 "BATCH_RECIPE_FORMULA",
                 "ATTRIBUTE_INSTANCE",
+                "FUNCTION_BLOCK_DEFINITION",
             ],
-
             // catches NAME="STRING" and extracts STRING
             block_name: {
                 match: /NAME="(?:[^"]*)"/,
@@ -22,7 +35,7 @@ class MooLexer {
 
             // catches PROPERTY=VALUE, e.g., TYPE=UNICODE_STRING
             property: {
-                match: /[A-Z_a-z_]+=[A-Z_a-z_]+/,
+                match: /[0-9_A-Z_a-z_]+=[A-Z_a-z_0-9]+/,
                 value: (s) => {
                     let [property, value] = s.split("=");
                     return { property, value };
@@ -42,6 +55,28 @@ class MooLexer {
                     return { parameter, value: Number(value) };
                 },
             },
+            expression:
+                // if starts with EXPRESSION then handle the expression as a
+                // string until the string ends with a sole double quote (one
+                // standalone doubleq quote). Note two back to back double
+                // quotes are still part of the expression
+                //For example
+                /**
+EXPRESSION="IF
+	'^/BSTATUS.CV' = '$phase_state:Aborting'
+THEN
+	'^/P_MSG1.CV' := ""Abort sequence active"";
+	'^/P_MSG2.CV' := """";
+ENDIF;
+IF
+	'^/BSTATUS.CV' = '$phase_state:Stopping'
+THEN
+	'^/P_MSG1.CV' := ""Stop sequence active"";
+	'^/P_MSG2.CV' := """";
+ENDIF;""
+                 */
+                /EXPRESSION="(?:(?:[^"]|"")*)"/,
+
             ///* Version: 15.0.0.8510.xr */\r\n'
             comment: /\/\*[\s\S]*?\*\//,
             _keyword: /[A-Z_a-z_]+/, // catches NAME, TYPE, DIRECTION, etc.
@@ -65,6 +100,44 @@ class MooLexer {
     // todo get rid of the whitespace tokens in the output
     tokenize() {
         return Array.from(this.lexer).filter((token) => token.type !== "WS");
+    }
+}
+
+function fhxBlockTokens(fhxLexer) {
+    let blocks = [];
+    let blockLevel = 0;
+    let inblock = false;
+    let indefinition = false;
+
+    for (let token of fhxLexer) {
+        if (token.type === "blockkey" && !inblock && blockLevel === 0) {
+            block = new Block();
+
+            inblock = true;
+            indefinition = true;
+            block.key = token.value;
+        }
+
+        if (token.type === "block_name" && inblock && indefinition) {
+            block.name = token.value;
+        }
+        if (token.type === "lbrace") {
+            blockLevel++;
+            indefinition = false;
+        }
+        if (token.type === "rbrace") {
+            blockLevel--;
+            if (blockLevel === 0 && indefinition == false) {
+                blocks.push(block);
+                inblock = false;
+            }
+        }
+        if (inblock) {
+            block.construct(token);
+            block.fhx += token.text;
+        } else {
+            // console.log(token);
+        }
     }
 }
 

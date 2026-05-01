@@ -11,9 +11,11 @@ const fhx2 = fs.readFileSync(inputPath2, "utf-8");
 const inputPath3 =
     "../../FHX-Files/Cytiva_Muskegon/original/_PR_DOWNSTREAM_Y.txt";
 const fhx3 = fs.readFileSync(inputPath3, "utf-8");
+const inputPath4 =
+    "../../FHX-Files/Cytiva_Muskegon/original/_PH_UF_XFER_IN.txt";
+const fhx4 = fs.readFileSync(inputPath4, "utf-8");
 
 // console.log(fhx3);
-
 // let lexer = moo.compile({
 //     _blockkey: ["BATCH_PHASE_PARAMETER", "BATCH_RECIPE"],
 
@@ -62,16 +64,22 @@ const fhx3 = fs.readFileSync(inputPath3, "utf-8");
 
 // Code below uses the MooLexer class written in moo.js
 let mooLexer = new MooLexer();
-let fhxLexer = mooLexer.feed(fhx3);
-
-// let alltokens = fhxLexer.tokenize().filter((token) => token.type !== "_WS");
+let fhxLexer = mooLexer.feed(fhx4);
+let alltokens = fhxLexer.tokenize().filter((token) => token.type !== "_WS");
 // console.log(alltokens);
 // console.log(alltokens.length);
+let errorTokens = alltokens.filter((token) => token.type === "_error");
+console.log(errorTokens);
+console.log(errorTokens.length);
+// element definitions
+let definitions = alltokens
+    .filter((token) => token.type === "comment")
+    .forEach((element) => {
+        console.log(element.text);
+    });
 
-// for (let token of fhxLexer) {
-//     console.log(token);
-//     console.log(token.text);
-// }
+let aTokens = alltokens.filter((token) => token.type === "expression");
+console.log(aTokens[0]);
 
 // Below is a quick and dirty way to identify blocks
 class Block {
@@ -89,7 +97,6 @@ let blocks = [];
 let blockLevel = 0;
 let inblock = false;
 let indefinition = false;
-let tokens = [];
 let block;
 
 for (let token of fhxLexer.lexer) {
@@ -124,7 +131,7 @@ for (let token of fhxLexer.lexer) {
         // console.log(token);
     }
 }
-console.log(blocks.length);
-blocks[2].tokens
-    .filter((t) => t.type !== "_WS")
-    .forEach((t) => console.log(t.toString()));
+// console.log(blocks.length);
+// blocks[0].tokens
+//     .filter((t) => t.type === "_error")
+//     .forEach((t) => console.log(t));
