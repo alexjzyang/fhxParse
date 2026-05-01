@@ -1,66 +1,89 @@
-import { expect } from "chai";
+import { expect, should } from "chai";
 import { describe, it, before, after } from "mocha";
 import fs from "fs";
 import yaml from "js-yaml";
+import { fhxLexer } from "./moo.js";
 
-// Import the module to test, e.g., import { MooLexer } from './moo.js';
-
-describe("MooLexer", () => {
-    let lexer;
-
-    const batchPhaseParametersInput = fs.readFileSync(
-        "./src/moo-lexer/fixtures/batch-phase-parameters/input.txt",
+describe("fhxLexer", () => {
+    const inputTokens = fs.readFileSync(
+        "./src/moo-lexer/fixtures/atomic-tokens/simple-block.txt",
         "utf-8",
     );
 
-    const batchPhaseParametersExpectedOutput = yaml.load(
+    const expectedTokens = yaml.load(
         fs.readFileSync(
-            "./src/moo-lexer/fixtures/batch-phase-parameters/expected.yaml",
+            "./src/moo-lexer/fixtures/atomic-tokens/expected.yaml",
             "utf-8",
         ),
     );
 
-    const attributeInstancesInputs = fs.readFileSync(
-        "./src/moo-lexer/fixtures/attribute-instances/input.txt",
-        "utf-8",
-    );
-    const attributeInstancesExpectedOutput = yaml.load(
-        fs.readFileSync(
-            "./src/moo-lexer/fixtures/attribute-instances/expected.yaml",
-            "utf-8",
-        ),
-    );
+    const tokens = Array.from(fhxLexer(inputTokens));
 
-    before(() => {
-        // Setup code, e.g., initialize lexer or read test datatell me more about fixtures
-        // lexer = new MooLexer();
+    it("should create an iterable lexer", () => {
+        expect(fhxLexer(inputTokens)).to.be.iterable;
     });
 
-    after(() => {
-        // Cleanup code, e.g., remove temp files if any
+    it("should not contain any comment tokens", () => {
+        const commentTokens = tokens.filter((t) => t.type === "comment");
+        expect(commentTokens).to.be.empty;
     });
 
-    describe("#tokenize()", () => {
-        it.only("should find fhx block definition lines", () => {
-            expect(/**/).to.deep.equal(
-                batchPhaseParametersExpectedOutput.definition_lines,
-            );
-        });
-        it("should find the names of the blocks", () => {
-            expect(/**/).to.deep.equal(
-                batchPhaseParametersExpectedOutput.block_names,
-            );
-        });
-        it("should find the blocks", () => {
-            expect(/**/).to.deep.equal(
-                batchPhaseParametersExpectedOutput.blocks,
-            );
-        });
-        it("should find nested blocks", () => {
-            expect(/**/).to.deep.equal(
-                attributeInstancesExpectedOutput.nested_blocks,
-            );
-        });
-        // Add more describe blocks for other methods or features
+    it("should contain expected keyword tokens", () => {
+        const keywordTokens = tokens
+            .filter((t) => t.type === "keyword")
+            .map((t) => t.value);
+        expect(keywordTokens).to.have.members(expectedTokens.keyword);
+    });
+
+    it("should contain expected properties tokens", () => {
+        const propertiesTokens = tokens
+            .filter((t) => t.type === "property_name")
+            .map((t) => t.value);
+        expect(propertiesTokens).to.have.members(expectedTokens.property_name);
+    });
+
+    it("should contain expected quoted string tokens", () => {
+        const quotedStringTokens = tokens
+            .filter((t) => t.type === "quoted_string")
+            .map((t) => t.value);
+        expect(quotedStringTokens).to.have.members(
+            expectedTokens.quoted_string,
+        );
+    });
+
+    it("should contain expected unquoted string tokens", () => {
+        const unquotedStringTokens = tokens
+            .filter((t) => t.type === "unquoted_string")
+            .map((t) => t.value);
+        expect(unquotedStringTokens).to.have.members(
+            expectedTokens.unquoted_string,
+        );
+    });
+    it("should contain expected number tokens", () => {
+        const numberTokens = tokens
+            .filter((t) => t.type === "number")
+            .map((t) => t.value);
+        expect(numberTokens).to.have.members(expectedTokens.number.toString());
+    });
+
+    it("should not contain dual double quote tokens", () => {
+        const twoDoubleQuoteTokens = tokens.filter(
+            (t) => t.type === "two_double_quotes",
+        );
+        expect(twoDoubleQuoteTokens).to.be.empty;
+    });
+    it("should contain equal sign tokens", () => {
+        expect(tokens.filter((t) => t.type === "equals_sign")).to.not.be.empty;
+    });
+    it("should contain one lbrace and one rbrace tokens", () => {
+        expect(tokens.filter((t) => t.type === "lbrace")).to.have.lengthOf(1);
+        expect(tokens.filter((t) => t.type === "rbrace")).to.have.lengthOf(1);
+    });
+
+    it("should contain whitespace tokens", () => {
+        expect(tokens.filter((t) => t.type === "WS")).to.not.be.empty;
+    });
+    it("should not contain any error tokens", () => {
+        expect(tokens.filter((t) => t.type === "errors")).to.be.empty;
     });
 });
