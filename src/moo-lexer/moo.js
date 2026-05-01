@@ -77,8 +77,7 @@ ENDIF;""
                  */
                 /EXPRESSION="(?:(?:[^"]|"")*)"/,
 
-            ///* Version: 15.0.0.8510.xr */\r\n'
-            comment: /\/\*[\s\S]*?\*\//,
+            comment: /\/\*[\s\S]*?\*\//, // catches /* ... */ comments, including multiline
             _keyword: /[A-Z_a-z_]+/, // catches NAME, TYPE, DIRECTION, etc.
             _equals: "=",
             _quoted: /"(?:[^"]*)"/, // catches "R_MESSAGE_2"
